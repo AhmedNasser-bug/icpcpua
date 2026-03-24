@@ -56,7 +56,7 @@
   body {
     background-color: #FFF4E0;
     color: #0F0F0F;
-    font-family: var(--font-body-var), 'Space Mono', monospace;
+    font-family: 'Space Mono', monospace;
     background-image: radial-gradient(#E0E0E0 1px, transparent 1px);
     background-size: 20px 20px;
     min-height: 100vh;
@@ -64,14 +64,12 @@
 }
 
 /* ---- Typography helpers ---- */
-/* --font-heading is injected by Next.js Fredoka_One({ variable: '--font-heading' }) */
-/* --font-body-var is injected by Next.js Space_Mono({ variable: '--font-body-var' }) */
 .font-display {
-  font-family: var(--font-heading), 'Fredoka One', cursive;
+  font-family: 'Fredoka One', cursive;
 }
 
 .font-body {
-  font-family: var(--font-body-var), 'Space Mono', monospace;
+  font-family: 'Space Mono', monospace;
 }
 
 /* ---- Text shadows ---- */

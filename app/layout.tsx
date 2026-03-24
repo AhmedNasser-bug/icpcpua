@@ -1,21 +1,5 @@
 import type { Metadata } from 'next'
-import { Fredoka, Space_Mono } from 'next/font/google'
-import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
-
-const fredokaOne = Fredoka({
-  weight: ['400', '600'],
-  subsets: ['latin'],
-  variable: '--font-heading',
-  display: 'swap',
-})
-
-const spaceMono = Space_Mono({
-  weight: ['400', '700'],
-  subsets: ['latin'],
-  variable: '--font-body-var',
-  display: 'swap',
-})
 
 export const metadata: Metadata = {
   title: 'PUA ICPC — Crack the Code',
@@ -30,12 +14,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${fredokaOne.variable} ${spaceMono.variable} antialiased`}
-        style={{ fontFamily: "'Space Mono', monospace" }}
-      >
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body className="antialiased">
         {children}
-        <Analytics />
       </body>
     </html>
   )
