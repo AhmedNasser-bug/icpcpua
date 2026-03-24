@@ -1,10 +1,10 @@
 import type { Metadata } from 'next'
-import { Fredoka_One, Space_Mono } from 'next/font/google'
+import { Fredoka, Space_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
-const fredokaOne = Fredoka_One({
-  weight: '400',
+const fredokaOne = Fredoka({
+  weight: ['400', '600'],
   subsets: ['latin'],
   variable: '--font-heading',
   display: 'swap',
