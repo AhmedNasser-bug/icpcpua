@@ -133,10 +133,28 @@
   padding: 0 2rem;
 }
 
-/* ---- Stipple background ---- */
+/* ---- Stipple backgrounds ---- */
 .stipple-bg {
   background-image: radial-gradient(#E0E0E0 1px, transparent 1px);
   background-size: 10px 10px;
+}
+
+.stipple-pattern {
+  background-image: radial-gradient(currentColor 0.5px, transparent 0.5px);
+  background-size: 4px 4px;
+}
+
+/* ---- Neo-brutalism shadows ---- */
+.shadow-neo {
+  box-shadow: 4px 4px 0px 0px #0F0F0F;
+}
+
+.shadow-neo-lg {
+  box-shadow: 8px 8px 0px 0px #0F0F0F;
+}
+
+.shadow-neo-xl {
+  box-shadow: 12px 12px 0px 0px #0F0F0F;
 }
 
 /* ---- Rank row hover ---- */
