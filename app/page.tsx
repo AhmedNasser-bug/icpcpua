@@ -62,6 +62,11 @@ function JoinModal({ onClose }: { onClose: () => void }) {
                 REGISTER NOW
               </button>
             </form>
+            <div className="mt-4 text-center">
+              <Link href="/join" onClick={onClose} className="font-body text-xs font-bold uppercase tracking-widest text-[#7B2CBF] underline decoration-[#7B2CBF] decoration-2 underline-offset-4 hover:text-[#FF0055] transition-colors">
+                View full application page &rarr;
+              </Link>
+            </div>
           </>
         ) : (
           <div className="flex flex-col items-center gap-6 py-8 text-center">

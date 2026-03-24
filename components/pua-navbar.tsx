@@ -11,6 +11,7 @@ const navLinks = [
   { href: "/leaderboard", label: "Leaderboard" },
   { href: "/resources", label: "Resources" },
   { href: "/testimonials", label: "Testimonials" },
+  { href: "/join", label: "Join the Team" },
 ]
 
 export function PuaNavbar() {
