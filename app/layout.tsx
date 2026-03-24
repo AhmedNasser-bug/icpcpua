@@ -6,19 +6,19 @@ import './globals.css'
 const fredokaOne = Fredoka_One({
   weight: '400',
   subsets: ['latin'],
-  variable: '--font-display',
+  variable: '--font-heading',
   display: 'swap',
 })
 
 const spaceMono = Space_Mono({
   weight: ['400', '700'],
   subsets: ['latin'],
-  variable: '--font-body',
+  variable: '--font-body-var',
   display: 'swap',
 })
 
 export const metadata: Metadata = {
-  title: 'PUA ICPC - Crack the Code',
+  title: 'PUA ICPC — Crack the Code',
   description: 'The fiercest algorithmic competitive programming community at Pharos University in Alexandria.',
   generator: 'v0.app',
 }
@@ -30,7 +30,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${fredokaOne.variable} ${spaceMono.variable} font-body antialiased`}>
+      <body
+        className={`${fredokaOne.variable} ${spaceMono.variable} antialiased`}
+        style={{ fontFamily: "'Space Mono', monospace" }}
+      >
         {children}
         <Analytics />
       </body>

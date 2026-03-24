@@ -3,6 +3,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ---- PUA ICPC Design System ---- */
 :root {
   --color-primary: #7B2CBF;
   --color-background: #FFF4E0;
@@ -13,82 +14,72 @@
   --color-muted: #E0E0E0;
   --font-heading: 'Fredoka One', cursive;
   --font-body: 'Space Mono', monospace;
-  --radius: 0px;
-  --border-width: 3px;
   --border-color: #0F0F0F;
   --shadow-offset: 8px 8px 0px #0F0F0F;
 
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --radius: 0.625rem;
+  /* shadcn compat tokens */
+  --background: 38 100% 95%;
+  --foreground: 0 0% 6%;
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 6%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 6%;
+  --primary: 276 63% 45%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 48 100% 50%;
+  --secondary-foreground: 0 0% 6%;
+  --muted: 0 0% 88%;
+  --muted-foreground: 0 0% 40%;
+  --accent: 188 100% 50%;
+  --accent-foreground: 0 0% 6%;
+  --destructive: 343 100% 33%;
+  --border: 0 0% 6%;
+  --input: 0 0% 6%;
+  --ring: 276 63% 45%;
+  --radius: 0px;
 }
 
 @theme inline {
-  --font-sans: var(--font-body);
-  --font-mono: var(--font-body);
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
+  --font-sans: 'Space Mono', monospace;
+  --font-mono: 'Space Mono', monospace;
 }
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
     box-sizing: border-box;
   }
+
+  html {
+    background-color: #FFF4E0;
+  }
+
   body {
     background-color: #FFF4E0;
     color: #0F0F0F;
-    font-family: 'Space Mono', monospace;
+    font-family: var(--font-body-var), 'Space Mono', monospace;
     background-image: radial-gradient(#E0E0E0 1px, transparent 1px);
     background-size: 20px 20px;
+    min-height: 100vh;
   }
 }
 
-/* ---- PUA ICPC Design System Utilities ---- */
+/* ---- Typography helpers ---- */
+/* --font-heading is injected by Next.js Fredoka_One({ variable: '--font-heading' }) */
+/* --font-body-var is injected by Next.js Space_Mono({ variable: '--font-body-var' }) */
 .font-display {
-  font-family: 'Fredoka One', cursive;
+  font-family: var(--font-heading), 'Fredoka One', cursive;
 }
 
 .font-body {
-  font-family: 'Space Mono', monospace;
+  font-family: var(--font-body-var), 'Space Mono', monospace;
 }
 
+/* ---- Text shadows ---- */
 .text-shadow-cyan {
   text-shadow: 6px 6px 0px #00E5FF;
 }
 
+/* ---- Box shadows ---- */
 .shadow-solid {
   box-shadow: 8px 8px 0px #0F0F0F;
 }
@@ -97,18 +88,12 @@
   box-shadow: 4px 4px 0px #0F0F0F;
 }
 
-.shadow-solid-hover {
-  box-shadow: 12px 12px 0px #0F0F0F;
-}
-
+/* ---- Border ---- */
 .border-3 {
   border-width: 3px;
 }
 
-.border-4 {
-  border-width: 4px;
-}
-
+/* ---- Vector nodes (corner accent squares) ---- */
 .vector-node {
   position: absolute;
   width: 12px;
@@ -116,22 +101,25 @@
   background-color: white;
   border: 3px solid #0F0F0F;
   z-index: 20;
+  pointer-events: none;
 }
 
-.vector-node-tl { top: -6px; left: -6px; }
-.vector-node-tr { top: -6px; right: -6px; }
-.vector-node-bl { bottom: -6px; left: -6px; }
+.vector-node-tl { top: -6px;    left: -6px;  }
+.vector-node-tr { top: -6px;    right: -6px; }
+.vector-node-bl { bottom: -6px; left: -6px;  }
 .vector-node-br { bottom: -6px; right: -6px; }
 
+/* ---- Button press effect ---- */
 .btn-solid {
   transition: all 0.1s ease-in-out;
 }
 
 .btn-solid:active {
   transform: translate(8px, 8px);
-  box-shadow: 0px 0px 0px #0F0F0F;
+  box-shadow: 0px 0px 0px #0F0F0F !important;
 }
 
+/* ---- Marquee ---- */
 .marquee-container {
   overflow: hidden;
   white-space: nowrap;
@@ -140,37 +128,20 @@
 
 .marquee-content {
   display: inline-flex;
-  animation: marquee 15s linear infinite;
+  animation: marquee 18s linear infinite;
 }
 
 .marquee-content span {
   padding: 0 2rem;
 }
 
+/* ---- Stipple background ---- */
 .stipple-bg {
   background-image: radial-gradient(#E0E0E0 1px, transparent 1px);
   background-size: 10px 10px;
 }
 
-@keyframes marquee {
-  0% { transform: translateX(0%); }
-  100% { transform: translateX(-50%); }
-}
-
-@keyframes pulsePink {
-  0%, 100% { background-color: #FFFFFF; }
-  50% { background-color: #FF0055; }
-}
-
-@keyframes pulseNode {
-  0%, 100% { background-color: #FFFFFF; }
-  50% { background-color: #FF0055; }
-}
-
-.hero-art-container:hover .vector-node {
-  animation: pulseNode 1s infinite;
-}
-
+/* ---- Rank row hover ---- */
 .rank-row {
   transition: all 0.15s ease-in-out;
 }
@@ -178,9 +149,10 @@
 .rank-row:hover {
   transform: translateX(-4px);
   box-shadow: 12px 4px 0px #0F0F0F;
-  border-color: #7B2CBF;
+  border-color: #7B2CBF !important;
 }
 
+/* ---- Resource card ---- */
 .resource-card {
   transition: all 0.2s ease-in-out;
   cursor: pointer;
@@ -200,17 +172,20 @@
   transform: rotate(2deg) scale(1.05);
 }
 
+/* ---- Polaroid / Hall of Fame ---- */
 .polaroid-card {
   transition: all 0.2s ease-in-out;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 .polaroid-card:hover {
   transform: rotate(5deg) translateY(-8px);
+  z-index: 10;
 }
 
 .duotone-img {
-  filter: grayscale(100%) sepia(50%) hue-rotate(240deg) saturate(200%);
+  filter: grayscale(100%) sepia(60%) hue-rotate(240deg) saturate(200%);
   transition: filter 0.3s ease-in-out;
 }
 
@@ -218,6 +193,7 @@
   filter: none;
 }
 
+/* ---- Filter pills ---- */
 .filter-pill {
   transition: all 0.1s ease-in-out;
   font-family: 'Space Mono', monospace;
@@ -234,22 +210,38 @@
   box-shadow: 0px 0px 0px #0F0F0F;
 }
 
+/* ---- Calendar cell hover ---- */
 .calendar-cell:hover {
-  background-color: #7B2CBF;
+  background-color: #7B2CBF !important;
   color: #FFFFFF;
 }
 
+.calendar-cell:hover * {
+  color: #FFFFFF;
+}
+
+/* ---- Slide-in animation ---- */
 @keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0);     }
 }
 
 .animate-slide-in {
-  animation: slideIn 0.3s ease-out forwards;
+  animation: slideIn 0.25s ease-out forwards;
+}
+
+/* ---- Marquee keyframe ---- */
+@keyframes marquee {
+  0%   { transform: translateX(0);    }
+  100% { transform: translateX(-50%); }
+}
+
+/* ---- Vector node pulse on hero hover ---- */
+@keyframes pulseNode {
+  0%, 100% { background-color: #FFFFFF; }
+  50%       { background-color: #FF0055; }
+}
+
+.hero-art-container:hover .vector-node {
+  animation: pulseNode 0.9s infinite;
 }
