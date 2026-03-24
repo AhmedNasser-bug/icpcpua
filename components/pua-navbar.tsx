@@ -10,7 +10,7 @@ const navLinks = [
   { href: "/events", label: "Events & Training" },
   { href: "/leaderboard", label: "Leaderboard" },
   { href: "/resources", label: "Resources" },
-  { href: "/hall-of-fame", label: "Hall of Fame" },
+  { href: "/testimonials", label: "Testimonials" },
 ]
 
 export function PuaNavbar() {
