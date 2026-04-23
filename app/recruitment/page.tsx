@@ -14,11 +14,13 @@ export default function RecruitmentLandingPage() {
                     <Link className="text-[#0F0F0F] dark:text-white hover:bg-[#00E5FF] hover:text-black transition-all duration-100 px-2 py-1" href="#roles">ROLES</Link>
                     <Link className="text-[#0F0F0F] dark:text-white hover:bg-[#00E5FF] hover:text-black transition-all duration-100 px-2 py-1" href="#systems">SYSTEMS</Link>
                     <Link className="text-[#0F0F0F] dark:text-white hover:bg-[#00E5FF] hover:text-black transition-all duration-100 px-2 py-1" href="#death_code">DEATH_CODE</Link>
-                    <Link className="text-[#FF0055] underline decoration-[3px] hover:bg-[#00E5FF] hover:text-black transition-all duration-100 px-2 py-1" href="#recruit">RECRUIT</Link>
+                    <Link className="text-[#FF0055] underline decoration-[3px] hover:bg-[#00E5FF] hover:text-black transition-all duration-100 px-2 py-1" href="/recruitment">RECRUIT</Link>
                 </nav>
-                <button className="bg-[#7B2CBF] text-white px-6 py-2 border-[3px] border-[#0F0F0F] font-bold uppercase tracking-tighter hover:bg-[#00E5FF] hover:text-black transition-all duration-100 active:translate-x-2 active:translate-y-2 active:shadow-none shadow-[4px_4px_0px_0px_#0F0F0F]">
-                    APPLY_NOW
-                </button>
+                <Link href="/join">
+                    <button className="bg-[#7B2CBF] text-white px-6 py-2 border-[3px] border-[#0F0F0F] font-bold uppercase tracking-tighter hover:bg-[#00E5FF] hover:text-black transition-all duration-100 active:translate-x-2 active:translate-y-2 active:shadow-none shadow-[4px_4px_0px_0px_#0F0F0F]">
+                        APPLY_NOW
+                    </button>
+                </Link>
             </header>
 
             {/* Main Content */}
@@ -226,7 +228,7 @@ export default function RecruitmentLandingPage() {
                     <Link className="text-white hover:text-[#FF0055] transition-colors active:scale-95 duration-75" href="#">ROLES</Link>
                     <Link className="text-white hover:text-[#FF0055] transition-colors active:scale-95 duration-75" href="#">SYSTEMS</Link>
                     <Link className="text-white hover:text-[#FF0055] transition-colors active:scale-95 duration-75" href="#">DEATH_CODE</Link>
-                    <Link className="text-[#00E5FF] hover:text-[#FF0055] transition-colors active:scale-95 duration-75" href="#recruit">RECRUIT</Link>
+                    <Link className="text-[#00E5FF] hover:text-[#FF0055] transition-colors active:scale-95 duration-75" href="/recruitment">RECRUIT</Link>
                 </div>
                 <div className="text-white text-sm font-bold opacity-80">
                     ©2024 ICPC PUA OPERATIONS
