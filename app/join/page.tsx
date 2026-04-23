@@ -3,6 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { PuaNavbar } from "@/components/pua-navbar"
+import { Footer } from "@/components/footer"
 
 /* ─── FAQ Item ─── */
 function FaqItem({ q, a }: { q: string; a: string }) {
@@ -32,22 +33,21 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 
 /* ─── Track Card ─── */
 function TrackCard({
-  level, title, subtitle, items, bg, textColor, accentColor,
+  level, title, subtitle, items, bgClass, textClass, accentClass,
 }: {
   level: string; title: string; subtitle: string; items: string[];
-  bg: string; textColor: string; accentColor: string;
+  bgClass: string; textClass: string; accentClass: string;
 }) {
   return (
     <div className="flex flex-col md:flex-row items-stretch border-[3px] border-[#0F0F0F] shadow-solid">
       <div
-        className="md:w-1/3 p-8 flex flex-col justify-between border-b-[3px] md:border-b-0 md:border-r-[3px] border-dashed border-[#0F0F0F]"
-        style={{ backgroundColor: bg }}
+        className={`md:w-1/3 p-8 flex flex-col justify-between border-b-[3px] md:border-b-0 md:border-r-[3px] border-dashed border-[#0F0F0F] ${bgClass}`}
       >
         <div>
-          <span className="font-display text-2xl" style={{ color: accentColor }}>{level}</span>
-          <h3 className="font-display text-4xl mt-2 uppercase" style={{ color: textColor }}>{title}</h3>
+          <span className={`font-display text-2xl ${accentClass}`}>{level}</span>
+          <h3 className={`font-display text-4xl mt-2 uppercase ${textClass}`}>{title}</h3>
         </div>
-        <p className="font-body text-sm mt-4 italic" style={{ color: textColor + "bb" }}>{subtitle}</p>
+        <p className={`font-body text-sm mt-4 italic ${textClass} opacity-80`}>{subtitle}</p>
       </div>
       <div className="md:w-2/3 p-8 flex flex-col justify-center gap-4 bg-[#FFF4E0]">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -83,7 +83,7 @@ function ApplicationForm() {
             <path d="M2 20h2c.55 0 1-.45 1-1v-9c0-.55-.45-1-1-1H2v11zm19.83-7.12c.11-.25.17-.52.17-.8V11c0-1.1-.9-2-2-2h-5.5l.92-4.65c.05-.22.02-.46-.08-.66-.23-.45-.52-.86-.88-1.22L14 2 7.59 8.41C7.21 8.79 7 9.3 7 9.83V19c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3-7.12z"/>
           </svg>
         </div>
-        <h3 className="font-display text-5xl uppercase text-[#7B2CBF]" style={{ textShadow: "4px 4px 0 #00E5FF" }}>
+        <h3 className="font-display text-5xl uppercase text-[#7B2CBF] [text-shadow:4px_4px_0_#00E5FF]">
           YOU&apos;RE IN THE QUEUE!
         </h3>
         <p className="font-body text-base max-w-md">
@@ -127,6 +127,7 @@ function ApplicationForm() {
           <label className="font-body text-xs font-bold uppercase block mb-2 tracking-widest">Academic Year *</label>
           <select
             required
+            title="Academic Year"
             className="w-full border-[3px] border-[#0F0F0F] bg-white px-4 py-3 font-body text-sm focus:outline-none focus:border-[#7B2CBF] shadow-neo"
             value={form.year}
             onChange={(e) => setForm({ ...form, year: e.target.value })}
@@ -142,6 +143,7 @@ function ApplicationForm() {
           <label className="font-body text-xs font-bold uppercase block mb-2 tracking-widest">Track *</label>
           <select
             required
+            title="Track"
             className="w-full border-[3px] border-[#0F0F0F] bg-white px-4 py-3 font-body text-sm focus:outline-none focus:border-[#7B2CBF] shadow-neo"
             value={form.track}
             onChange={(e) => setForm({ ...form, track: e.target.value })}
@@ -211,8 +213,7 @@ export default function JoinPage() {
               Applications Open — 2026 Season
             </div>
             <h1
-              className="font-display text-[72px] lg:text-[96px] leading-[0.9] uppercase text-[#0F0F0F] mb-8"
-              style={{ textShadow: "4px 4px 0 #00E5FF" }}
+              className="font-display text-[72px] lg:text-[96px] leading-[0.9] uppercase text-[#0F0F0F] mb-8 [text-shadow:4px_4px_0_#00E5FF]"
             >
               ENGINEER<br />YOUR <span className="text-[#7B2CBF]">LOGIC.</span><br />COMPETE<br />WITH THE BEST.
             </h1>
@@ -236,7 +237,8 @@ export default function JoinPage() {
                 {
                   title: "Crack Technical Interviews",
                   desc: "Master the algorithms that unlock doors at FAANG and top-tier tech firms. Our curriculum is built for high-stakes assessments.",
-                  border: "#7B2CBF",
+                  borderClass: "border-[#7B2CBF]",
+                  bgClass: "bg-zinc-900",
                   icon: (
                     <svg className="w-12 h-12 text-[#7B2CBF]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
@@ -246,7 +248,8 @@ export default function JoinPage() {
                 {
                   title: "Premium Mentorship",
                   desc: "Get 1-on-1 coaching from seasoned problem solvers. Weekly code reviews and strategic debugging sessions.",
-                  border: "white",
+                  borderClass: "border-white",
+                  bgClass: "bg-zinc-900",
                   icon: (
                     <svg className="w-12 h-12 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
@@ -256,8 +259,8 @@ export default function JoinPage() {
                 {
                   title: "Real Stakes & Rewards",
                   desc: "Compete in offline contests, win prizes, and earn prestigious recommendations from department heads.",
-                  border: "#0F0F0F",
-                  bg: "#7B2CBF",
+                  borderClass: "border-[#0F0F0F]",
+                  bgClass: "bg-[#7B2CBF]",
                   icon: (
                     <svg className="w-12 h-12 text-[#FFD500]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
@@ -267,8 +270,7 @@ export default function JoinPage() {
               ].map((card) => (
                 <div
                   key={card.title}
-                  className="p-8 border-[3px] relative overflow-hidden hover:-translate-y-2 transition-transform duration-200 vector-node"
-                  style={{ borderColor: card.border, backgroundColor: card.bg ?? "#18181b" }}
+                  className={`p-8 border-[3px] relative overflow-hidden hover:-translate-y-2 transition-transform duration-200 vector-node ${card.borderClass} ${card.bgClass}`}
                 >
                   <div className="mb-4">{card.icon}</div>
                   <h3 className="font-display text-2xl text-white mb-3">{card.title}</h3>
@@ -288,9 +290,9 @@ export default function JoinPage() {
                 level="LEVEL 01"
                 title="FUNDAMENTALS"
                 subtitle="Perfect for beginners and first-year enthusiasts."
-                bg="#FFF4E0"
-                textColor="#0F0F0F"
-                accentColor="#7B2CBF"
+                bgClass="bg-[#FFF4E0]"
+                textClass="text-[#0F0F0F]"
+                accentClass="text-[#7B2CBF]"
                 items={[
                   "Basic Math & Logic",
                   "STL Collections",
@@ -302,9 +304,9 @@ export default function JoinPage() {
                 level="LEVEL 02"
                 title="ADVANCED"
                 subtitle="ECPC/ACPC oriented training for veteran coders."
-                bg="#7B2CBF"
-                textColor="white"
-                accentColor="#FFD500"
+                bgClass="bg-[#7B2CBF]"
+                textClass="text-white"
+                accentClass="text-[#FFD500]"
                 items={[
                   "Graph Algorithms & Flow",
                   "Advanced DP Optimization",
@@ -340,11 +342,11 @@ export default function JoinPage() {
                 </h2>
                 <div className="flex flex-col gap-6">
                   {[
-                    { num: "01", color: "#0F0F0F", title: "Professional Environment", desc: "We operate like a high-performance sports team. Punctuality and discipline are non-negotiable." },
-                    { num: "02", color: "#7B2CBF", title: "Strict Code of Conduct", desc: "Collaboration is key, but integrity is paramount. Plagiarism results in immediate expulsion." },
+                    { num: "01", colorClass: "bg-[#0F0F0F]", title: "Professional Environment", desc: "We operate like a high-performance sports team. Punctuality and discipline are non-negotiable." },
+                    { num: "02", colorClass: "bg-[#7B2CBF]", title: "Strict Code of Conduct", desc: "Collaboration is key, but integrity is paramount. Plagiarism results in immediate expulsion." },
                   ].map((item) => (
                     <div key={item.num} className="flex items-start gap-4">
-                      <div className="text-white p-3 font-display text-xl shrink-0 border-[2px] border-[#0F0F0F]" style={{ backgroundColor: item.color }}>
+                      <div className={`text-white p-3 font-display text-xl shrink-0 border-[2px] border-[#0F0F0F] ${item.colorClass}`}>
                         {item.num}
                       </div>
                       <div>
@@ -446,8 +448,7 @@ export default function JoinPage() {
             <div className="grid md:grid-cols-2 gap-20 items-start">
               <div>
                 <h2
-                  className="font-display text-6xl lg:text-7xl text-[#0F0F0F] uppercase mb-6 leading-none"
-                  style={{ textShadow: "4px 4px 0 #00E5FF" }}
+                  className="font-display text-6xl lg:text-7xl text-[#0F0F0F] uppercase mb-6 leading-none [text-shadow:4px_4px_0_#00E5FF]"
                 >
                   READY TO BE THE <span className="text-[#7B2CBF] underline decoration-[#0F0F0F] decoration-8 underline-offset-8">BEST?</span>
                 </h2>
@@ -482,23 +483,7 @@ export default function JoinPage() {
         </section>
 
         {/* ── FOOTER ─── */}
-        <footer className="w-full bg-[#0F0F0F] border-t-[6px] border-[#FF0055] py-12 px-10">
-          <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-            <div className="flex flex-col items-center md:items-start gap-2">
-              <span className="font-display text-4xl text-white italic">PUA ICPC</span>
-              <p className="font-body text-xs text-zinc-400 uppercase tracking-widest">
-                &copy; 2026 PUA ICPC COMMUNITY. NO LOGIC, NO GLORY.
-              </p>
-            </div>
-            <div className="flex gap-8">
-              {["Discord", "GitHub", "Codeforces"].map((link) => (
-                <a key={link} href="#" className="font-body font-bold text-zinc-400 hover:text-[#FF0055] hover:underline decoration-4 transition-colors text-sm">
-                  {link}
-                </a>
-              ))}
-            </div>
-          </div>
-        </footer>
+        <Footer />
 
       </main>
     </div>

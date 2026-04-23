@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Footer } from '@/components/footer';
 
 export interface SpecSheetProps {
     roleId: string;
@@ -161,12 +162,7 @@ export function PuaSpecSheet({ data }: { data: SpecSheetProps }) {
             </main>
 
             {/* Footer */}
-            <footer className="w-full py-12 px-6 flex flex-col md:flex-row justify-between items-center gap-8 bg-black border-t-[3px] border-white">
-                <div className="flex flex-col items-center md:items-start" style={{fontFamily: 'Fredoka One, sans-serif'}}>
-                    <h4 className="text-3xl font-black text-white uppercase tracking-wider">ICPC PUA OPERATIONS</h4>
-                    <p className="text-sm font-bold uppercase tracking-widest text-[#FFD500]" style={{fontFamily: 'Space Grotesk, sans-serif'}}>©2024 ELECTRIC BLUEPRINT / OPS-DIVISION</p>
-                </div>
-            </footer>
+            <Footer />
         </div>
     );
 }

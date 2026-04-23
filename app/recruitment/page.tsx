@@ -1,27 +1,12 @@
 import Link from 'next/link';
 import { EcosystemGraph } from '@/components/EcosystemGraph';
+import { Footer } from '@/components/footer';
+import { PuaNavbar } from '@/components/pua-navbar';
 
 export default function RecruitmentLandingPage() {
     return (
         <div className="bg-[#FFF4E0] font-sans text-[#0F0F0F] selection:bg-[#00E5FF] selection:text-[#0F0F0F] min-h-screen">
-            {/* TopAppBar */}
-            <header className="fixed top-0 w-full z-50 flex justify-between items-center px-8 py-6 bg-[#FFF4E0] dark:bg-zinc-950 border-b-[3px] border-[#0F0F0F] dark:border-white shadow-[8px_8px_0px_0px_#0F0F0F]">
-                <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-3xl font-variation-settings-fill-1">terminal</span>
-                    <span className="text-3xl font-black text-[#0F0F0F] dark:text-white italic uppercase tracking-tighter leading-none" style={{fontFamily: 'Space Grotesk, sans-serif'}}>ICPC PUA OPS</span>
-                </div>
-                <nav className="hidden md:flex gap-8 items-center uppercase font-bold tracking-tighter leading-none" style={{fontFamily: 'Space Grotesk, sans-serif'}}>
-                    <Link className="text-[#0F0F0F] dark:text-white hover:bg-[#00E5FF] hover:text-black transition-all duration-100 px-2 py-1" href="#roles">ROLES</Link>
-                    <Link className="text-[#0F0F0F] dark:text-white hover:bg-[#00E5FF] hover:text-black transition-all duration-100 px-2 py-1" href="#systems">SYSTEMS</Link>
-                    <Link className="text-[#0F0F0F] dark:text-white hover:bg-[#00E5FF] hover:text-black transition-all duration-100 px-2 py-1" href="#death_code">DEATH_CODE</Link>
-                    <Link className="text-[#FF0055] underline decoration-[3px] hover:bg-[#00E5FF] hover:text-black transition-all duration-100 px-2 py-1" href="/recruitment">RECRUIT</Link>
-                </nav>
-                <Link href="/join">
-                    <button className="bg-[#7B2CBF] text-white px-6 py-2 border-[3px] border-[#0F0F0F] font-bold uppercase tracking-tighter hover:bg-[#00E5FF] hover:text-black transition-all duration-100 active:translate-x-2 active:translate-y-2 active:shadow-none shadow-[4px_4px_0px_0px_#0F0F0F]">
-                        APPLY_NOW
-                    </button>
-                </Link>
-            </header>
+            <PuaNavbar />
 
             {/* Main Content */}
             <main className="pt-32 pb-20 px-6 max-w-7xl mx-auto relative overflow-x-hidden">
@@ -219,21 +204,7 @@ export default function RecruitmentLandingPage() {
             </main>
 
             {/* Footer */}
-            <footer className="w-full flex flex-col md:flex-row justify-between items-center px-10 py-12 gap-6 bg-[#0F0F0F] dark:bg-black border-t-[3px] border-[#FFD500]">
-                <div className="flex flex-col items-center md:items-start">
-                    <span className="text-[#FFD500] font-black tracking-widest text-2xl uppercase" style={{fontFamily: 'Space Grotesk, sans-serif'}}>ICPC PUA OPERATIONS</span>
-                    <span className="text-white/60 font-bold uppercase text-sm">NO SOFT WEB ALLOWED</span>
-                </div>
-                <div className="flex gap-8 text-[#FFD500] font-bold uppercase text-lg" style={{fontFamily: 'Space Grotesk, sans-serif'}}>
-                    <Link className="text-white hover:text-[#FF0055] transition-colors active:scale-95 duration-75" href="#">ROLES</Link>
-                    <Link className="text-white hover:text-[#FF0055] transition-colors active:scale-95 duration-75" href="#">SYSTEMS</Link>
-                    <Link className="text-white hover:text-[#FF0055] transition-colors active:scale-95 duration-75" href="#">DEATH_CODE</Link>
-                    <Link className="text-[#00E5FF] hover:text-[#FF0055] transition-colors active:scale-95 duration-75" href="/recruitment">RECRUIT</Link>
-                </div>
-                <div className="text-white text-sm font-bold opacity-80">
-                    ©2024 ICPC PUA OPERATIONS
-                </div>
-            </footer>
+            <Footer />
         </div>
     );
 }
