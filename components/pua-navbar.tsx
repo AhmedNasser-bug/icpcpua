@@ -4,6 +4,7 @@ import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Menu, X } from "lucide-react"
+import { PuaLogo } from "./pua-logo"
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -11,7 +12,7 @@ const navLinks = [
   { href: "/leaderboard", label: "Leaderboard" },
   { href: "/resources", label: "Resources" },
   { href: "/testimonials", label: "Testimonials" },
-  { href: "/join", label: "Join the Team" },
+  { href: "/recruitment", label: "Work With Us" },
 ]
 
 export function PuaNavbar() {
@@ -27,16 +28,7 @@ export function PuaNavbar() {
 
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3 group cursor-pointer">
-          <div className="size-9 bg-[#FFD500] border-[3px] border-[#0F0F0F] shadow-solid-sm flex items-center justify-center group-hover:-translate-y-1 transition-transform">
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-              <g clipPath="url(#clip0_nav)">
-                <path clipRule="evenodd" d="M47.2426 24L24 47.2426L0.757355 24L24 0.757355L47.2426 24ZM12.2426 21H35.7574L24 9.24264L12.2426 21Z" fill="currentColor" fillRule="evenodd" />
-              </g>
-              <defs>
-                <clipPath id="clip0_nav"><rect fill="white" height="48" width="48" /></clipPath>
-              </defs>
-            </svg>
-          </div>
+          <PuaLogo size={36} className="group-hover:-translate-y-1 transition-transform shadow-[4px_4px_0px_#0F0F0F]" />
           <h2 className="text-[#0F0F0F] text-xl font-display uppercase tracking-widest">PUA ICPC</h2>
         </Link>
 
@@ -62,10 +54,10 @@ export function PuaNavbar() {
           </nav>
 
           <Link
-            href="/"
+            href="/join"
             className="btn-solid hidden md:flex items-center justify-center border-[3px] border-[#0F0F0F] shadow-solid-sm bg-[#7B2CBF] text-white text-base font-display uppercase tracking-wider px-5 h-11 hover:bg-[#FF0055] transition-colors"
           >
-            JOIN THE SQUAD
+            START TRAINING
           </Link>
 
           {/* Mobile toggle */}
@@ -101,11 +93,11 @@ export function PuaNavbar() {
               )
             })}
             <Link
-              href="/"
+              href="/join"
               className="btn-solid mt-2 flex items-center justify-center border-[3px] border-[#0F0F0F] shadow-solid-sm bg-[#7B2CBF] text-white text-base font-display uppercase tracking-wider px-5 h-11 w-fit"
               onClick={() => setMobileOpen(false)}
             >
-              JOIN THE SQUAD
+              START TRAINING
             </Link>
           </div>
         </div>
