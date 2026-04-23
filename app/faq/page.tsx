@@ -74,33 +74,7 @@ export default function FAQPage() {
                       <p dir="rtl" className="text-right">نقدم تدريباً منظماً ومقسماً لمستويات. المستوى الأول يغطي الأساسيات (الرياضيات، الخوارزميات الأساسية)، والمستوى الثاني يغطي المواضيع المتقدمة (الرسوم البيانية، البرمجة الديناميكية). يشمل التدريب جلسات مراجعة، وتدريبات مكثفة (Upsolving)، ومحاكاة لضغط المسابقات.</p>
                     </>}
                   />
-
-              {/* Section 5: Official Links */}
-              <div>
-                <h2 className="font-display text-4xl text-white uppercase italic tracking-tighter mb-8 border-b-[3px] border-[#7B2CBF] pb-2 inline-block">
-                  Official Links & Channels | الروابط والقنوات الرسمية
-                </h2>
-                <div className="max-w-4xl flex flex-col gap-4">
-                  <div className="border-[3px] border-[#0F0F0F] bg-white p-6">
-                    <ul className="flex flex-col gap-4 font-body font-bold text-sm">
-                      <li className="flex flex-col md:flex-row md:items-center justify-between border-b-[2px] border-[#0F0F0F] pb-2">
-                        <span className="uppercase text-[#0F0F0F]">Website</span>
-                        <a href="https://icpcpua.netlify.app/" target="_blank" rel="noreferrer" className="text-[#7B2CBF] hover:underline break-all">https://icpcpua.netlify.app/</a>
-                      </li>
-                      <li className="flex flex-col md:flex-row md:items-center justify-between border-b-[2px] border-[#0F0F0F] pb-2">
-                        <span className="uppercase text-[#0F0F0F]">Discord</span>
-                        <a href="https://discord.gg/bzjx5W5Wt" target="_blank" rel="noreferrer" className="text-[#7B2CBF] hover:underline break-all">https://discord.gg/bzjx5W5Wt</a>
-                      </li>
-                      <li className="flex flex-col md:flex-row md:items-center justify-between pb-2">
-                        <span className="uppercase text-[#0F0F0F]">WhatsApp Group</span>
-                        <a href="https://chat.whatsapp.com/DYx4tz7Y2xnE8GJ1D8S6xn" target="_blank" rel="noreferrer" className="text-[#7B2CBF] hover:underline break-all">https://chat.whatsapp.com/DYx4tz7Y2xnE8GJ1D8S6xn</a>
-                      </li>
-                    </ul>
-                  </div>
                 </div>
-              </div>
-
-            </div>
               </div>
 
               {/* Section 2 */}
@@ -119,7 +93,7 @@ export default function FAQPage() {
                   <FaqItem
                     q="How do the committees work, and can I join one? | كيف تعمل اللجان، وهل يمكنني الانضمام؟"
                     a={<>
-                      <p className="mb-4">We operate on a strict division of labor: Technical (Instructors & Tech Leads), Operations & PR (Logistics & Marketing), Design, and HR. Recruitment for committee roles happens periodically for members who exhibit a high-performance, "zero-ego" mindset.</p>
+                      <p className="mb-4">We operate on a strict division of labor: Technical (Instructors & Tech Leads), Operations & PR (Logistics & Marketing), Design, and HR. Recruitment for committee roles happens periodically for members who exhibit a high-performance, &quot;zero-ego&quot; mindset.</p>
                       <p dir="rtl" className="text-right">نعمل بنظام تقسيم مهام صارم: اللجنة التقنية (المدربون)، العمليات والعلاقات العامة (الخدمات اللوجستية والتسويق)، التصميم، والموارد البشرية (HR). يتم فتح باب الانضمام للجان بشكل دوري للأعضاء الذين يثبتون كفاءة عالية وعقلية احترافية خالية من الأنا (Zero-ego).</p>
                     </>}
                   />
@@ -189,7 +163,7 @@ export default function FAQPage() {
                   <FaqItem
                     q="What happens if there is a conflict or missed deadline? | ماذا يحدث في حال وجود خلاف أو تأخير في المهام؟"
                     a={<>
-                      <p className="mb-4">Our HR committee handles all conflicts objectively. We operate on a strict "Zero-Ego" policy. Issues are addressed through a 24-hour cool-down protocol and a formal Strike System (Warning, Probation, Removal). Public venting is not permitted.</p>
+                      <p className="mb-4">Our HR committee handles all conflicts objectively. We operate on a strict &quot;Zero-Ego&quot; policy. Issues are addressed through a 24-hour cool-down protocol and a formal Strike System (Warning, Probation, Removal). Public venting is not permitted.</p>
                       <p dir="rtl" className="text-right">تتعامل لجنة الموارد البشرية (HR) مع جميع المشاكل بحيادية. نعمل بسياسة صارمة تمنع الشخصنة (Zero-Ego). تُحل المشاكل عبر بروتوكول التهدئة لمدة 24 ساعة ونظام الإنذارات الرسمي. يمنع تماماً إثارة المشاكل أو الشكوى في المجموعات العامة.</p>
                     </>}
                   />
@@ -200,6 +174,31 @@ export default function FAQPage() {
                       <p dir="rtl" className="text-right">يُمنع تداخل الأدوار. المدربون مهمتهم الوحيدة هي الشرح والتوجيه. لأي أمور تخص القاعات أو التنظيم، تواصل مع فريق العمليات (Operations). ولأي مشاكل تخص بيئة المجتمع، تواصل مع لجنة الـ HR.</p>
                     </>}
                   />
+                </div>
+              </div>
+
+              {/* Section 5: Official Links */}
+              <div>
+                <h2 className="font-display text-4xl text-white uppercase italic tracking-tighter mb-8 border-b-[3px] border-[#7B2CBF] pb-2 inline-block">
+                  Official Links & Channels | الروابط والقنوات الرسمية
+                </h2>
+                <div className="max-w-4xl flex flex-col gap-4">
+                  <div className="border-[3px] border-[#0F0F0F] bg-white p-6">
+                    <ul className="flex flex-col gap-4 font-body font-bold text-sm">
+                      <li className="flex flex-col md:flex-row md:items-center justify-between border-b-[2px] border-[#0F0F0F] pb-2">
+                        <span className="uppercase text-[#0F0F0F]">Website</span>
+                        <a href="https://icpcpua.netlify.app/" target="_blank" rel="noreferrer" className="text-[#7B2CBF] hover:underline break-all">https://icpcpua.netlify.app/</a>
+                      </li>
+                      <li className="flex flex-col md:flex-row md:items-center justify-between border-b-[2px] border-[#0F0F0F] pb-2">
+                        <span className="uppercase text-[#0F0F0F]">Discord</span>
+                        <a href="https://discord.gg/bzjx5W5Wt" target="_blank" rel="noreferrer" className="text-[#7B2CBF] hover:underline break-all">https://discord.gg/bzjx5W5Wt</a>
+                      </li>
+                      <li className="flex flex-col md:flex-row md:items-center justify-between pb-2">
+                        <span className="uppercase text-[#0F0F0F]">WhatsApp Group</span>
+                        <a href="https://chat.whatsapp.com/DYx4tz7Y2xnE8GJ1D8S6xn" target="_blank" rel="noreferrer" className="text-[#7B2CBF] hover:underline break-all">https://chat.whatsapp.com/DYx4tz7Y2xnE8GJ1D8S6xn</a>
+                      </li>
+                    </ul>
+                  </div>
                 </div>
               </div>
 
