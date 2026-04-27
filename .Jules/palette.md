@@ -1,0 +1,3 @@
+## 2026-04-27 - [Mobile-First Typography & Accessibility]
+**Learning:** Large display typography (e.g., `text-5xl md:text-8xl`, `text-[96px]`) in the hero sections caused severe overflow and cut-off text on mobile screens. Additionally, custom interactive components like accordions and expanding list rows were missing critical `aria-expanded` attributes for screen readers.
+**Action:** Always implement a mobile-first scaling approach for giant headers (`text-4xl md:text-6xl lg:text-8xl`), and enforce that any state-driven toggle elements must dynamically update their `aria-expanded` properties. Add horizontal scroll containers (`overflow-x-auto min-w-[...]`) to tabular data like the leaderboard to prevent layout breakage on small viewports.

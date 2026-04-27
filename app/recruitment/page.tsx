@@ -20,7 +20,7 @@ export default function RecruitmentLandingPage() {
                         <div className="absolute w-3 h-3 bg-white border-[3px] border-[#0F0F0F] z-10 -bottom-[6px] -left-[6px]"></div>
                         <div className="absolute w-3 h-3 bg-white border-[3px] border-[#0F0F0F] z-10 -bottom-[6px] -right-[6px]"></div>
                         
-                        <h1 className="text-5xl md:text-8xl lg:text-9xl font-black uppercase leading-[0.85] tracking-tighter text-[#0F0F0F] drop-shadow-[6px_6px_0px_#FF0055]" style={{fontFamily: 'Fredoka One, sans-serif'}}>
+                        <h1 className="text-4xl md:text-6xl lg:text-8xl font-black uppercase leading-[0.85] tracking-tighter text-[#0F0F0F] drop-shadow-[6px_6px_0px_#FF0055]" style={{fontFamily: 'Fredoka One, sans-serif'}}>
                             JOIN THE<br/>OPERATIONS
                         </h1>
                         <div className="mt-8 flex flex-col md:flex-row gap-6 items-end justify-between">
@@ -74,7 +74,7 @@ export default function RecruitmentLandingPage() {
                             </div>
                         </div>
                         <Link href="/recruitment/specs/instructor">
-                            <button className="w-full bg-white text-[#0F0F0F] py-4 border-[3px] border-[#0F0F0F] font-black uppercase text-xl shadow-[8px_8px_0px_0px_#0F0F0F] active:shadow-none active:translate-x-2 active:translate-y-2 transition-all">
+                            <button aria-label="View Spec Sheet" className="w-full bg-white text-[#0F0F0F] py-4 border-[3px] border-[#0F0F0F] font-black uppercase text-xl shadow-[8px_8px_0px_0px_#0F0F0F] active:shadow-none active:translate-x-2 active:translate-y-2 transition-all">
                                 View Instructor Spec Sheet
                             </button>
                         </Link>
@@ -112,7 +112,7 @@ export default function RecruitmentLandingPage() {
                             </div>
                         </div>
                         <Link href="/recruitment/specs/ops-pr">
-                            <button className="w-full bg-white text-[#0F0F0F] py-4 border-[3px] border-[#0F0F0F] font-black uppercase text-xl shadow-[8px_8px_0px_0px_#0F0F0F] active:shadow-none active:translate-x-2 active:translate-y-2 transition-all">
+                            <button aria-label="View Spec Sheet" className="w-full bg-white text-[#0F0F0F] py-4 border-[3px] border-[#0F0F0F] font-black uppercase text-xl shadow-[8px_8px_0px_0px_#0F0F0F] active:shadow-none active:translate-x-2 active:translate-y-2 transition-all">
                                 View PR Spec Sheet
                             </button>
                         </Link>
@@ -150,7 +150,7 @@ export default function RecruitmentLandingPage() {
                             </div>
                         </div>
                         <Link href="/recruitment/specs/hr">
-                            <button className="w-full bg-white text-[#0F0F0F] py-4 border-[3px] border-[#0F0F0F] font-black uppercase text-xl shadow-[8px_8px_0px_0px_#0F0F0F] active:shadow-none active:translate-x-2 active:translate-y-2 transition-all">
+                            <button aria-label="View Spec Sheet" className="w-full bg-white text-[#0F0F0F] py-4 border-[3px] border-[#0F0F0F] font-black uppercase text-xl shadow-[8px_8px_0px_0px_#0F0F0F] active:shadow-none active:translate-x-2 active:translate-y-2 transition-all">
                                 View HR Spec Sheet
                             </button>
                         </Link>
@@ -188,7 +188,7 @@ export default function RecruitmentLandingPage() {
                             </div>
                         </div>
                         <Link href="/recruitment/specs/design-dev">
-                            <button className="w-full bg-white text-[#0F0F0F] py-4 border-[3px] border-[#0F0F0F] font-black uppercase text-xl shadow-[8px_8px_0px_0px_#0F0F0F] active:shadow-none active:translate-x-2 active:translate-y-2 transition-all">
+                            <button aria-label="View Spec Sheet" className="w-full bg-white text-[#0F0F0F] py-4 border-[3px] border-[#0F0F0F] font-black uppercase text-xl shadow-[8px_8px_0px_0px_#0F0F0F] active:shadow-none active:translate-x-2 active:translate-y-2 transition-all">
                                 View Dev Spec Sheet
                             </button>
                         </Link>

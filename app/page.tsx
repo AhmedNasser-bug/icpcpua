@@ -253,7 +253,7 @@ export default function HomePage() {
                   <img
                     alt="Abstract vector illustration of a laptop with algorithms exploding from the screen"
                     className="w-full h-full object-cover contrast-125 saturate-150"
-                    src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/unnamed%20%281%29-ExpiRWbOncgumQTQe1QA1XdHvRaWzZ.png"
+                    src="/cracked-laptop.jpg"
                     style={{ mixBlendMode: "luminosity", opacity: 0.85 }}
                   />
                   <div className="absolute top-8 left-8 w-14 h-14 border-[3px] border-[#0F0F0F] bg-[#FFD500]" style={{ animation: "bounce 3s infinite" }} />
