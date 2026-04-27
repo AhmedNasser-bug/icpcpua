@@ -13,7 +13,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
       className={`border-[3px] border-[#0F0F0F] transition-colors ${open ? "bg-[#7B2CBF]" : "bg-white"}`}
     >
       <button
-        className="w-full flex items-center justify-between px-6 py-5 text-left gap-4 focus-visible:outline-none focus-visible:bg-[#FFD500]/20 transition-colors"
+        className="w-full flex items-center justify-between px-6 py-5 text-left gap-4 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#FFD500] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0F0F0F] focus-visible:bg-[#FFD500]/20 transition-colors"
         onClick={() => setOpen(!open)} aria-expanded={open}
       >
         <span className={`font-display text-xl uppercase tracking-wide ${open ? "text-white" : "text-[#0F0F0F]"}`}>{q}</span>
@@ -213,7 +213,7 @@ export default function JoinPage() {
               Applications Open — 2026 Season
             </div>
             <h1
-              className="font-display text-[48px] md:text-[72px] lg:text-[96px] leading-[0.9] uppercase text-[#0F0F0F] mb-8 [text-shadow:4px_4px_0_#00E5FF]"
+              className="font-display text-4xl md:text-6xl lg:text-8xl leading-[0.9] uppercase text-[#0F0F0F] mb-8 [text-shadow:4px_4px_0_#00E5FF]"
             >
               ENGINEER<br />YOUR <span className="text-[#7B2CBF]">LOGIC.</span><br />COMPETE<br />WITH THE BEST.
             </h1>

@@ -236,12 +236,13 @@ export default function LeaderboardPage() {
         </div>
 
         {/* Rank Table */}
-        <div className="border-[3px] border-[#0F0F0F] shadow-solid relative overflow-x-auto">
+        <div className="border-[3px] border-[#0F0F0F] shadow-solid relative">
           <span className="vector-node vector-node-tl" />
           <span className="vector-node vector-node-tr" />
           <span className="vector-node vector-node-bl" />
           <span className="vector-node vector-node-br" />
 
+          <div className="w-full overflow-x-auto">
           {rest.map((coder, i) => (
             <div key={coder.rank} className={i % 2 !== 0 ? "stipple-bg" : ""}>
               <button
@@ -281,7 +282,7 @@ export default function LeaderboardPage() {
 
               {/* Expanded: recent submissions */}
               {expandedRow === coder.rank && (
-                <div className="border-b-[3px] border-[#0F0F0F] bg-[#00E5FF] px-6 py-4 animate-slide-in">
+                <div className="border-b-[3px] border-[#0F0F0F] bg-[#00E5FF] px-6 py-4 animate-slide-in min-w-[500px]">
                   <p className="font-body text-[10px] font-bold uppercase text-[#0F0F0F] mb-3 flex items-center gap-2">
                     <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
                     RECENT SUBMISSIONS
@@ -300,6 +301,7 @@ export default function LeaderboardPage() {
               )}
             </div>
           ))}
+          </div>
         </div>
 
         {/* Load more */}
