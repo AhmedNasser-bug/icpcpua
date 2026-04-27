@@ -163,7 +163,7 @@ export default function LeaderboardPage() {
         <div className="text-center mb-8 relative">
           <span className="vector-node vector-node-tl" style={{ top: -6, left: -6 }} />
           <span className="vector-node vector-node-tr" style={{ top: -6, right: -6 }} />
-          <h1 className="font-display text-[64px] lg:text-[80px] uppercase text-[#0F0F0F] text-shadow-cyan leading-none">
+          <h1 className="font-display text-[48px] md:text-[64px] lg:text-[80px] uppercase text-[#0F0F0F] text-shadow-cyan leading-none">
             LEADERBOARD
           </h1>
           <p className="inline-block font-body text-sm font-bold uppercase mt-2 bg-[#FFD500] px-6 py-2 border-[3px] border-[#0F0F0F] shadow-solid-sm">
@@ -236,7 +236,7 @@ export default function LeaderboardPage() {
         </div>
 
         {/* Rank Table */}
-        <div className="border-[3px] border-[#0F0F0F] shadow-solid relative">
+        <div className="border-[3px] border-[#0F0F0F] shadow-solid relative overflow-x-auto">
           <span className="vector-node vector-node-tl" />
           <span className="vector-node vector-node-tr" />
           <span className="vector-node vector-node-bl" />
@@ -245,8 +245,8 @@ export default function LeaderboardPage() {
           {rest.map((coder, i) => (
             <div key={coder.rank} className={i % 2 !== 0 ? "stipple-bg" : ""}>
               <button
-                className="rank-row w-full border-b-[3px] border-[#0F0F0F] last:border-b-0 flex items-center gap-4 px-6 py-0 h-16 bg-white/80 hover:bg-white text-left"
-                onClick={() => setExpandedRow(expandedRow === coder.rank ? null : coder.rank)}
+                className="rank-row w-full min-w-[500px] border-b-[3px] border-[#0F0F0F] last:border-b-0 flex items-center gap-4 px-6 py-0 h-16 bg-white/80 hover:bg-white text-left"
+                onClick={() => setExpandedRow(expandedRow === coder.rank ? null : coder.rank)} aria-expanded={expandedRow === coder.rank}
               >
                 {/* Rank number */}
                 <span className="font-display text-2xl text-[#0F0F0F] w-8 flex-shrink-0">{coder.rank}</span>
