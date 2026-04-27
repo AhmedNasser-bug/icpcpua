@@ -415,30 +415,18 @@ export default function JoinPage() {
           </div>
         </section>
 
-        {/* ── FAQ ─── */}
+        {/* ── FAQ LINK ─── */}
         <section className="w-full bg-[#0F0F0F] border-b-[3px] border-[#0F0F0F]">
-          <div className="max-w-[1440px] mx-auto px-10 py-24">
-            <h2 className="font-display text-5xl text-white text-center uppercase italic tracking-tighter mb-16">
-              FREQUENTLY ASKED LOGIC
+          <div className="max-w-[1440px] mx-auto px-10 py-24 text-center">
+            <h2 className="font-display text-5xl text-white uppercase italic tracking-tighter mb-8">
+              HAVE QUESTIONS?
             </h2>
-            <div className="max-w-4xl mx-auto flex flex-col gap-4">
-              <FaqItem
-                q="Do I need prior experience?"
-                a="No. Level 1 is specifically designed for absolute beginners. We only ask for strong logic and a willingness to learn."
-              />
-              <FaqItem
-                q="When do sessions start?"
-                a="The 2026 Season kicks off in February. Onboarding and preliminary assessment tests begin late January."
-              />
-              <FaqItem
-                q="Is it online or offline?"
-                a="Hybrid. Lectures are recorded, but mock contests and specialized training are held on-campus for maximum focus."
-              />
-              <FaqItem
-                q="What language should I know?"
-                a="C++ is the standard for competitive programming. We'll teach you the essentials if you're just starting out."
-              />
-            </div>
+            <p className="font-body text-xl text-zinc-400 max-w-2xl mx-auto mb-12">
+              Check out our official FAQ for all the details about training, eligibility, ECPCQ, and more.
+            </p>
+            <Link href="/faq" className="inline-flex items-center justify-center border-[3px] border-white shadow-solid-sm bg-[#7B2CBF] text-white text-lg font-display uppercase tracking-wider px-8 py-4 hover:bg-[#FF0055] transition-colors">
+              READ THE FAQ
+            </Link>
           </div>
         </section>
 
