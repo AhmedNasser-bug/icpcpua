@@ -73,11 +73,9 @@ export default function RecruitmentLandingPage() {
                                 </div>
                             </div>
                         </div>
-                        <Link href="/recruitment/specs/instructor">
-                            <button aria-label="View Spec Sheet" className="w-full bg-white text-[#0F0F0F] py-4 border-[3px] border-[#0F0F0F] font-black uppercase text-xl shadow-[8px_8px_0px_0px_#0F0F0F] active:shadow-none active:translate-x-2 active:translate-y-2 transition-all">
+                        <Link href="/recruitment/specs/instructor" className="block text-center w-full bg-white text-[#0F0F0F] py-4 border-[3px] border-[#0F0F0F] font-black uppercase text-xl shadow-[8px_8px_0px_0px_#0F0F0F] active:shadow-none active:translate-x-2 active:translate-y-2 transition-all">
                                 View Instructor Spec Sheet
-                            </button>
-                        </Link>
+                            </Link>
                     </div>
 
                     {/* Card 2: Operations & PR */}
@@ -111,11 +109,9 @@ export default function RecruitmentLandingPage() {
                                 </div>
                             </div>
                         </div>
-                        <Link href="/recruitment/specs/ops-pr">
-                            <button aria-label="View Spec Sheet" className="w-full bg-white text-[#0F0F0F] py-4 border-[3px] border-[#0F0F0F] font-black uppercase text-xl shadow-[8px_8px_0px_0px_#0F0F0F] active:shadow-none active:translate-x-2 active:translate-y-2 transition-all">
+                        <Link href="/recruitment/specs/ops-pr" className="block text-center w-full bg-white text-[#0F0F0F] py-4 border-[3px] border-[#0F0F0F] font-black uppercase text-xl shadow-[8px_8px_0px_0px_#0F0F0F] active:shadow-none active:translate-x-2 active:translate-y-2 transition-all">
                                 View PR Spec Sheet
-                            </button>
-                        </Link>
+                            </Link>
                     </div>
 
                     {/* Card 3: HR / Monitoring */}
@@ -149,11 +145,9 @@ export default function RecruitmentLandingPage() {
                                 </div>
                             </div>
                         </div>
-                        <Link href="/recruitment/specs/hr">
-                            <button aria-label="View Spec Sheet" className="w-full bg-white text-[#0F0F0F] py-4 border-[3px] border-[#0F0F0F] font-black uppercase text-xl shadow-[8px_8px_0px_0px_#0F0F0F] active:shadow-none active:translate-x-2 active:translate-y-2 transition-all">
+                        <Link href="/recruitment/specs/hr" className="block text-center w-full bg-white text-[#0F0F0F] py-4 border-[3px] border-[#0F0F0F] font-black uppercase text-xl shadow-[8px_8px_0px_0px_#0F0F0F] active:shadow-none active:translate-x-2 active:translate-y-2 transition-all">
                                 View HR Spec Sheet
-                            </button>
-                        </Link>
+                            </Link>
                     </div>
 
                     {/* Card 4: Design / Dev */}
@@ -187,11 +181,9 @@ export default function RecruitmentLandingPage() {
                                 </div>
                             </div>
                         </div>
-                        <Link href="/recruitment/specs/design-dev">
-                            <button aria-label="View Spec Sheet" className="w-full bg-white text-[#0F0F0F] py-4 border-[3px] border-[#0F0F0F] font-black uppercase text-xl shadow-[8px_8px_0px_0px_#0F0F0F] active:shadow-none active:translate-x-2 active:translate-y-2 transition-all">
+                        <Link href="/recruitment/specs/design-dev" className="block text-center w-full bg-white text-[#0F0F0F] py-4 border-[3px] border-[#0F0F0F] font-black uppercase text-xl shadow-[8px_8px_0px_0px_#0F0F0F] active:shadow-none active:translate-x-2 active:translate-y-2 transition-all">
                                 View Dev Spec Sheet
-                            </button>
-                        </Link>
+                            </Link>
                     </div>
                 </section>
 

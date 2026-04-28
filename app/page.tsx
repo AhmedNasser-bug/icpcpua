@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { PuaNavbar } from "@/components/pua-navbar"
 import { Marquee } from "@/components/pua-marquee"
 import { Footer } from "@/components/footer"
@@ -217,8 +218,9 @@ export default function HomePage() {
               </svg>
             </div>
             <h1 className="font-display text-[72px] lg:text-[84px] leading-[0.9] text-[#0F0F0F] text-shadow-cyan uppercase">
-              CRACK<br />THE<br />CODE.
+              ICPC PUA
             </h1>
+            <p className="font-body text-xl font-bold uppercase mt-4 text-[#7B2CBF]">icpc training Pharos University branch</p>
             <p className="font-body text-lg font-bold max-w-lg bg-white p-6 border-[3px] border-[#0F0F0F] shadow-solid-sm relative">
               <span className="vector-node vector-node-tl" />
               <span className="vector-node vector-node-br" />
@@ -249,11 +251,11 @@ export default function HomePage() {
               <span className="vector-node vector-node-br" />
               <div className="absolute inset-0 p-6 flex items-center justify-center">
                 <div className="w-full h-full bg-white border-[3px] border-[#0F0F0F] shadow-solid-sm relative flex items-center justify-center overflow-hidden">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                  <Image
                     alt="Abstract vector illustration of a laptop with algorithms exploding from the screen"
                     className="w-full h-full object-cover contrast-125 saturate-150"
                     src="/cracked-laptop.jpg"
+                    fill
                     style={{ mixBlendMode: "luminosity", opacity: 0.85 }}
                   />
                   <div className="absolute top-8 left-8 w-14 h-14 border-[3px] border-[#0F0F0F] bg-[#FFD500]" style={{ animation: "bounce 3s infinite" }} />
