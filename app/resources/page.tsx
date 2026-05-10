@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { PuaNavbar } from "@/components/pua-navbar"
 import { Marquee } from "@/components/pua-marquee"
 
@@ -161,6 +161,16 @@ export default function ResourcesPage() {
     ? (["Algorithms", "Platforms", "Bootcamps"] as const)
     : ([activeCategory] as const)
 
+  const groupedResources = useMemo(() => {
+    return filtered.reduce((acc, resource) => {
+      if (!acc[resource.category]) {
+        acc[resource.category] = []
+      }
+      acc[resource.category].push(resource)
+      return acc
+    }, {} as Record<string, Resource[]>)
+  }, [filtered])
+
   return (
     <div className="min-h-screen flex flex-col overflow-x-hidden">
       <PuaNavbar />
@@ -199,7 +209,7 @@ export default function ResourcesPage() {
 
         {/* Resource grid by category */}
         {categoryGroups.map((group) => {
-          const groupResources = filtered.filter((r) => r.category === group)
+          const groupResources = groupedResources[group] || []
           if (groupResources.length === 0) return null
           return (
             <div key={group} className="mb-12">
