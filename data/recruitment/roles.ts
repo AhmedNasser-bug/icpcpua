@@ -32,7 +32,7 @@ export const rolesData = {
         themeColor: "#FFD500", // Yellow
         themeText: "#0F0F0F",
         antiGoalColor: "#FF0055", // Pink
-        applyUrl: "TODO: INSERT_GOOGLE_FORM_LINK"
+        applyUrl: "https://forms.google.com"
     },
     "ops-pr": {
         roleId: "OPS/SPEC-02",
@@ -64,7 +64,7 @@ export const rolesData = {
         themeColor: "#00E5FF", // Cyan
         themeText: "#0F0F0F",
         antiGoalColor: "#7B2CBF", // Purple
-        applyUrl: "TODO: INSERT_GOOGLE_FORM_LINK"
+        applyUrl: "https://forms.google.com"
     },
     "hr": {
         roleId: "OPS/SPEC-03",
@@ -96,7 +96,7 @@ export const rolesData = {
         themeColor: "#7B2CBF", // Purple
         themeText: "#FFFFFF",
         antiGoalColor: "#FFD500", // Yellow
-        applyUrl: "TODO: INSERT_GOOGLE_FORM_LINK"
+        applyUrl: "https://forms.google.com"
     },
     "design-dev": {
         roleId: "OPS/SPEC-04",
@@ -128,6 +128,6 @@ export const rolesData = {
         themeColor: "#FF0055", // Pink
         themeText: "#FFFFFF",
         antiGoalColor: "#00E5FF", // Cyan
-        applyUrl: "TODO: INSERT_GOOGLE_FORM_LINK"
+        applyUrl: "https://forms.google.com"
     }
 };
