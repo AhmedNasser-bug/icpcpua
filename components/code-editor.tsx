@@ -5,6 +5,30 @@ import { motion } from "framer-motion"
 
 const PROMPT_TEXT = "a saas dashboard with sidebar navigation, charts, and user management..."
 
+const SIDEBAR_ITEMS = [
+  <div key={0} className="mb-2 h-6 w-6 rounded-lg bg-white/10" />,
+  <div key={1} className="mb-2 h-6 w-6 rounded-lg bg-white/5" />,
+  <div key={2} className="mb-2 h-6 w-6 rounded-lg bg-white/5" />,
+  <div key={3} className="mb-2 h-6 w-6 rounded-lg bg-white/5" />,
+]
+
+const STAT_CARDS = [
+  <div key={0} className="flex-1 rounded-lg bg-white/5 p-2">
+    <div className="mb-1 h-2 w-8 rounded bg-white/10" />
+    <div className="h-3 w-12 rounded bg-white/20" />
+  </div>,
+  <div key={1} className="flex-1 rounded-lg bg-white/5 p-2">
+    <div className="mb-1 h-2 w-8 rounded bg-white/10" />
+    <div className="h-3 w-12 rounded bg-white/20" />
+  </div>,
+  <div key={2} className="flex-1 rounded-lg bg-white/5 p-2">
+    <div className="mb-1 h-2 w-8 rounded bg-white/10" />
+    <div className="h-3 w-12 rounded bg-white/20" />
+  </div>,
+]
+
+const CHART_HEIGHTS = [40, 65, 45, 80, 55, 70, 60, 85, 50]
+
 export function CodeEditor() {
   const [displayedText, setDisplayedText] = useState("")
   const [showPreview, setShowPreview] = useState(false)
@@ -88,28 +112,21 @@ export function CodeEditor() {
             {/* Sidebar */}
             <div className="w-12 shrink-0 border-r border-white/5 bg-white/[0.02] p-2">
               <div className="mb-3 h-6 w-6 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-500" />
-              {[...Array(4)].map((_, i) => (
-                <div key={i} className={`mb-2 h-6 w-6 rounded-lg ${i === 0 ? 'bg-white/10' : 'bg-white/5'}`} />
-              ))}
+              {SIDEBAR_ITEMS}
             </div>
             
             {/* Main content */}
             <div className="flex-1 p-3">
               {/* Stats row */}
               <div className="mb-3 flex gap-2">
-                {[...Array(3)].map((_, i) => (
-                  <div key={i} className="flex-1 rounded-lg bg-white/5 p-2">
-                    <div className="mb-1 h-2 w-8 rounded bg-white/10" />
-                    <div className="h-3 w-12 rounded bg-white/20" />
-                  </div>
-                ))}
+                {STAT_CARDS}
               </div>
               
               {/* Chart area */}
               <div className="rounded-lg bg-white/5 p-2">
                 <div className="mb-2 h-2 w-16 rounded bg-white/10" />
                 <div className="flex h-16 items-end gap-1">
-                  {[40, 65, 45, 80, 55, 70, 60, 85, 50].map((h, i) => (
+                  {CHART_HEIGHTS.map((h, i) => (
                     <motion.div 
                       key={i} 
                       className="flex-1 rounded-t bg-gradient-to-t from-indigo-500/50 to-purple-500/50"
