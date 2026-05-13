@@ -187,15 +187,15 @@ export default function FAQPage() {
                     <ul className="flex flex-col gap-4 font-body font-bold text-sm">
                       <li className="flex flex-col md:flex-row md:items-center justify-between border-b-[2px] border-[#0F0F0F] pb-2">
                         <span className="uppercase text-[#0F0F0F]">Website</span>
-                        <a href="https://icpcpua.netlify.app/" target="_blank" rel="noreferrer" className="text-[#7B2CBF] hover:underline break-all">https://icpcpua.netlify.app/</a>
+                        <a href="https://icpcpua.netlify.app/" target="_blank" rel="noopener noreferrer" className="text-[#7B2CBF] hover:underline break-all">https://icpcpua.netlify.app/</a>
                       </li>
                       <li className="flex flex-col md:flex-row md:items-center justify-between border-b-[2px] border-[#0F0F0F] pb-2">
                         <span className="uppercase text-[#0F0F0F]">Discord</span>
-                        <a href="https://discord.gg/bzjx5W5Wt" target="_blank" rel="noreferrer" className="text-[#7B2CBF] hover:underline break-all">https://discord.gg/bzjx5W5Wt</a>
+                        <a href="https://discord.gg/bzjx5W5Wt" target="_blank" rel="noopener noreferrer" className="text-[#7B2CBF] hover:underline break-all">https://discord.gg/bzjx5W5Wt</a>
                       </li>
                       <li className="flex flex-col md:flex-row md:items-center justify-between pb-2">
                         <span className="uppercase text-[#0F0F0F]">WhatsApp Group</span>
-                        <a href="https://chat.whatsapp.com/DYx4tz7Y2xnE8GJ1D8S6xn" target="_blank" rel="noreferrer" className="text-[#7B2CBF] hover:underline break-all">https://chat.whatsapp.com/DYx4tz7Y2xnE8GJ1D8S6xn</a>
+                        <a href="https://chat.whatsapp.com/DYx4tz7Y2xnE8GJ1D8S6xn" target="_blank" rel="noopener noreferrer" className="text-[#7B2CBF] hover:underline break-all">https://chat.whatsapp.com/DYx4tz7Y2xnE8GJ1D8S6xn</a>
                       </li>
                     </ul>
                   </div>
