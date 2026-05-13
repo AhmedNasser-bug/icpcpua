@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { PuaNavbar } from "@/components/pua-navbar"
 import { Marquee } from "@/components/pua-marquee"
 
@@ -90,9 +90,11 @@ export default function EventsPage() {
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null)
   const [currentMonth] = useState({ month: "OCTOBER", year: "2023" })
 
-  const filteredEvents = activeFilter === "All"
-    ? EVENTS
-    : EVENTS.filter((e) => e.type === activeFilter)
+  const filteredEvents = useMemo(() => {
+    return activeFilter === "All"
+      ? EVENTS
+      : EVENTS.filter((e) => e.type === activeFilter)
+  }, [activeFilter])
 
   const getDayEvents = (day: number) =>
     filteredEvents.filter((e) => e.day === day)

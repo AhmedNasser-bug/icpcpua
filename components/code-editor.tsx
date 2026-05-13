@@ -4,6 +4,9 @@ import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 
 const PROMPT_TEXT = "a saas dashboard with sidebar navigation, charts, and user management..."
+const SIDEBAR_ITEMS = [0, 1, 2, 3]
+const STATS_ITEMS = [0, 1, 2]
+const CHART_DATA = [40, 65, 45, 80, 55, 70, 60, 85, 50]
 
 const SIDEBAR_ITEMS = [
   <div key={0} className="mb-2 h-6 w-6 rounded-lg bg-white/10" />,
