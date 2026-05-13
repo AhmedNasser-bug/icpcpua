@@ -4,6 +4,9 @@ import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 
 const PROMPT_TEXT = "a saas dashboard with sidebar navigation, charts, and user management..."
+const SIDEBAR_ITEMS = [0, 1, 2, 3]
+const STATS_ITEMS = [0, 1, 2]
+const CHART_DATA = [40, 65, 45, 80, 55, 70, 60, 85, 50]
 
 export function CodeEditor() {
   const [displayedText, setDisplayedText] = useState("")
@@ -88,7 +91,7 @@ export function CodeEditor() {
             {/* Sidebar */}
             <div className="w-12 shrink-0 border-r border-white/5 bg-white/[0.02] p-2">
               <div className="mb-3 h-6 w-6 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-500" />
-              {[...Array(4)].map((_, i) => (
+              {SIDEBAR_ITEMS.map((_, i) => (
                 <div key={i} className={`mb-2 h-6 w-6 rounded-lg ${i === 0 ? 'bg-white/10' : 'bg-white/5'}`} />
               ))}
             </div>
@@ -97,7 +100,7 @@ export function CodeEditor() {
             <div className="flex-1 p-3">
               {/* Stats row */}
               <div className="mb-3 flex gap-2">
-                {[...Array(3)].map((_, i) => (
+                {STATS_ITEMS.map((_, i) => (
                   <div key={i} className="flex-1 rounded-lg bg-white/5 p-2">
                     <div className="mb-1 h-2 w-8 rounded bg-white/10" />
                     <div className="h-3 w-12 rounded bg-white/20" />
@@ -109,7 +112,7 @@ export function CodeEditor() {
               <div className="rounded-lg bg-white/5 p-2">
                 <div className="mb-2 h-2 w-16 rounded bg-white/10" />
                 <div className="flex h-16 items-end gap-1">
-                  {[40, 65, 45, 80, 55, 70, 60, 85, 50].map((h, i) => (
+                  {CHART_DATA.map((h, i) => (
                     <motion.div 
                       key={i} 
                       className="flex-1 rounded-t bg-gradient-to-t from-indigo-500/50 to-purple-500/50"
