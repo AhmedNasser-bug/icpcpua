@@ -96,8 +96,15 @@ export default function EventsPage() {
       : EVENTS.filter((e) => e.type === activeFilter)
   }, [activeFilter])
 
-  const getDayEvents = (day: number) =>
-    filteredEvents.filter((e) => e.day === day)
+  const groupedEvents = useMemo(() => {
+    return filteredEvents.reduce((acc, ev) => {
+      if (!acc[ev.day]) acc[ev.day] = [];
+      acc[ev.day].push(ev);
+      return acc;
+    }, {} as Record<number, CalendarEvent[]>);
+  }, [filteredEvents]);
+
+  const getDayEvents = (day: number) => groupedEvents[day] || [];
 
   const filters: Array<EventType | "All"> = ["All", "Bootcamp", "Contest", "Meetup"]
   const filterColors: Record<string, string> = {
