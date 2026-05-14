@@ -37,6 +37,21 @@ const DAYS_OF_WEEK = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
 const OCTOBER_OFFSET = 0
 const OCTOBER_DAYS = 31
 
+const FILTERS: Array<EventType | "All"> = ["All", "Bootcamp", "Contest", "Meetup"]
+const FILTER_COLORS: Record<string, string> = {
+  All: "bg-[#7B2CBF] text-white border-[#7B2CBF]",
+  Bootcamp: "bg-[#FF0055] text-white border-[#FF0055]",
+  Contest: "bg-[#FFD500] text-[#0F0F0F] border-[#FFD500]",
+  Meetup: "bg-[#7B2CBF] text-white border-[#7B2CBF]",
+}
+
+// Build calendar grid cells (Oct 2023 starts Sunday = day 0)
+const TOTAL_CELLS = 42
+const CALENDAR_CELLS: Array<number | null> = []
+for (let i = 0; i < OCTOBER_OFFSET; i++) CALENDAR_CELLS.push(null)
+for (let d = 1; d <= OCTOBER_DAYS; d++) CALENDAR_CELLS.push(d)
+while (CALENDAR_CELLS.length < TOTAL_CELLS) CALENDAR_CELLS.push(null)
+
 function EventDetailModal({ event, onClose }: { event: CalendarEvent; onClose: () => void }) {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#0F0F0F]/70 p-4">
@@ -96,23 +111,14 @@ export default function EventsPage() {
       : EVENTS.filter((e) => e.type === activeFilter)
   }, [activeFilter])
 
-  const getDayEvents = (day: number) =>
-    filteredEvents.filter((e) => e.day === day)
-
-  const filters: Array<EventType | "All"> = ["All", "Bootcamp", "Contest", "Meetup"]
-  const filterColors: Record<string, string> = {
-    All: "bg-[#7B2CBF] text-white border-[#7B2CBF]",
-    Bootcamp: "bg-[#FF0055] text-white border-[#FF0055]",
-    Contest: "bg-[#FFD500] text-[#0F0F0F] border-[#FFD500]",
-    Meetup: "bg-[#7B2CBF] text-white border-[#7B2CBF]",
-  }
-
-  // Build calendar grid cells (Oct 2023 starts Sunday = day 0)
-  const totalCells = 42
-  const cells: Array<number | null> = []
-  for (let i = 0; i < OCTOBER_OFFSET; i++) cells.push(null)
-  for (let d = 1; d <= OCTOBER_DAYS; d++) cells.push(d)
-  while (cells.length < totalCells) cells.push(null)
+  const eventsByDay = useMemo(() => {
+    const map: Record<number, CalendarEvent[]> = {}
+    filteredEvents.forEach((event) => {
+      if (!map[event.day]) map[event.day] = []
+      map[event.day].push(event)
+    })
+    return map
+  }, [filteredEvents])
 
   return (
     <div className="min-h-screen flex flex-col overflow-x-hidden">
@@ -135,11 +141,11 @@ export default function EventsPage() {
           </div>
           {/* Filter pills */}
           <div className="flex flex-wrap gap-3">
-            {filters.map((f) => (
+            {FILTERS.map((f) => (
               <button
                 key={f}
                 onClick={() => setActiveFilter(f)}
-                className={`filter-pill shadow-solid-sm ${activeFilter === f ? filterColors[f] + " shadow-none translate-x-[4px] translate-y-[4px]" : "bg-[#FFF4E0] text-[#0F0F0F] border-[#0F0F0F] hover:bg-[#0F0F0F] hover:text-white"}`}
+                className={`filter-pill shadow-solid-sm ${activeFilter === f ? FILTER_COLORS[f] + " shadow-none translate-x-[4px] translate-y-[4px]" : "bg-[#FFF4E0] text-[#0F0F0F] border-[#0F0F0F] hover:bg-[#0F0F0F] hover:text-white"}`}
               >
                 {f === "All" ? "ALL SHEETS" : f.toUpperCase()}
               </button>
@@ -185,9 +191,9 @@ export default function EventsPage() {
 
               {/* Calendar grid */}
               <div className="grid grid-cols-7">
-                {cells.map((day, i) => {
-                  const dayEvents = day ? getDayEvents(day) : []
-                  const isLastRow = i >= totalCells - 7
+                {CALENDAR_CELLS.map((day, i) => {
+                  const dayEvents = day ? eventsByDay[day] || [] : []
+                  const isLastRow = i >= TOTAL_CELLS - 7
                   const isLastCol = (i + 1) % 7 === 0
                   return (
                     <div
