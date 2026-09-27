@@ -9,7 +9,7 @@ type Category = "All Sheets" | "Algorithms" | "Platforms" | "Bootcamps"
 interface Resource {
   title: string
   description: string
-  category: Omit<Category, "All Sheets">
+  category: Exclude<Category, "All Sheets">
   tag: string
   bg: string
   url: string

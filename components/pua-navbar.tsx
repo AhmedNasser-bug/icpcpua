@@ -14,6 +14,8 @@ const navLinks = [
   { href: "/faq", label: "FAQ" },
   { href: "/testimonials", label: "Testimonials" },
   { href: "/recruitment", label: "Work With Us" },
+  { href: "/feedback", label: "Feedback" },
+  { href: "/referrals", label: "Referrals" },
 ]
 
 export function PuaNavbar() {

@@ -1,42 +1,60 @@
 import Link from 'next/link';
-import { EcosystemGraph } from '@/components/EcosystemGraph';
 import { Footer } from '@/components/footer';
-import { PuaNavbar } from '@/components/pua-navbar';
+import { EcosystemGraph } from '@/components/EcosystemGraph';
 
 export default function RecruitmentLandingPage() {
     return (
-        <div className="bg-[#FFF4E0] font-sans text-[#0F0F0F] selection:bg-[#00E5FF] selection:text-[#0F0F0F] min-h-screen">
-            <PuaNavbar />
+        <div className="bg-[#FFF4E0] text-[#0F0F0F] min-h-screen flex flex-col justify-between selection:bg-[#00E5FF] selection:text-[#0F0F0F]">
+            {/* TopAppBar */}
+            <header className="flex justify-between items-center w-full px-6 py-4 sticky top-0 z-50 bg-[#FFF4E0] border-b-[3px] border-[#0F0F0F] shadow-[8px_8px_0px_0px_#0F0F0F]">
+                <div className="flex items-center gap-3">
+                    <span className="material-symbols-outlined text-2xl font-variation-settings-fill-1 text-[#FF0055]">terminal</span>
+                    <h1 className="uppercase font-black tracking-tighter text-2xl text-black" style={{fontFamily: 'Space Grotesk, sans-serif'}}>RECRUITMENT.CORPS</h1>
+                </div>
+                <div className="hidden md:flex gap-8 items-center" style={{fontFamily: 'Space Grotesk, sans-serif'}}>
+                    <Link className="text-sm font-bold uppercase tracking-widest text-[#0F0F0F] underline decoration-[3px] hover:translate-x-[2px] hover:translate-y-[2px] transition-all" href="/recruitment">MANIFESTO</Link>
+                    <Link className="text-sm font-bold uppercase tracking-widest text-[#0F0F0F] hover:translate-x-[2px] hover:translate-y-[2px] transition-all" href="#roles">ROLES</Link>
+                    <Link className="text-sm font-bold uppercase tracking-widest text-[#0F0F0F] hover:translate-x-[2px] hover:translate-y-[2px] transition-all" href="/referrals">BOUNTIES</Link>
+                </div>
+                <Link href="#roles" className="block uppercase font-bold tracking-tighter px-4 py-1 border-[3px] border-[#0F0F0F] shadow-[4px_4px_0px_0px_#0F0F0F] bg-[#00E5FF] text-[#0F0F0F] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all active:translate-x-[4px] active:translate-y-[4px]" style={{fontFamily: 'Space Grotesk, sans-serif'}}>
+                    VIEW ROLES
+                </Link>
+            </header>
 
-            {/* Main Content */}
-            <main className="pt-32 pb-20 px-6 max-w-7xl mx-auto relative overflow-x-hidden">
+            <main className="w-full max-w-7xl mx-auto px-6 py-12 md:py-20 relative">
                 {/* Hero Section */}
-                <section className="mb-24 relative">
-                    <div className="absolute inset-0 bg-[radial-gradient(#0F0F0F_1px,transparent_1px)] [background-size:24px_24px] opacity-10 -z-10"></div>
-                    <div className="border-[3px] border-[#0F0F0F] p-8 bg-white shadow-[12px_12px_0px_0px_#0F0F0F] relative">
-                        {/* Corner Nodes */}
-                        <div className="absolute w-3 h-3 bg-white border-[3px] border-[#0F0F0F] z-10 -top-[6px] -left-[6px]"></div>
-                        <div className="absolute w-3 h-3 bg-white border-[3px] border-[#0F0F0F] z-10 -top-[6px] -right-[6px]"></div>
-                        <div className="absolute w-3 h-3 bg-white border-[3px] border-[#0F0F0F] z-10 -bottom-[6px] -left-[6px]"></div>
-                        <div className="absolute w-3 h-3 bg-white border-[3px] border-[#0F0F0F] z-10 -bottom-[6px] -right-[6px]"></div>
-                        
-                        <h1 className="text-4xl md:text-6xl lg:text-8xl font-black uppercase leading-[0.85] tracking-tighter text-[#0F0F0F] drop-shadow-[6px_6px_0px_#FF0055]" style={{fontFamily: 'Fredoka One, sans-serif'}}>
-                            JOIN THE<br/>OPERATIONS
+                <section className="mb-24 flex flex-col md:flex-row gap-12 items-start justify-between">
+                    <div className="max-w-3xl">
+                        <div className="inline-block bg-[#0F0F0F] text-[#FFF4E0] px-3 py-1 font-mono text-xs uppercase mb-6 tracking-widest border border-[#0F0F0F]">
+                            // SYSTEM ALERT: INTAKE ACTIVE
+                        </div>
+                        <h1 className="text-6xl md:text-8xl lg:text-9xl font-black uppercase leading-[0.85] tracking-tighter mb-8" style={{fontFamily: 'Fredoka One, sans-serif'}}>
+                            SELECT YOUR <br />
+                            <span className="text-[#FF0055] underline decoration-[#00E5FF] decoration-[8px]">SPECIALIZATION.</span>
                         </h1>
-                        <div className="mt-8 flex flex-col md:flex-row gap-6 items-end justify-between">
-                            <p className="max-w-xl text-xl md:text-2xl font-bold uppercase leading-tight italic" style={{fontFamily: 'Space Grotesk, sans-serif'}}>
-                                The ICPC PUA technical corps is expanding. We don't hire employees. We recruit systems-architects who thrive in chaos. No soft code. No weak logic.
-                            </p>
-                            <div className="bg-[#FF0055] text-white px-4 py-2 border-[3px] border-[#0F0F0F] font-black text-xl flex items-center gap-2">
-                                <span className="material-symbols-outlined">warning</span>
-                                OPEN_TRANSMISSION_04
-                            </div>
+                        <p className="text-xl md:text-2xl font-bold max-w-xl border-l-[4px] border-[#0F0F0F] pl-4 mb-8 leading-tight" style={{fontFamily: 'Space Grotesk, sans-serif'}}>
+                            We do not offer standard student leadership roles. Every position is an isolated component with strict parameters, absolute ownership, and brutalist performance metrics.
+                        </p>
+                    </div>
+                    
+                    <div className="border-[3px] border-[#0F0F0F] bg-white p-6 shadow-[8px_8px_0px_0px_#0F0F0F] max-w-sm w-full font-mono text-sm space-y-4">
+                        <div className="flex justify-between border-b-2 border-[#0F0F0F] pb-2">
+                            <span>CYCLE</span>
+                            <span className="font-bold">2026.01-PROD</span>
+                        </div>
+                        <div className="flex justify-between border-b-2 border-[#0F0F0F] pb-2">
+                            <span>VETTING</span>
+                            <span className="font-bold text-[#FF0055]">ZERO-TOLERANCE</span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span>ACTIVE NODES</span>
+                            <span className="font-bold">05 SPECIALIZATIONS</span>
                         </div>
                     </div>
                 </section>
 
+                {/* Ecosystem Graph Section */}
                 <div className="mb-24">
-                  <h2 className="text-4xl font-black uppercase mb-6" style={{fontFamily: 'Fredoka One, sans-serif'}}>Ecosystem Intelligence</h2>
                   <EcosystemGraph />
                 </div>
 
@@ -73,9 +91,9 @@ export default function RecruitmentLandingPage() {
                                 </div>
                             </div>
                         </div>
-                        <Link href="/recruitment/specs/instructor" className="block text-center w-full bg-white text-[#0F0F0F] py-4 border-[3px] border-[#0F0F0F] font-black uppercase text-xl shadow-[8px_8px_0px_0px_#0F0F0F] active:shadow-none active:translate-x-2 active:translate-y-2 transition-all">
-                                View Instructor Spec Sheet
-                            </Link>
+                        <Link href="/specs/instructor" className="block text-center w-full bg-white text-[#0F0F0F] py-4 border-[3px] border-[#0F0F0F] font-black uppercase text-xl shadow-[8px_8px_0px_0px_#0F0F0F] active:shadow-none active:translate-x-2 active:translate-y-2 transition-all">
+                            View Instructor Spec Sheet &amp; Guide
+                        </Link>
                     </div>
 
                     {/* Card 2: Operations & PR */}
@@ -109,9 +127,9 @@ export default function RecruitmentLandingPage() {
                                 </div>
                             </div>
                         </div>
-                        <Link href="/recruitment/specs/ops-pr" className="block text-center w-full bg-white text-[#0F0F0F] py-4 border-[3px] border-[#0F0F0F] font-black uppercase text-xl shadow-[8px_8px_0px_0px_#0F0F0F] active:shadow-none active:translate-x-2 active:translate-y-2 transition-all">
-                                View PR Spec Sheet
-                            </Link>
+                        <Link href="/specs/ops-pr" className="block text-center w-full bg-white text-[#0F0F0F] py-4 border-[3px] border-[#0F0F0F] font-black uppercase text-xl shadow-[8px_8px_0px_0px_#0F0F0F] active:shadow-none active:translate-x-2 active:translate-y-2 transition-all">
+                            View PR Spec Sheet &amp; Guide
+                        </Link>
                     </div>
 
                     {/* Card 3: HR / Monitoring */}
@@ -145,9 +163,9 @@ export default function RecruitmentLandingPage() {
                                 </div>
                             </div>
                         </div>
-                        <Link href="/recruitment/specs/hr" className="block text-center w-full bg-white text-[#0F0F0F] py-4 border-[3px] border-[#0F0F0F] font-black uppercase text-xl shadow-[8px_8px_0px_0px_#0F0F0F] active:shadow-none active:translate-x-2 active:translate-y-2 transition-all">
-                                View HR Spec Sheet
-                            </Link>
+                        <Link href="/specs/hr" className="block text-center w-full bg-white text-[#0F0F0F] py-4 border-[3px] border-[#0F0F0F] font-black uppercase text-xl shadow-[8px_8px_0px_0px_#0F0F0F] active:shadow-none active:translate-x-2 active:translate-y-2 transition-all">
+                            View HR Spec Sheet &amp; Guide
+                        </Link>
                     </div>
 
                     {/* Card 4: Design / Dev */}
@@ -181,9 +199,46 @@ export default function RecruitmentLandingPage() {
                                 </div>
                             </div>
                         </div>
-                        <Link href="/recruitment/specs/design-dev" className="block text-center w-full bg-white text-[#0F0F0F] py-4 border-[3px] border-[#0F0F0F] font-black uppercase text-xl shadow-[8px_8px_0px_0px_#0F0F0F] active:shadow-none active:translate-x-2 active:translate-y-2 transition-all">
-                                View Dev Spec Sheet
-                            </Link>
+                        <Link href="/specs/design-dev" className="block text-center w-full bg-white text-[#0F0F0F] py-4 border-[3px] border-[#0F0F0F] font-black uppercase text-xl shadow-[8px_8px_0px_0px_#0F0F0F] active:shadow-none active:translate-x-2 active:translate-y-2 transition-all">
+                            View Dev Spec Sheet &amp; Guide
+                        </Link>
+                    </div>
+
+                    {/* Card 5: Specialised Marketing */}
+                    <div className="group relative bg-[#FF6B00] border-[3px] border-[#0F0F0F] p-8 shadow-[8px_8px_0px_0px_#0F0F0F] transition-all hover:-translate-y-2 hover:-translate-x-2 hover:shadow-[16px_16px_0px_0px_#0F0F0F] text-white md:col-span-2">
+                        <div className="absolute w-3 h-3 bg-white border-[3px] border-[#0F0F0F] z-10 -top-[6px] -left-[6px]"></div>
+                        <div className="absolute w-3 h-3 bg-white border-[3px] border-[#0F0F0F] z-10 -bottom-[6px] -right-[6px]"></div>
+                        <div className="flex justify-between items-start mb-6">
+                            <h2 className="text-4xl font-black uppercase leading-none tracking-tight" style={{fontFamily: 'Fredoka One, sans-serif'}}>Specialised Marketing</h2>
+                            <span className="bg-[#0F0F0F] text-[#FFD500] px-3 py-1 text-sm font-black">LVL_05</span>
+                        </div>
+                        <div className="space-y-6 mb-8" style={{fontFamily: 'Space Grotesk, sans-serif'}}>
+                            <div>
+                                <span className="block font-black text-sm uppercase bg-[#0F0F0F] text-white w-fit px-2 mb-2 italic tracking-widest">Selling Points</span>
+                                <p className="font-bold border-l-[3px] border-white pl-3 leading-tight">Stop posting and praying. Omnipresent tech growth engine. Top 1% pipeline framing.</p>
+                            </div>
+                            <div>
+                                <span className="block font-black text-sm uppercase bg-[#0F0F0F] text-white w-fit px-2 mb-2 italic tracking-widest">Owns</span>
+                                <ul className="font-bold list-none space-y-1 text-white/90">
+                                    <li>&gt; The Ground Game (Campus Recruitment)</li>
+                                    <li>&gt; The Broadcaster (Shorts &amp; Clips)</li>
+                                    <li>&gt; The Hype Builder (Leaderboard Fame)</li>
+                                </ul>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <span className="block font-black text-sm uppercase bg-[#0F0F0F] text-white w-fit px-2 mb-2 italic tracking-widest">Metrics</span>
+                                    <p className="font-bold">3.5X Registration Growth</p>
+                                </div>
+                                <div>
+                                    <span className="block font-black text-sm uppercase bg-[#7B2CBF] text-white w-fit px-2 mb-2 italic tracking-widest">Anti-goals</span>
+                                    <p className="font-bold">Passive 'Post &amp; Pray'</p>
+                                </div>
+                            </div>
+                        </div>
+                        <Link href="/specs/marketing" className="block text-center w-full bg-white text-[#0F0F0F] py-4 border-[3px] border-[#0F0F0F] font-black uppercase text-xl shadow-[8px_8px_0px_0px_#0F0F0F] active:shadow-none active:translate-x-2 active:translate-y-2 transition-all">
+                            View Marketing Spec Sheet &amp; Guide
+                        </Link>
                     </div>
                 </section>
 
