@@ -73,9 +73,9 @@ export default function RecruitmentLandingPage() {
                                 </div>
                             </div>
                         </div>
-                        <Link href="/recruitment/specs/instructor">
+                        <Link href="/specs/instructor">
                             <button className="w-full bg-white text-[#0F0F0F] py-4 border-[3px] border-[#0F0F0F] font-black uppercase text-xl shadow-[8px_8px_0px_0px_#0F0F0F] active:shadow-none active:translate-x-2 active:translate-y-2 transition-all">
-                                View Instructor Spec Sheet
+                                View Instructor Spec Sheet & Guide
                             </button>
                         </Link>
                     </div>
@@ -111,9 +111,9 @@ export default function RecruitmentLandingPage() {
                                 </div>
                             </div>
                         </div>
-                        <Link href="/recruitment/specs/ops-pr">
+                        <Link href="/specs/ops-pr">
                             <button className="w-full bg-white text-[#0F0F0F] py-4 border-[3px] border-[#0F0F0F] font-black uppercase text-xl shadow-[8px_8px_0px_0px_#0F0F0F] active:shadow-none active:translate-x-2 active:translate-y-2 transition-all">
-                                View PR Spec Sheet
+                                View PR Spec Sheet & Guide
                             </button>
                         </Link>
                     </div>
@@ -149,9 +149,9 @@ export default function RecruitmentLandingPage() {
                                 </div>
                             </div>
                         </div>
-                        <Link href="/recruitment/specs/hr">
+                        <Link href="/specs/hr">
                             <button className="w-full bg-white text-[#0F0F0F] py-4 border-[3px] border-[#0F0F0F] font-black uppercase text-xl shadow-[8px_8px_0px_0px_#0F0F0F] active:shadow-none active:translate-x-2 active:translate-y-2 transition-all">
-                                View HR Spec Sheet
+                                View HR Spec Sheet & Guide
                             </button>
                         </Link>
                     </div>
@@ -187,9 +187,48 @@ export default function RecruitmentLandingPage() {
                                 </div>
                             </div>
                         </div>
-                        <Link href="/recruitment/specs/design-dev">
+                        <Link href="/specs/design-dev">
                             <button className="w-full bg-white text-[#0F0F0F] py-4 border-[3px] border-[#0F0F0F] font-black uppercase text-xl shadow-[8px_8px_0px_0px_#0F0F0F] active:shadow-none active:translate-x-2 active:translate-y-2 transition-all">
-                                View Dev Spec Sheet
+                                View Dev Spec Sheet & Guide
+                            </button>
+                        </Link>
+                    </div>
+
+                    {/* Card 5: Specialised Marketing */}
+                    <div className="group relative bg-[#FF6B00] border-[3px] border-[#0F0F0F] p-8 shadow-[8px_8px_0px_0px_#0F0F0F] transition-all hover:-translate-y-2 hover:-translate-x-2 hover:shadow-[16px_16px_0px_0px_#0F0F0F] text-white md:col-span-2 lg:col-span-1">
+                        <div className="absolute w-3 h-3 bg-white border-[3px] border-[#0F0F0F] z-10 -top-[6px] -left-[6px]"></div>
+                        <div className="absolute w-3 h-3 bg-white border-[3px] border-[#0F0F0F] z-10 -bottom-[6px] -right-[6px]"></div>
+                        <div className="flex justify-between items-start mb-6">
+                            <h2 className="text-4xl font-black uppercase leading-none tracking-tight" style={{fontFamily: 'Fredoka One, sans-serif'}}>Specialised Marketing</h2>
+                            <span className="bg-[#0F0F0F] text-[#FFD500] px-3 py-1 text-sm font-black">LVL_05</span>
+                        </div>
+                        <div className="space-y-6 mb-8" style={{fontFamily: 'Space Grotesk, sans-serif'}}>
+                            <div>
+                                <span className="block font-black text-sm uppercase bg-[#0F0F0F] text-white w-fit px-2 mb-2 italic tracking-widest">Selling Points</span>
+                                <p className="font-bold border-l-[3px] border-white pl-3 leading-tight">Stop posting and praying. Omnipresent tech growth engine. Top 1% pipeline framing.</p>
+                            </div>
+                            <div>
+                                <span className="block font-black text-sm uppercase bg-[#0F0F0F] text-white w-fit px-2 mb-2 italic tracking-widest">Owns</span>
+                                <ul className="font-bold list-none space-y-1 text-white/90">
+                                    <li>&gt; The Ground Game (Campus Recruitment)</li>
+                                    <li>&gt; The Broadcaster (Shorts &amp; Clips)</li>
+                                    <li>&gt; The Hype Builder (Leaderboard Fame)</li>
+                                </ul>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <span className="block font-black text-sm uppercase bg-[#0F0F0F] text-white w-fit px-2 mb-2 italic tracking-widest">Metrics</span>
+                                    <p className="font-bold">3.5X Registration Growth</p>
+                                </div>
+                                <div>
+                                    <span className="block font-black text-sm uppercase bg-[#7B2CBF] text-white w-fit px-2 mb-2 italic tracking-widest">Anti-goals</span>
+                                    <p className="font-bold">Passive 'Post &amp; Pray'</p>
+                                </div>
+                            </div>
+                        </div>
+                        <Link href="/specs/marketing">
+                            <button className="w-full bg-white text-[#0F0F0F] py-4 border-[3px] border-[#0F0F0F] font-black uppercase text-xl shadow-[8px_8px_0px_0px_#0F0F0F] active:shadow-none active:translate-x-2 active:translate-y-2 transition-all">
+                                View Marketing Spec Sheet & Guide
                             </button>
                         </Link>
                     </div>
