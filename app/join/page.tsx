@@ -1,6 +1,7 @@
 "use client"
 
 import { PuaNavbar } from "@/components/pua-navbar"
+import { Marquee } from "@/components/pua-marquee"
 import { Footer } from "@/components/footer"
 import { HeroSection } from "./components/hero-section"
 import { ValuePropsSection } from "./components/value-props-section"
@@ -26,8 +27,10 @@ export default function JoinPage() {
         <MilestonesSection />
         <FaqLinkSection />
         <ApplicationSection />
-        <Footer />
       </main>
+
+      <Marquee />
+      <Footer />
     </div>
   )
 }

@@ -31,11 +31,11 @@ export default function HomePage() {
         <JoinCtaSection onOpenModal={handleOpenModal} />
       </main>
 
-      {/* ── FEEDBACK BUCKET FOOTER ────────────── */}
-      <Footer />
-
       {/* Scrolling marquee sits just above the footer */}
       <Marquee />
+
+      {/* ── FEEDBACK BUCKET FOOTER ────────────── */}
+      <Footer />
     </div>
   )
 }

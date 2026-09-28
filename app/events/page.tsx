@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react"
 import { PuaNavbar } from "@/components/pua-navbar"
 import { Marquee } from "@/components/pua-marquee"
+import { Footer } from "@/components/footer"
 
 type EventType = "Bootcamp" | "Contest" | "Meetup"
 
@@ -269,6 +270,7 @@ export default function EventsPage() {
       </main>
 
       <Marquee />
+      <Footer />
     </div>
   )
 }

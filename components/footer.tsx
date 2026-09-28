@@ -30,56 +30,144 @@ export function Footer() {
 
           <Link
             href="/feedback"
-            className="btn-solid inline-flex items-center justify-center gap-3 bg-[#7B2CBF] text-white font-display text-lg md:text-xl uppercase tracking-wider px-8 py-4 border-[3px] border-[#0F0F0F] shadow-[6px_6px_0px_#0F0F0F] hover:bg-[#FF0055] hover:text-white transition-all shrink-0 active:translate-x-1 active:translate-y-1 active:shadow-none"
+            className="btn-solid inline-flex items-center justify-center gap-3 bg-[#7B2CBF] text-white font-display text-lg md:text-xl uppercase tracking-wider px-8 py-4 border-[3px] border-[#0F0F0F] shadow-[6px_6px_0px_#0F0F0F] hover:bg-[#FF0055] hover:text-white transition-all shrink-0 active:translate-x-1 active:translate-y-1 active:shadow-none cursor-pointer"
           >
             <span>DUMP YOUR FEEDBACK</span>
             <span className="text-2xl">🪣</span>
           </Link>
         </div>
 
-        {/* ── FOOTER BOTTOM ROW ── */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-8 w-full border-t border-zinc-800 pt-8">
-          <div className="flex flex-col items-center md:items-start gap-2">
-            <Link href="/" className="font-display text-4xl text-white italic hover:text-[#00E5FF] transition-colors">
+        {/* ── FOOTER SITEMAP COLUMNS ── */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 py-4 border-b border-zinc-800 text-white font-body">
+          {/* Brand Col */}
+          <div className="space-y-3">
+            <Link href="/" className="font-display text-3xl md:text-4xl text-white italic hover:text-[#00E5FF] transition-colors inline-block">
               PUA ICPC
             </Link>
-            <p className="font-body text-xs text-zinc-400 uppercase tracking-widest text-center md:text-left">
-              &copy; 2026 PUA ICPC COMMUNITY. NO LOGIC, NO GLORY.
+            <p className="text-xs text-zinc-400 font-bold uppercase tracking-wider leading-relaxed">
+              Pharos University Official Competitive Programming Community. Training algorithmists, qualifying for ECPC, and dominating tech rounds.
             </p>
+            <div className="inline-block bg-zinc-900 border border-zinc-700 px-2.5 py-1 text-[11px] font-mono text-[#00E5FF]">
+              STATUS: 2026-2027 ACTIVE_SEASON
+            </div>
           </div>
 
-          <div className="flex flex-wrap justify-center gap-6 md:gap-8 items-center">
-            <Link
-              href="/feedback"
-              className="font-body font-bold text-[#00E5FF] hover:text-[#FFD500] hover:underline decoration-4 transition-colors text-sm uppercase tracking-wider flex items-center gap-1.5"
-            >
-              <span>Feedback Bucket</span>
-              <span className="text-xs bg-[#7B2CBF] text-white px-1.5 py-0.5 border border-[#00E5FF]">NEW</span>
-            </Link>
+          {/* Navigation Col */}
+          <div className="space-y-2">
+            <span className="font-display text-sm text-[#FFD500] uppercase tracking-wider block mb-2">
+              CORE DIRECTORY
+            </span>
+            <ul className="space-y-1.5 text-xs font-bold text-zinc-300">
+              <li>
+                <Link href="/" className="hover:text-[#00E5FF] transition-colors">Home Base</Link>
+              </li>
+              <li>
+                <Link href="/events" className="hover:text-[#00E5FF] transition-colors">Events & Training Schedule</Link>
+              </li>
+              <li>
+                <Link href="/leaderboard" className="hover:text-[#00E5FF] transition-colors">Live Leaderboard</Link>
+              </li>
+              <li>
+                <Link href="/hall-of-fame" className="hover:text-[#00E5FF] transition-colors">Hall of Fame (Legends)</Link>
+              </li>
+              <li>
+                <Link href="/resources" className="hover:text-[#00E5FF] transition-colors">Training Armory & Resources</Link>
+              </li>
+              <li>
+                <Link href="/faq" className="hover:text-[#00E5FF] transition-colors">Knowledge Base & FAQ</Link>
+              </li>
+              <li>
+                <Link href="/testimonials" className="hover:text-[#00E5FF] transition-colors">Cadet Testimonials</Link>
+              </li>
+            </ul>
+          </div>
 
-            <Link
-              href="/referrals"
-              className="font-body font-bold text-[#FFD500] hover:text-[#00E5FF] hover:underline decoration-4 transition-colors text-sm uppercase tracking-wider flex items-center gap-1.5"
-            >
-              <span>Referral Rewards</span>
-              <span className="text-xs bg-[#FF0055] text-white px-1.5 py-0.5 border border-[#0F0F0F]">BOUNTY</span>
-            </Link>
+          {/* Initiatives Col */}
+          <div className="space-y-2">
+            <span className="font-display text-sm text-[#00E5FF] uppercase tracking-wider block mb-2">
+              OPPORTUNITIES & CORPS
+            </span>
+            <ul className="space-y-1.5 text-xs font-bold text-zinc-300">
+              <li>
+                <Link href="/recruitment" className="hover:text-[#FFD500] transition-colors">
+                  Work With Us (Recruitment)
+                </Link>
+              </li>
+              <li>
+                <Link href="/specs/instructor" className="hover:text-[#FFD500] transition-colors">
+                  Instructor Blueprint
+                </Link>
+              </li>
+              <li>
+                <Link href="/specs/technical" className="hover:text-[#FFD500] transition-colors">
+                  Technical Lead Blueprint
+                </Link>
+              </li>
+              <li>
+                <Link href="/specs/ops-pr" className="hover:text-[#FFD500] transition-colors">
+                  Ops & PR Blueprint
+                </Link>
+              </li>
+              <li>
+                <Link href="/referrals" className="hover:text-[#FFD500] transition-colors flex items-center gap-1.5">
+                  <span>Referral Bounties</span>
+                  <span className="text-[10px] bg-[#FF0055] text-white px-1 py-0.2 border border-[#0F0F0F]">BOUNTY</span>
+                </Link>
+              </li>
+              <li>
+                <Link href="/join" className="hover:text-[#FFD500] transition-colors">
+                  Cadet Intake Application
+                </Link>
+              </li>
+            </ul>
+          </div>
 
-            {[
-              { label: "Discord", href: "https://discord.gg" },
-              { label: "GitHub", href: "https://github.com" },
-              { label: "Codeforces", href: "https://codeforces.com" },
-            ].map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                target="_blank"
-                rel="noreferrer"
-                className="font-body font-bold text-zinc-400 hover:text-[#FF0055] hover:underline decoration-4 transition-colors text-sm"
-              >
-                {link.label}
-              </a>
-            ))}
+          {/* Community & Outbound Col */}
+          <div className="space-y-2">
+            <span className="font-display text-sm text-[#FF0055] uppercase tracking-wider block mb-2">
+              COMMUNITY PLATFORMS
+            </span>
+            <ul className="space-y-1.5 text-xs font-bold text-zinc-300">
+              <li>
+                <a href="https://codeforces.com" target="_blank" rel="noreferrer" className="hover:text-[#00E5FF] transition-colors">
+                  Codeforces Group & Gyms
+                </a>
+              </li>
+              <li>
+                <a href="https://discord.gg" target="_blank" rel="noreferrer" className="hover:text-[#00E5FF] transition-colors">
+                  Discord Headquarters
+                </a>
+              </li>
+              <li>
+                <a href="https://github.com" target="_blank" rel="noreferrer" className="hover:text-[#00E5FF] transition-colors">
+                  Open Source GitHub
+                </a>
+              </li>
+              <li>
+                <a href="https://chat.whatsapp.com/DYx4tz7Y2xnE8GJ1D8S6xn" target="_blank" rel="noreferrer" className="hover:text-[#00E5FF] transition-colors">
+                  Official WhatsApp Dispatch
+                </a>
+              </li>
+              <li>
+                <Link href="/feedback" className="hover:text-[#FFD500] transition-colors flex items-center gap-1.5">
+                  <span>Feedback Bucket</span>
+                  <span className="text-[10px] bg-[#7B2CBF] text-white px-1 py-0.2 border border-[#00E5FF]">ACTIVE</span>
+                </Link>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        {/* ── FOOTER BOTTOM ROW ── */}
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4 w-full text-zinc-500 font-body text-xs font-bold">
+          <p className="uppercase tracking-wider text-center md:text-left">
+            &copy; 2026 PUA ICPC COMMUNITY. NO SOFT CODE ALLOWED. ALL RIGHTS RESERVED.
+          </p>
+          <div className="flex items-center gap-4 text-zinc-400">
+            <span className="text-[#00E5FF]">// PHAROS UNIVERSITY IN ALEXANDRIA</span>
+            <a href="#" className="hover:text-white transition-colors underline decoration-2">
+              BACK TO TOP ↑
+            </a>
           </div>
         </div>
       </div>

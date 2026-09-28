@@ -3,6 +3,7 @@
 import { useState, useRef } from "react"
 import { PuaNavbar } from "@/components/pua-navbar"
 import { Marquee } from "@/components/pua-marquee"
+import { Footer } from "@/components/footer"
 
 interface TeamMember {
   name: string
@@ -294,6 +295,7 @@ export default function HallOfFamePage() {
       </main>
 
       <Marquee />
+      <Footer />
     </div>
   )
 }

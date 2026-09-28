@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react"
 import { PuaNavbar } from "@/components/pua-navbar"
 import { Marquee } from "@/components/pua-marquee"
+import { Footer } from "@/components/footer"
 
 type Category = "All Sheets" | "Algorithms" | "Platforms" | "Bootcamps"
 
@@ -269,6 +270,7 @@ export default function ResourcesPage() {
       </main>
 
       <Marquee />
+      <Footer />
     </div>
   )
 }

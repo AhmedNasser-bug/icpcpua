@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { PuaNavbar } from "@/components/pua-navbar"
+import { Marquee } from "@/components/pua-marquee"
 import { Footer } from "@/components/footer"
 
 function FaqItem({ q, a }: { q: string; a: string | React.ReactNode }) {
@@ -205,11 +206,10 @@ export default function FAQPage() {
             </div>
           </div>
         </section>
-
-        {/* ── FOOTER ─── */}
-        <Footer />
-
       </main>
+
+      <Marquee />
+      <Footer />
     </div>
   )
 }

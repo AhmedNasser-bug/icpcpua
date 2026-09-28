@@ -1,6 +1,8 @@
 'use client'
 
 import { PuaNavbar } from '@/components/pua-navbar'
+import { Marquee } from '@/components/pua-marquee'
+import { Footer } from '@/components/footer'
 
 export default function TestimonialsPage() {
   return (
@@ -21,6 +23,9 @@ export default function TestimonialsPage() {
           </div>
         </section>
       </main>
+
+      <Marquee />
+      <Footer />
     </div>
   )
 }

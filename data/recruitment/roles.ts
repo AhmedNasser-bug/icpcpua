@@ -27,8 +27,15 @@ export interface RoleData {
   antiGoals: string[];
   themeColor: string;
   themeText: string;
-  antiGoalColor: string;
   applyUrl: string;
+  problemsSolved: {
+    title: { en: string; ar: string };
+    desc: { en: string; ar: string };
+  }[];
+  impact: {
+    title: { en: string; ar: string };
+    desc: { en: string; ar: string };
+  }[];
   handbook: CommitteeHandbook;
 }
 
@@ -105,7 +112,71 @@ export const rolesData: Record<string, RoleData> = {
     themeText: "#0F0F0F",
     antiGoalColor: "#FF0055", // Pink
     applyUrl: "#register",
-    handbook: {
+        problemsSolved: [
+      {
+        title: {
+          en: "The Freshman Drop-Off Wall",
+          ar: "حائط إحباط المبتدئين والانسحاب المبكر",
+        },
+        desc: {
+          en: "Over 70% of beginners abandon competitive programming within weeks due to cryptic compiler errors, steep learning curves, and toxic imposter syndrome. Instructors build step-by-step cognitive ladders that deliver rapid 'Green AC' breakthroughs.",
+          ar: "يتخلى أكثر من 70% من المبتدئين عن البرمجة التنافسية في الأسابيع الأولى بسبب رسائل الأخطاء المعقدة وفقدان التوجيه. يقوم المدرب ببناء مسار تدريجي يمنح الطالب أولى حلوله المقبولة (Green AC) سريعاً ويكسر حاجز الرهبة.",
+        },
+      },
+      {
+        title: {
+          en: "Theory vs. Contest Execution Gap",
+          ar: "فجوة النظرية والتنفيذ بالمسابقات",
+        },
+        desc: {
+          en: "College curricula teach data structures theoretically on static whiteboards. Instructors bridge the gap to high-stakes contests where asymptotic bounds, memory limits, and sub-second execution are matter-of-life-or-death.",
+          ar: "تركز المناهج الأكاديمية على النظريات المجردة دون ربطها بضغط الوقت. يسد المدرب هذه الفجوة بتدريب عملي مكثف على تحليل التعقيد الزمني (Time Complexity) والتصرف تحت ضغط المسابقات الحقيقية.",
+        },
+      },
+      {
+        title: {
+          en: "Unstructured Practice Chaos",
+          ar: "فوضى التدريب العشوائي وتشتت المصادر",
+        },
+        desc: {
+          en: "Students waste months solving arbitrary, mismatched problems without progressive mastery. Instructors deliver curated problem sheets and targeted upsolving clinics targeting specific algorithmic blind spots.",
+          ar: "يضيع الطلاب شهوراً في حل مسائل عشوائية دون تدرج منهجي. يقدم المدرب شيتات مختارة بعناية وجلسات حل تكميلي (Upsolving) لاستهداف الثغرات البرمجية والارتقاء بالمستوى بثبات.",
+        },
+      },
+    ],
+    impact: [
+      {
+        title: {
+          en: "Codeforces Monster Pipeline",
+          ar: "صناعة وحوش منصة كودفورسيز",
+        },
+        desc: {
+          en: "Systematically elevates unranked university cadets into Pupil, Specialist, and Expert ranks, building a persistent culture of elite problem solving.",
+          ar: "تحويل الطلاب المبتدئين إلى متسابقين مصنفين (Pupil وSpecialist وExpert) على Codeforces، وصناعة نواة تنافسية قوية بالجامعة.",
+        },
+      },
+      {
+        title: {
+          en: "National ECPC Qualifications & Medals",
+          ar: "التأهل لنهائيات ECPC وحصد الميداليات",
+        },
+        desc: {
+          en: "Prepares and fields high-synergy 3-person squads capable of conquering regional qualifiers and representing Pharos University on national stages.",
+          ar: "تأهيل وإعداد فرق متكاملة قادرة على اجتياز التصفيات الوطنية لبطولة ECPC وتحقيق مراكز متقدمة تليق باسم الجامعة.",
+        },
+      },
+      {
+        title: {
+          en: "FAANG & Tier-1 Technical Interview Dominance",
+          ar: "اكتساح المقابلات التقنية لكبرى الشركات العالمية",
+        },
+        desc: {
+          en: "Cadets internalize algorithmic fundamentals so deeply that algorithmic interview rounds at top tech multinationals become effortless reflex.",
+          ar: "ترسيخ التفكير الخوارزمي الصارم لدى المتدربين، مما يجعل المقابلات البرمجية الصعبة في الشركات العالمية الكبرى أمراً بديهياً ومضموناً.",
+        },
+      },
+    ],
+handbook: {
       vision: {
         en: "Turn beginners into monsters on Codeforces. Elevate students to masters while maintaining a premium, ego-free learning environment. You are an academic machine, not an event planning club.",
         ar: "تحويل المبتدئين إلى وحوش على منصة Codeforces. الارتقاء بالطلاب إلى مستويات متقدمة مع الحفاظ على بيئة تعليمية احترافية وخالية من الغرور. أنتم آلة أكاديمية، ولستم نادياً لتنظيم الفعاليات."
@@ -243,7 +314,71 @@ export const rolesData: Record<string, RoleData> = {
     themeText: "#0F0F0F",
     antiGoalColor: "#FF0055",
     applyUrl: "#register",
-    handbook: {
+        problemsSolved: [
+      {
+        title: {
+          en: "Weak Testcases & Sloppy Problem Integrity",
+          ar: "ضعف حالات الاختبار وحلول الالتفاف غير الدقيقة",
+        },
+        desc: {
+          en: "Contests turn into jokes when weak test suites allow brute-force O(N²) solutions to pass optimal O(N log N) limits. Technical specialists build industrial-strength Polygon validators and edge-case generators.",
+          ar: "تفقد المسابقات قيمتها عندما تسمح حالات الاختبار الضعيفة بمرور الحلول غير الفعالة. يتولى الفريق التقني هندسة مدخلات اختبار قوية وشاملة باستخدام Polygon وtestlib لمنع أي تجاوزات.",
+        },
+      },
+      {
+        title: {
+          en: "Contest-Day Platform Latency & System Crashes",
+          ar: "أعطال المنصات وبطء التحكيم يوم المسابقة",
+        },
+        desc: {
+          en: "Local judge servers crash under concurrent submission floods, corrupting live scoreboards. Technical architects deploy stress-tested, resilient contest environments with automated telemetry.",
+          ar: "انهيار خوادم التحكيم أثناء تسليم الحلول الجماعي يدمر حماس المسابقة. يصمم الفريق التقني بيئات اختبار وسيرفرات ذات موثوقية عالية لمنع أي تأخير أو فقدان للبيانات.",
+        },
+      },
+      {
+        title: {
+          en: "Missing Post-Contest Analytics & Editorial Vacuum",
+          ar: "غياب الشروحات الرسمية والتحليلات البيانية",
+        },
+        desc: {
+          en: "Contests without mathematical proofs, clean model solutions, and failure analytics leave participants confused. Technical specialists publish rigorous editorials and problem telemetry.",
+          ar: "انتهاء المسابقة دون تحليل الأخطاء والشروحات الرياضية للحلول يضيع فرصة التعلم. يوثق الفريق حلولاً نموذجية ويحلل أداء المشاركين لتطوير جولات التدريب القادمة.",
+        },
+      },
+    ],
+    impact: [
+      {
+        title: {
+          en: "World-Class Contest Engineering",
+          ar: "هندسة مسابقات بمعايير ICPC العالمية",
+        },
+        desc: {
+          en: "Ensures every official university contest runs with mathematical perfection, zero leaked solutions, and authentic ICPC-standard judge configurations.",
+          ar: "ضمان خروج جميع مسابقات الجامعة بأعلى درجات الانضباط والنزاهة، مع مطابقة شروط ومعايير التحكيم في المسابقات الدولية.",
+        },
+      },
+      {
+        title: {
+          en: "Real-Time Telemetry & Data-Driven Coaching",
+          ar: "تحليلات الأداء اللحظية لتوجيه التدريب",
+        },
+        desc: {
+          en: "Delivers granular submission data and failure classifications to instructors, enabling micro-targeted pedagogical adjustments.",
+          ar: "تزويد المدربين ببيانات دقيقة حول نقاط ضعف الطلاب في المسابقات (مثل التردد في DP أو Graph)، لإعادة تصحيح خطة التدريب فوراً.",
+        },
+      },
+      {
+        title: {
+          en: "Autonomous Gym & Contest Infrastructure",
+          ar: "بنية تحتية ذاتية التشغيل للمسابقات والـ Gyms",
+        },
+        desc: {
+          en: "Automates problem uploads, leaderboard freezes, and rating updates, allowing scalable contest hosting with minimal manual overhead.",
+          ar: "أتمتة رفع المسائل، تجميد لوحة المتصدرين، وتحديث التقييمات، مما يتيح إقامة مسابقات دورية ضخمة بأقل جهد يدوي ممكن.",
+        },
+      },
+    ],
+handbook: {
       vision: {
         en: "Turn beginners into monsters on Codeforces. Elevate students to masters while maintaining a premium, ego-free learning environment. You are an academic machine, not an event planning club.",
         ar: "تحويل المبتدئين إلى وحوش على منصة Codeforces. الارتقاء بالطلاب إلى مستويات متقدمة مع الحفاظ على بيئة تعليمية احترافية وخالية من الغرور. أنتم آلة أكاديمية، ولستم نادياً لتنظيم الفعاليات."
@@ -380,7 +515,71 @@ export const rolesData: Record<string, RoleData> = {
     themeText: "#0F0F0F",
     antiGoalColor: "#7B2CBF", // Purple
     applyUrl: "#register",
-    handbook: {
+        problemsSolved: [
+      {
+        title: {
+          en: "Campus Bureaucracy & Lab Booking Bottlenecks",
+          ar: "بيروقراطية الموافقات وحجز المعامل الجامعية",
+        },
+        desc: {
+          en: "Workshops and live mock contests face sudden cancellations when facility permissions stall. Ops-PR builds rock-solid diplomatic ties with university leadership, IT, and facility administration.",
+          ar: "تتعرض الفعاليات للإلغاء المفاجئ بسبب تأخر تصاريح القاعات والمعامل. يتولى فريق العلاقات العامة التنسيق الدبلوماسي مع إدارة الجامعة والعمادة لتأمين كافة التراخيص مسبقاً.",
+        },
+      },
+      {
+        title: {
+          en: "Chaotic Offline Event Logistics & Hardware Fails",
+          ar: "فوضى التنظيم الميداني وأعطال الأجهزة والشبكة",
+        },
+        desc: {
+          en: "Power fluctuations, missing network cables, and unallocated seats turn 100-student contests into mayhem. Ops-PR enforces strict site-inspection checklists and backup power protocols.",
+          ar: "انقطاع الإنترنت أو نقص الكابلات وسوء توزيع المقاعد قد يفشل أي مسابقة حضورية. يضع الفريق خطط طوارئ صارمة تضمن جاهزية كل جهاز ومقعد قبل بدء الحدث بساعات.",
+        },
+      },
+      {
+        title: {
+          en: "Industry Isolation & Sponsorship Deficits",
+          ar: "عزلة الكيان عن مجتمع التكنولوجيا والشركات الراعية",
+        },
+        desc: {
+          en: "Student communities starve for lack of resources, prize pools, and professional mentorship. Ops-PR pitches corporate sponsors and invites senior industry engineers to campus.",
+          ar: "تعاني الأنشطة الطلابية من غياب الميزانيات والجوائز المادية. يفتح الفريق قنوات اتصال مع كبرى شركات البرمجيات لرعاية المسابقات وتوفير فرص تدريب ومكافآت للمتميزين.",
+        },
+      },
+    ],
+    impact: [
+      {
+        title: {
+          en: "Zero-Latency Event Orchestration",
+          ar: "تنفيذ الفعاليات بانسيابية ودقة تشغيلية مطلقة",
+        },
+        desc: {
+          en: "100% on-schedule contest kickoffs, seamless participant check-in, and flawless crowd logistics across all university facilities.",
+          ar: "بدء الفعاليات في الموعد المحدد بنسبة 100%، وتسهيل دخول المتسابقين وتوفير بيئة هادئة ومثالية للتركيز الذهني.",
+        },
+      },
+      {
+        title: {
+          en: "Academic & Engineering Time Insulation",
+          ar: "عزل المدربين والمتسابقين عن المشتتات الإدارية",
+        },
+        desc: {
+          en: "Shields technical leads and problem setters from logistical friction, preserving their cognitive energy entirely for algorithms.",
+          ar: "تفريغ المدربين والمتسابقين تماماً من أي عناء تنظيمي أو أوراق رسمية، ليتفرغوا بنسبة 100% للتدريب والحل والإبداع.",
+        },
+      },
+      {
+        title: {
+          en: "Institutional Clout & Official University Backing",
+          ar: "ترسيخ المكانة الرسمية للمجتمع كواجهة مشرفة للجامعة",
+        },
+        desc: {
+          en: "Establishes ICPC PUA as the gold-standard student organization, commanding premier halls, administrative fast-tracks, and regional recognition.",
+          ar: "جعل مجتمع ICPC الكيان الطلابي الأكثر تقديراً واعتماداً لدى رئاسة الجامعة وعمداء الكليات بفضل الاحترافية والمصداقية.",
+        },
+      },
+    ],
+handbook: {
       vision: {
         en: "Build and protect the corporate-level 'Premium Feel' of the ICPC PUA community to the outside world. You own the logistics, the external image, and the conversion funnel.",
         ar: "بناء وحماية 'الطابع الاحترافي' الفاخر لمجتمع ICPC PUA أمام العالم الخارجي. أنتم تديرون اللوجستيات، الصورة الخارجية، ومسار تحويل المتابعين إلى مشاركين."
@@ -517,7 +716,71 @@ export const rolesData: Record<string, RoleData> = {
     themeText: "#FFFFFF",
     antiGoalColor: "#FFD500", // Yellow
     applyUrl: "#register",
-    handbook: {
+        problemsSolved: [
+      {
+        title: {
+          en: "Mid-Season Ghosting & Volunteer Burnout",
+          ar: "الاحتراق النفسي واختفاء الأعضاء منتصف الموسم",
+        },
+        desc: {
+          en: "Student teams collapse when key members disappear during midterms. HR implements strict 48-hour delay notices, healthy shift rotations, and early burnout intervention.",
+          ar: "انهيار العديد من الأنشطة بسبب انسحاب الأعضاء فجأة وقت الامتحانات. يطبق فريق الموارد البشرية بروتوكول إشعار الـ 48 ساعة المسبق، مع توزيع الأحمال بالتساوي.",
+        },
+      },
+      {
+        title: {
+          en: "The Martyrdom Trap & Single-Point-of-Failure",
+          ar: "فخ التضحية الفردية واحتكار المهام",
+        },
+        desc: {
+          en: "A single overloaded leader doing everyone's job bottlenecks the community. HR enforces role boundaries, clear deliverables, and mandatory peer shadow training.",
+          ar: "محاولة شخص واحد حمل كل المسؤوليات تخلق عنق زجاجة وتهدد استقرار الكيان. يضمن الـ HR وجود نواب مدربين وتوثيقاً كاملاً لكل مهمة لمنع الاعتماد على الفرد.",
+        },
+      },
+      {
+        title: {
+          en: "Destructive Ego Clashes & Communication Breakdowns",
+          ar: "صراعات الغرور وتصدع التواصل الداخلي",
+        },
+        desc: {
+          en: "Passionate debates turn into personal feuds, fracturing committees. HR executes the 'Ego is the Enemy' protocol and mandatory 24-hour cool-down mediation.",
+          ar: "تحول النقاشات الحادة إلى خلافات شخصية يفسد بيئة العمل. يدير الـ HR بروتوكول فض النزاعات وفترة التهدئة الإلزامية (24h Cool-down) باحترافية وتجرد تام.",
+        },
+      },
+    ],
+    impact: [
+      {
+        title: {
+          en: "Unbreakable Season-Long Operational Continuity",
+          ar: "استمرارية مؤسسية صلبة طوال أشهر الموسم",
+        },
+        desc: {
+          en: "Zero orphaned tasks, zero stalled committees, and complete operational readiness across all 7 months of intensive training.",
+          ar: "انعدام المهام المعلقة أو اللجان المتعطلة، وضمان استمرار العمل التدريبي واللوجستي بنفس القوة من أول يوم وحتى ختام الموسم.",
+        },
+      },
+      {
+        title: {
+          en: "Psychological Safety & High-Retention Culture",
+          ar: "بيئة محفزة وآمنة نفسياً تضمن ولاء واستمرار الفريق",
+        },
+        desc: {
+          en: "Members feel heard, supported, and recognized, fostering deep mutual trust and the highest volunteer retention rate on campus.",
+          ar: "بناء مناخ يشعر فيه كل فرد بالتقدير والملاحظة الإيجابية، مما يخلق رابطة ولاء حقيقية ويقضي على ظاهرة التسرب الطلابي.",
+        },
+      },
+      {
+        title: {
+          en: "Next-Generation Leadership Pipeline",
+          ar: "إعداد وتأهيل قادة المستقبل لإدارة المجتمع",
+        },
+        desc: {
+          en: "Mentors high-potential junior coordinators into battle-tested future board leaders, ensuring long-term institutional succession.",
+          ar: "اكتشاف الكفاءات الشابة مبكراً وتدريبهم عملياً على مهارات القيادة، ليقودوا مجتمع ICPC PUA في المواسم القادمة بسلاسة.",
+        },
+      },
+    ],
+handbook: {
       vision: {
         en: "You are the guardians of the community's psychological safety and operational systems. Your goal is to protect the 'Premium Feel' of the community, manage conflicts quietly, and ensure zero operational fires.",
         ar: "أنتم حراس الأمان النفسي والنظام التشغيلي للمجتمع. هدفكم هو الحفاظ على 'الطابع الاحترافي' (Premium Feel) للمجتمع، إدارة النزاعات بهدوء، ومنع حدوث أي أزمات تشغيلية."
@@ -648,7 +911,71 @@ export const rolesData: Record<string, RoleData> = {
     themeText: "#FFFFFF",
     antiGoalColor: "#7B2CBF", // Purple
     applyUrl: "#register",
-    handbook: {
+        problemsSolved: [
+      {
+        title: {
+          en: "The 'Only for Geniuses' Intimidation Myth",
+          ar: "خرافة أن حل المشكلات والـ ICPC مخصص للعباقرة فقط",
+        },
+        desc: {
+          en: "Ambitious students shy away from competitive programming because they believe it requires mathematical genius. Marketing reframes problem solving as a systematic skill accessible to all.",
+          ar: "يعزف آلاف الطلاب عن المسابقات ظناً منهم أنها حكر على نوابغ الرياضيات. يفكك فريق التسويق هذا الوهم، ويوضح أن التفكير الخوارزمي مهارة تُكتسب بالتدريب المنظم.",
+        },
+      },
+      {
+        title: {
+          en: "Freshmen Informational Vacuum",
+          ar: "الفجوة المعرفية لدى طلاب السنوات الأولى",
+        },
+        desc: {
+          en: "New students discover ICPC in their senior year when it is too late. Marketing deploys aggressive, targeted orientation campaigns reaching freshmen in their first 14 days on campus.",
+          ar: "يكتشف أغلب الطلاب أهمية الـ Problem Solving متأخرين في سنوات التخرج. يستهدف التسويق الطلاب الجدد في أسابيعهم الأولى لتوجيه مسارهم الجامعي مبكراً.",
+        },
+      },
+      {
+        title: {
+          en: "Uncelebrated Victories & Vanishing Momentum",
+          ar: "ضياع الإنجازات في صمت وخفوت الحماس",
+        },
+        desc: {
+          en: "When student rating jumps and contest milestones go unrecognized, community morale wanes. Marketing spotlight campaigns turn every breakthrough into campus-wide inspiration.",
+          ar: "عدم تسليط الضوء على إنجازات الطلاب وتطور تصنيفاتهم يقلل من حماس البقية. يوثق الفريق قصص النجاح ويحول الأبطال إلى قدوة ملهمة داخل الجامعة وخارجها.",
+        },
+      },
+    ],
+    impact: [
+      {
+        title: {
+          en: "Record-Breaking Training Cohort Intake",
+          ar: "أكبر معدل تسجيل وتفاعل في تاريخ مجتمع الجامعة",
+        },
+        desc: {
+          en: "Funnels hundreds of high-intent, passionate students into training cohorts, maximizing applicant quality and long-term retention.",
+          ar: "جذب مئات الطلاب ذوي الشغف العالي لصفوف التدريب، مما يرفع من جودة التنافس داخل القاعات ويضمن استمرار أعداد كبيرة حتى النهاية.",
+        },
+      },
+      {
+        title: {
+          en: "Campus Cultural Movement",
+          ar: "تحويل ثقافة الـ Problem Solving إلى أسلوب حياة بالكلية",
+        },
+        desc: {
+          en: "Transforms competitive programming from a niche club into the single most prestigious, aspirational extracurricular community at Pharos University.",
+          ar: "جعل البرمجة التنافسية النشاط الأبرز والأكثر هيبة بين جميع الأنشطة الطلابية بالكلية، ومحط فخر أعضاء هيئة التدريس والطلاب.",
+        },
+      },
+      {
+        title: {
+          en: "Alumni Network & Tech Industry Magnet",
+          ar: "جذب أنظار الخريجين ومسؤولي التوظيف في كبرى الشركات",
+        },
+        desc: {
+          en: "Amplifies community milestones on LinkedIn and professional media, attracting tech recruiters, hiring managers, and proud alumni sponsors.",
+          ar: "نشر قصص تفوق الطلاب ومشاريعهم على المنصات المهنية، مما يربط طلاب مجتمع ICPC PUA بفرص عمل وتدريب حصرية في كبرى الشركات.",
+        },
+      },
+    ],
+handbook: {
       vision: {
         en: "Stop relying on 'post and pray' messaging. Build an active, omnipresent growth engine. Position ICPC PUA as an elite tech incubator and the ultimate pipeline to top-tier tech companies.",
         ar: "التوقف عن سياسة 'النشر والانتظار'. بناء محرك نمو نشط يتواجد في كل مكان. تقديم ICPC PUA كحاضنة نخبوية تقنية وأفضل مسار للوصول إلى كبرى شركات التكنولوجيا."
@@ -785,7 +1112,71 @@ export const rolesData: Record<string, RoleData> = {
     themeText: "#FFFFFF",
     antiGoalColor: "#00E5FF", // Cyan
     applyUrl: "#register",
-    handbook: {
+        problemsSolved: [
+      {
+        title: {
+          en: "Amateur Design Slop & Generic Student Aesthetics",
+          ar: "عشوائية التصاميم والملصقات الطلابية التقليدية",
+        },
+        desc: {
+          en: "Generic Canva templates and sloppy graphics signal a low-quality community. Design-Dev crafts an unmistakable Neobrutalist design system with high-voltage visual authority.",
+          ar: "التصاميم الرديئة والقوالب المستهلكة تعطي انطباعاً بعدم الاحترافية. يبني فريق التصميم هوية بصرية متمردة وقوية (Neobrutalism) تفرض هيبتها وتخطف الأنظار فوراً.",
+        },
+      },
+      {
+        title: {
+          en: "Manual Form Chaos & Data Fragmentation",
+          ar: "فوضى النماذج اليدوية وتشتت بيانات المسجلين",
+        },
+        desc: {
+          en: "Relying on clunky Google Forms causes missing entries, slow response times, and broken pipelines. Design-Dev builds custom, ultra-fast web platforms with zero downtime.",
+          ar: "الاعتماد على نماذج بدائية يسبب ضياع بيانات الطلاب وبطء المتابعة. يطور الفريق منصات ويب مخصصة وسريعة تليق بمجتمع متخصص في علوم الحاسب.",
+        },
+      },
+      {
+        title: {
+          en: "Incomprehensible Algorithmic Visuals & Slide Scramble",
+          ar: "صعوبة تصور الخوارزميات وتشتت الشرائح التعليمية",
+        },
+        desc: {
+          en: "Complex data structures (trees, graphs, DP tables) fall flat when explained on ugly, wall-of-text slides. Design-Dev builds modular, beautiful visual assets that clarify abstract code.",
+          ar: "المفاهيم الخوارزمية المعقدة تفقد وضوحها بدون رسوم توضيحية متقنة. يصمم الفريق شرائح تعليمية ورسوماً بصرية ديناميكية تجعل أصعب المفاهيم بدهية وسهلة الهضم.",
+        },
+      },
+    ],
+    impact: [
+      {
+        title: {
+          en: "Unmistakable Engineering Identity & Visual Clout",
+          ar: "هوية بصرية هندسية فريدة ذات طابع عالمي",
+        },
+        desc: {
+          en: "Establishes a high-contrast, technical visual benchmark that sets ICPC PUA miles apart from standard campus clubs.",
+          ar: "صناعة بصمة بصرية مميزة لا تُخطئها العين، تجمع بين الجرأة الفنية والصرامة الهندسية، لتكون علامة الجودة الأولى في الجامعة.",
+        },
+      },
+      {
+        title: {
+          en: "High-Performance Interactive Digital Infrastructure",
+          ar: "منظومة برمجية تفاعلية فائقة السرعة والاستقرار",
+        },
+        desc: {
+          en: "Engineers responsive Next.js web applications, spec sheets, and live scoreboards optimized for 100% lighthouse performance.",
+          ar: "بناء بوابات إلكترونية ومواصفات تفاعلية باستخدام أحدث تقنيات الويب، تتميز بالسرعة اللحظية والتوافق التام مع كافة الشاشات.",
+        },
+      },
+      {
+        title: {
+          en: "Pedagogical Clarity & Cognitive Acceleration",
+          ar: "تسريع الفهم الذهني ومضاعفة استيعاب المحتوى",
+        },
+        desc: {
+          en: "Standardizes curriculum presentation slide decks, visual cheatsheets, and vector diagrams that supercharge student retention by 3x.",
+          ar: "توحيد قوالب المحاضرات وتصميم ملخصات بصرية مكثفة للخوارزميات تسهم في مضاعفة سرعة استيعاب الطلاب وتركيزهم أثناء الشرح.",
+        },
+      },
+    ],
+handbook: {
       vision: {
         en: "You make the community look like an elite startup, not a college club. You own the visual standard, the digital infrastructure, and the automation of busywork.",
         ar: "أنتم تجعلون المجتمع يبدو كشركة ناشئة نخبوية وليس مجرد نادٍ جامعي. أنتم تديرون المعيار البصري، البنية التحتية الرقمية، وتختصرون المهام الإدارية عن طريق الأتمتة."

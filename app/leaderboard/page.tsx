@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { PuaNavbar } from "@/components/pua-navbar"
 import { Marquee } from "@/components/pua-marquee"
+import { Footer } from "@/components/footer"
 
 interface Submission {
   name: string
@@ -316,6 +317,7 @@ export default function LeaderboardPage() {
       </main>
 
       <Marquee />
+      <Footer />
     </div>
   )
 }

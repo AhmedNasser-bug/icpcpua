@@ -1,25 +1,32 @@
 import Link from 'next/link';
+import { PuaNavbar } from '@/components/pua-navbar';
+import { Marquee } from '@/components/pua-marquee';
 import { Footer } from '@/components/footer';
 import { EcosystemGraph } from '@/components/EcosystemGraph';
 
 export default function RecruitmentLandingPage() {
     return (
         <div className="bg-[#FFF4E0] text-[#0F0F0F] min-h-screen flex flex-col justify-between selection:bg-[#00E5FF] selection:text-[#0F0F0F]">
-            {/* TopAppBar */}
-            <header className="flex justify-between items-center w-full px-6 py-4 sticky top-0 z-50 bg-[#FFF4E0] border-b-[3px] border-[#0F0F0F] shadow-[8px_8px_0px_0px_#0F0F0F]">
-                <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-2xl font-variation-settings-fill-1 text-[#FF0055]">terminal</span>
-                    <h1 className="uppercase font-black tracking-tighter text-2xl text-black" style={{fontFamily: 'Space Grotesk, sans-serif'}}>RECRUITMENT.CORPS</h1>
+            {/* Unified Site Navbar */}
+            <PuaNavbar />
+
+            {/* Quick Context Sub-Bar */}
+            <div className="w-full bg-white border-b-[3px] border-[#0F0F0F] px-6 py-2.5 shadow-[4px_4px_0px_#0F0F0F]">
+                <div className="max-w-7xl mx-auto flex items-center justify-between text-xs font-bold uppercase tracking-wider font-mono">
+                    <div className="flex items-center gap-2">
+                        <span className="w-2.5 h-2.5 bg-[#FF0055] inline-block animate-pulse" />
+                        <span className="text-[#0F0F0F]">RECRUITMENT.CORPS // 2026-2027</span>
+                    </div>
+                    <div className="hidden sm:flex gap-6 items-center">
+                        <Link href="/recruitment" className="hover:text-[#7B2CBF] underline decoration-2">MANIFESTO</Link>
+                        <Link href="#roles" className="hover:text-[#7B2CBF]">ROLES</Link>
+                        <Link href="/referrals" className="hover:text-[#7B2CBF]">BOUNTIES</Link>
+                    </div>
+                    <Link href="#roles" className="bg-[#00E5FF] text-[#0F0F0F] px-3 py-1 border-2 border-[#0F0F0F] shadow-[2px_2px_0px_#0F0F0F] hover:bg-[#FFD500]">
+                        VIEW ROLES ↓
+                    </Link>
                 </div>
-                <div className="hidden md:flex gap-8 items-center" style={{fontFamily: 'Space Grotesk, sans-serif'}}>
-                    <Link className="text-sm font-bold uppercase tracking-widest text-[#0F0F0F] underline decoration-[3px] hover:translate-x-[2px] hover:translate-y-[2px] transition-all" href="/recruitment">MANIFESTO</Link>
-                    <Link className="text-sm font-bold uppercase tracking-widest text-[#0F0F0F] hover:translate-x-[2px] hover:translate-y-[2px] transition-all" href="#roles">ROLES</Link>
-                    <Link className="text-sm font-bold uppercase tracking-widest text-[#0F0F0F] hover:translate-x-[2px] hover:translate-y-[2px] transition-all" href="/referrals">BOUNTIES</Link>
-                </div>
-                <Link href="#roles" className="block uppercase font-bold tracking-tighter px-4 py-1 border-[3px] border-[#0F0F0F] shadow-[4px_4px_0px_0px_#0F0F0F] bg-[#00E5FF] text-[#0F0F0F] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all active:translate-x-[4px] active:translate-y-[4px]" style={{fontFamily: 'Space Grotesk, sans-serif'}}>
-                    VIEW ROLES
-                </Link>
-            </header>
+            </div>
 
             <main className="w-full max-w-7xl mx-auto px-6 py-12 md:py-20 relative">
                 {/* Hero Section */}
@@ -242,15 +249,10 @@ export default function RecruitmentLandingPage() {
                     </div>
                 </section>
 
-                {/* Marquee Component */}
-                <div className="mt-24 bg-[#0F0F0F] overflow-hidden whitespace-nowrap py-4 -rotate-1 border-y-[3px] border-[#FF0055]">
-                    <div className="inline-block text-white text-4xl font-black uppercase tracking-widest mr-8" style={{fontFamily: 'Fredoka One, sans-serif'}}>
-                        NO SOFT CODE ALLOWED // SYSTEM OVERRIDE ACTIVE // RECRUITMENT OPEN // NO SOFT CODE ALLOWED // SYSTEM OVERRIDE ACTIVE // RECRUITMENT OPEN //
-                    </div>
-                </div>
             </main>
 
-            {/* Footer */}
+            {/* Unified Marquee & Footer */}
+            <Marquee />
             <Footer />
         </div>
     );

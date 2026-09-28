@@ -2,9 +2,10 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import { PuaNavbar } from "@/components/pua-navbar"
 import { Footer } from "@/components/footer"
 import { Marquee } from "@/components/pua-marquee"
-import { RoleData, universalRules } from "@/data/recruitment/roles"
+import { RoleData } from "@/data/recruitment/roles"
 import {
   Terminal,
   Shield,
@@ -15,9 +16,6 @@ import {
   ChevronDown,
   ArrowRight,
   BookOpen,
-  Send,
-  UserCheck,
-  Flame,
   Globe,
   Award,
   Sparkles,
@@ -29,39 +27,9 @@ import {
 export function PuaSpecSheet({ data }: { data: RoleData }) {
   const [lang, setLang] = useState<"en" | "ar">("en")
   const [activeFaq, setActiveFaq] = useState<number | null>(null)
-  const [rulesOpen, setRulesOpen] = useState(true)
-
-  // Registration Form State
-  const [form, setForm] = useState({
-    name: "",
-    studentId: "",
-    email: "",
-    phone: "",
-    academicYear: "Year 2",
-    subRole: data.handbook.subRoles[0] || "",
-    handleOrPortfolio: "",
-    motivation: "",
-    agreedToRules: false,
-  })
-  const [registered, setRegistered] = useState(false)
-  const [formError, setFormError] = useState("")
 
   const toggleFaq = (idx: number) => {
     setActiveFaq(activeFaq === idx ? null : idx)
-  }
-
-  const handleRegister = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!form.agreedToRules) {
-      setFormError(
-        lang === "en"
-          ? "You must accept the Universal Rules & Division of Labor to register."
-          : "يجب الموافقة على القواعد العامة وتقسيم العمل الصارم لإتمام التسجيل."
-      )
-      return
-    }
-    setFormError("")
-    setRegistered(true)
   }
 
   return (
@@ -71,8 +39,11 @@ export function PuaSpecSheet({ data }: { data: RoleData }) {
       }`}
       dir={lang === "ar" ? "rtl" : "ltr"}
     >
-      {/* ── TOP STICKY BAR ── */}
-      <header className="flex justify-between items-center w-full px-6 py-4 sticky top-0 z-50 bg-[#FFF4E0] border-b-[3px] border-[#0F0F0F] shadow-[6px_6px_0px_#0F0F0F]">
+      <PuaNavbar />
+
+      {/* ── TOP SPEC SUB-BAR ── */}
+      <div className="w-full bg-[#FFF4E0] border-b-[3px] border-[#0F0F0F] shadow-[4px_4px_0px_#0F0F0F] sticky top-[60px] lg:top-[65px] z-40">
+        <header className="flex justify-between items-center w-full px-4 sm:px-6 py-3 max-w-6xl mx-auto">
         <div className="flex items-center gap-3">
           <span
             className="w-4 h-4 border-2 border-[#0F0F0F] inline-block"
@@ -91,8 +62,8 @@ export function PuaSpecSheet({ data }: { data: RoleData }) {
 
         {/* Quick Anchors */}
         <div className="hidden md:flex gap-6 items-center font-body text-xs font-bold uppercase tracking-wider">
-          <a href="#rules" className="hover:text-[#7B2CBF] hover:underline decoration-2 transition-colors">
-            {lang === "en" ? "UNIVERSAL RULES" : "القواعد العامة"}
+          <a href="#mission" className="hover:text-[#7B2CBF] hover:underline decoration-2 transition-colors">
+            {lang === "en" ? "MISSION & IMPACT" : "المهمة والأثر"}
           </a>
           <a href="#contract" className="hover:text-[#7B2CBF] hover:underline decoration-2 transition-colors">
             {lang === "en" ? "SPEC CONTRACT" : "العقد والمواصفات"}
@@ -103,8 +74,8 @@ export function PuaSpecSheet({ data }: { data: RoleData }) {
           <a href="#faq" className="hover:text-[#7B2CBF] hover:underline decoration-2 transition-colors">
             {lang === "en" ? "FAQ" : "الأسئلة الشائعة"}
           </a>
-          <a href="#register" className="hover:text-[#7B2CBF] hover:underline decoration-2 transition-colors">
-            {lang === "en" ? "REGISTER" : "التسجيل"}
+          <a href="#blueprint" className="hover:text-[#7B2CBF] hover:underline decoration-2 transition-colors">
+            {lang === "en" ? "BLUEPRINT" : "المخطط"}
           </a>
         </div>
 
@@ -126,6 +97,7 @@ export function PuaSpecSheet({ data }: { data: RoleData }) {
           </Link>
         </div>
       </header>
+    </div>
 
       <main className="flex-grow w-full max-w-6xl mx-auto px-6 py-10 md:py-16 relative overflow-x-hidden">
         {/* Background Dot Matrix */}
@@ -176,68 +148,131 @@ export function PuaSpecSheet({ data }: { data: RoleData }) {
                 <span className="text-[#0F0F0F]">VERSION: {data.version}</span>
                 <span>ISSUED: {data.issued}</span>
                 <span>LOCATION: {data.location}</span>
-                <span className="text-[#7B2CBF] pt-2">STATUS: RECRUITMENT_OPEN</span>
+                <span className="text-[#7B2CBF] pt-2">DOC_TYPE: INFORMATIONAL_BLUEPRINT</span>
               </div>
             </div>
           </div>
         </section>
 
-        {/* ── 1. UNIVERSAL RULES SECTION (📖 القواعد العامة لمجتمع ICPC PUA) ── */}
-        <section id="rules" className="mb-20">
-          <div className="bg-[#0F0F0F] text-white border-[3px] border-[#0F0F0F] p-6 md:p-8 shadow-[8px_8px_0px_#FFD500] relative">
-            <span className="vector-node vector-node-tl" />
-            <span className="vector-node vector-node-tr" />
-            <span className="vector-node vector-node-bl" />
-            <span className="vector-node vector-node-br" />
+        {/* ── 1. PROBLEMS SOLVED & STRATEGIC IMPACT (المشكلات المعالجة والأثر الاستراتيجي) ── */}
+        <section id="mission" className="mb-20">
+          <div className="mb-6 flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b-2 border-[#0F0F0F] pb-3">
+            <div>
+              <span
+                className="px-2 py-0.5 font-body text-xs font-bold uppercase tracking-widest border border-[#0F0F0F] inline-block mb-1"
+                style={{ backgroundColor: data.themeColor, color: data.themeText }}
+              >
+                SECTION 01 // STRATEGIC VALUE PROPOSITION
+              </span>
+              <h3 className="font-display text-3xl md:text-4xl uppercase text-[#0F0F0F]">
+                {lang === "en" ? "PROBLEMS SOLVED & STRATEGIC IMPACT" : "المشكلات التي تقضي عليها اللجنة والأثر الاستراتيجي"}
+              </h3>
+            </div>
+            <p className="font-body text-xs font-bold text-zinc-600 uppercase">
+              {lang === "en" ? "OPERATIONAL PURPOSE // 2026-2027 SEASON" : "الغاية التشغيلية // موسم 2026-2027"}
+            </p>
+          </div>
 
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b-2 border-zinc-700">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-[#FFD500] text-[#0F0F0F] border-2 border-white flex items-center justify-center font-display text-xl">
-                  📖
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Column 1: Problems Solved */}
+            <div className="bg-white border-[3px] border-[#0F0F0F] p-6 md:p-8 shadow-[8px_8px_0px_#FF0055] relative flex flex-col justify-between">
+              <span className="vector-node vector-node-tl" />
+              <span className="vector-node vector-node-tr" />
+              <span className="vector-node vector-node-bl" />
+              <span className="vector-node vector-node-br" />
+
+              <div>
+                <div className="flex items-center gap-3 mb-6 pb-4 border-b-2 border-[#0F0F0F]">
+                  <div className="w-10 h-10 bg-[#FF0055] text-white border-2 border-[#0F0F0F] flex items-center justify-center font-bold">
+                    <AlertTriangle className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="font-display text-2xl uppercase tracking-tight text-[#0F0F0F]">
+                      {lang === "en" ? "CRITICAL BOTTLENECKS ELIMINATED" : "المشكلات الجذرية التي تقضي عليها اللجنة"}
+                    </h4>
+                    <p className="font-body text-xs text-zinc-600 font-bold uppercase">
+                      {lang === "en" ? "Targeted failures & systemic challenges" : "التحديات الهيكلية ونقاط الضعف المعالجة"}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-display text-2xl md:text-3xl uppercase text-white tracking-tight">
-                    {lang === "en" ? "UNIVERSAL ICPC PUA RULES" : "القواعد العامة لمجتمع ICPC PUA"}
-                  </h3>
-                  <p className="font-body text-xs text-zinc-400 font-bold uppercase tracking-wider">
-                    {lang === "en"
-                      ? "MANDATORY FOR ALL COMMITTEES // ZERO COMPROMISE"
-                      : "تنطبق بشكل غير قابل للتفاوض على جميع الأعضاء واللجان"}
-                  </p>
+
+                <div className="space-y-4">
+                  {data.problemsSolved?.map((item, idx) => (
+                    <div
+                      key={idx}
+                      className="bg-[#FFF4E0] border-2 border-[#0F0F0F] p-4.5 shadow-[4px_4px_0px_#0F0F0F] hover:translate-x-0.5 hover:-translate-y-0.5 transition-transform"
+                    >
+                      <div className="flex items-start gap-3">
+                        <span className="font-display text-base font-bold px-2 py-0.5 bg-[#FF0055] text-white border border-[#0F0F0F] shrink-0">
+                          0{idx + 1}
+                        </span>
+                        <div className="space-y-1.5 flex-1">
+                          <h5 className="font-display text-base md:text-lg uppercase text-[#0F0F0F] leading-snug">
+                            {item.title[lang]}
+                          </h5>
+                          <p className="font-body text-xs md:text-sm text-zinc-800 leading-relaxed font-semibold">
+                            {item.desc[lang]}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
-
-              <button
-                onClick={() => setRulesOpen(!rulesOpen)}
-                className="btn-solid inline-flex items-center gap-2 bg-white text-[#0F0F0F] font-body text-xs font-bold px-3 py-1.5 border-2 border-white uppercase hover:bg-[#FFD500] cursor-pointer"
-              >
-                <span>{rulesOpen ? (lang === "en" ? "COLLAPSE" : "إخفاء") : (lang === "en" ? "EXPAND" : "عرض")}</span>
-                <ChevronDown className={`w-4 h-4 transition-transform ${rulesOpen ? "rotate-180" : ""}`} />
-              </button>
             </div>
 
-            {rulesOpen && (
-              <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-                {universalRules.map((rule, idx) => (
+            {/* Column 2: Strategic Impact */}
+            <div className="bg-[#0F0F0F] text-white border-[3px] border-[#0F0F0F] p-6 md:p-8 shadow-[8px_8px_0px_#00E5FF] relative flex flex-col justify-between">
+              <span className="vector-node vector-node-tl" />
+              <span className="vector-node vector-node-tr" />
+              <span className="vector-node vector-node-bl" />
+              <span className="vector-node vector-node-br" />
+
+              <div>
+                <div className="flex items-center gap-3 mb-6 pb-4 border-b-2 border-zinc-700">
                   <div
-                    key={rule.id}
-                    className="bg-zinc-900 border-2 border-zinc-700 p-4 flex flex-col justify-between hover:border-[#FFD500] transition-colors"
+                    className="w-10 h-10 border-2 border-white flex items-center justify-center font-bold"
+                    style={{ backgroundColor: data.themeColor, color: data.themeText }}
                   >
-                    <div>
-                      <span className="font-display text-sm text-[#FFD500] block mb-1">
-                        0{idx + 1} // RULE
-                      </span>
-                      <h4 className="font-display text-base uppercase text-white mb-2 leading-tight">
-                        {lang === "en" ? rule.titleEn : rule.titleAr}
-                      </h4>
-                      <p className="font-body text-xs text-zinc-300 leading-relaxed font-bold">
-                        {lang === "en" ? rule.ruleEn : rule.ruleAr}
-                      </p>
-                    </div>
+                    <Zap className="w-5 h-5" />
                   </div>
-                ))}
+                  <div>
+                    <h4 className="font-display text-2xl uppercase tracking-tight text-white">
+                      {lang === "en" ? "TRANSFORMATIVE STRATEGIC IMPACT" : "الأثر الاستراتيجي والتحول الفعلي"}
+                    </h4>
+                    <p className="font-body text-xs text-zinc-400 font-bold uppercase">
+                      {lang === "en" ? "Measurable outcomes & lasting benchmarks" : "المخرجات الملموسة والنتائج التنافسية"}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  {data.impact?.map((item, idx) => (
+                    <div
+                      key={idx}
+                      className="bg-zinc-900 border-2 border-zinc-700 p-4.5 shadow-[4px_4px_0px_#00E5FF] hover:border-[#00E5FF] transition-colors"
+                    >
+                      <div className="flex items-start gap-3">
+                        <span
+                          className="font-display text-base font-bold px-2 py-0.5 border border-[#0F0F0F] shrink-0"
+                          style={{ backgroundColor: data.themeColor, color: data.themeText }}
+                        >
+                          0{idx + 1}
+                        </span>
+                        <div className="space-y-1.5 flex-1">
+                          <h5 className="font-display text-base md:text-lg uppercase text-white leading-snug">
+                            {item.title[lang]}
+                          </h5>
+                          <p className="font-body text-xs md:text-sm text-zinc-300 leading-relaxed font-semibold">
+                            {item.desc[lang]}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
-            )}
+            </div>
           </div>
         </section>
 
@@ -246,7 +281,7 @@ export function PuaSpecSheet({ data }: { data: RoleData }) {
           <div className="mb-6 flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b-2 border-[#0F0F0F] pb-3">
             <div>
               <span className="bg-[#7B2CBF] text-white px-2 py-0.5 font-body text-xs font-bold uppercase tracking-widest border border-[#0F0F0F]">
-                SECTION 01
+                SECTION 02
               </span>
               <h3 className="font-display text-3xl md:text-4xl uppercase text-[#0F0F0F] mt-1">
                 {lang === "en" ? "THE ROLE CONTRACT & AUDIT MATRIX" : "عقد ومصفوفة تدقيق الدور"}
@@ -360,7 +395,7 @@ export function PuaSpecSheet({ data }: { data: RoleData }) {
           <div className="mb-6 flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b-2 border-[#0F0F0F] pb-3">
             <div>
               <span className="bg-[#FF0055] text-white px-2 py-0.5 font-body text-xs font-bold uppercase tracking-widest border border-[#0F0F0F]">
-                SECTION 02
+                SECTION 03
               </span>
               <h3 className="font-display text-3xl md:text-4xl uppercase text-[#0F0F0F] mt-1">
                 {lang === "en" ? "COMMITTEE OPERATIONAL HANDBOOK" : "دليل التشغيل وإجراءات اللجنة"}
@@ -450,11 +485,11 @@ export function PuaSpecSheet({ data }: { data: RoleData }) {
                 </ul>
               </div>
 
-              {/* Preferable */}
+              {/* Prefer */}
               <div className="bg-white border-[3px] border-[#25D366] p-6 shadow-[6px_6px_0px_#25D366]">
                 <h5 className="font-display text-xl uppercase mb-4 text-[#0F0F0F] flex items-center gap-2">
                   <span className="w-3 h-3 bg-[#25D366] inline-block" />
-                  <span>{lang === "en" ? "WHAT IS PREFERABLE" : "ما يفضل فعله والالتزام به"}</span>
+                  <span>{lang === "en" ? "PREFERABLE PRACTICES" : "الممارسات المفضلة والمستحبة"}</span>
                 </h5>
                 <ul className="space-y-3 font-body text-xs md:text-sm font-bold text-zinc-800">
                   {data.handbook.dosAndDonts.prefer.map((item, idx) => (
@@ -469,19 +504,19 @@ export function PuaSpecSheet({ data }: { data: RoleData }) {
           </div>
         </section>
 
-        {/* ── 4. COMMITTEE FAQ ACCORDION (الأسئلة الشائعة) ── */}
+        {/* ── 4. COMMITTEE FAQ (الأسئلة الشائعة للجنة) ── */}
         <section id="faq" className="mb-20">
           <div className="mb-6 flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b-2 border-[#0F0F0F] pb-3">
             <div>
               <span className="bg-[#00E5FF] text-[#0F0F0F] px-2 py-0.5 font-body text-xs font-bold uppercase tracking-widest border border-[#0F0F0F]">
-                SECTION 03
+                SECTION 04
               </span>
               <h3 className="font-display text-3xl md:text-4xl uppercase text-[#0F0F0F] mt-1">
-                {lang === "en" ? "COMMITTEE FAQ" : "الأسئلة الشائعة للجنة"}
+                {lang === "en" ? "FREQUENTLY ASKED QUESTIONS" : "الأسئلة الشائعة الخاصة باللجنة"}
               </h3>
             </div>
             <p className="font-body text-xs font-bold text-zinc-600 uppercase">
-              REAL-WORLD PROTOCOL SCENARIOS
+              {lang === "en" ? "COMMONLY RAISED QUESTIONS" : "أبرز الاستفسارات المتكررة"}
             </p>
           </div>
 
@@ -491,20 +526,19 @@ export function PuaSpecSheet({ data }: { data: RoleData }) {
               return (
                 <div
                   key={idx}
-                  className={`border-[3px] border-[#0F0F0F] transition-colors ${
-                    isOpen ? "bg-white shadow-[6px_6px_0px_#0F0F0F]" : "bg-[#FFF4E0] shadow-[3px_3px_0px_#0F0F0F]"
-                  }`}
+                  className="bg-white border-[3px] border-[#0F0F0F] shadow-[4px_4px_0px_#0F0F0F] transition-all"
                 >
                   <button
                     onClick={() => toggleFaq(idx)}
-                    className="w-full flex items-center justify-between p-5 text-left gap-4 cursor-pointer"
+                    className="w-full text-left p-5 flex items-center justify-between gap-4 font-display text-base md:text-lg uppercase text-[#0F0F0F] hover:bg-[#FFF4E0] transition-colors cursor-pointer"
                   >
-                    <span className="font-display text-base md:text-lg uppercase text-[#0F0F0F]">
-                      Q: {lang === "en" ? item.q.en : item.q.ar}
+                    <span className="flex items-center gap-3">
+                      <HelpCircle className="w-5 h-5 text-[#7B2CBF] shrink-0" />
+                      <span>{lang === "en" ? item.q.en : item.q.ar}</span>
                     </span>
                     <ChevronDown
-                      className={`w-5 h-5 shrink-0 transition-transform duration-200 ${
-                        isOpen ? "rotate-180 text-[#7B2CBF]" : "text-[#0F0F0F]"
+                      className={`w-5 h-5 shrink-0 transition-transform ${
+                        isOpen ? "rotate-180 text-[#7B2CBF]" : ""
                       }`}
                     />
                   </button>
@@ -520,235 +554,79 @@ export function PuaSpecSheet({ data }: { data: RoleData }) {
           </div>
         </section>
 
-        {/* ── 5. REGISTRATION PORTAL (نموذج التسجيل والانضمام للجنة) ── */}
-        <section id="register" className="mb-20">
-          <div className="bg-white border-[3px] border-[#0F0F0F] p-6 md:p-12 shadow-[10px_10px_0px_#0F0F0F] relative">
+        {/* ── 5. INFORMATIONAL SPECIFICATION // ROLE BLUEPRINT ── */}
+        <section id="blueprint" className="mb-20">
+          <div className="bg-white border-[3px] border-[#0F0F0F] p-6 md:p-10 shadow-[10px_10px_0px_#0F0F0F] relative">
             <span className="vector-node vector-node-tl" />
             <span className="vector-node vector-node-tr" />
             <span className="vector-node vector-node-bl" />
             <span className="vector-node vector-node-br" />
 
-            <div className="max-w-2xl mb-8">
-              <span
-                className="px-2.5 py-1 font-body text-xs font-bold uppercase tracking-widest border-2 border-[#0F0F0F] inline-block mb-3"
-                style={{ backgroundColor: data.themeColor, color: data.themeText }}
-              >
-                JOIN THE CORPS // CADET INTAKE
-              </span>
-              <h3 className="font-display text-4xl md:text-5xl uppercase text-[#0F0F0F] leading-tight">
-                {lang === "en" ? "COMMITTEE REGISTRATION" : "استمارة التسجيل والانضمام"}
-              </h3>
-              <p className="font-body text-xs md:text-sm text-zinc-600 mt-2 font-bold">
-                {lang === "en"
-                  ? "Submit your dossier to join this committee. All recruits undergo zero-ego vetting and must commit to the division of labor."
-                  : "قدم بياناتك للانضمام إلى هذه اللجنة. يخضع جميع المتقدمين لفحص العقلية الخالية من الغرور وتقسيم العمل الصارم."}
-              </p>
-            </div>
-
-            {registered ? (
-              <div className="bg-[#FFF4E0] border-[3px] border-[#0F0F0F] p-8 text-center space-y-4 shadow-[6px_6px_0px_#25D366] animate-slide-in">
-                <div className="w-16 h-16 bg-[#25D366] text-white border-[3px] border-[#0F0F0F] mx-auto flex items-center justify-center">
-                  <CheckCircle2 className="w-10 h-10" />
-                </div>
-                <h4 className="font-display text-3xl uppercase text-[#0F0F0F]">
-                  {lang === "en" ? "DOSSIER TRANSMITTED!" : "تم تسجيل ملفك بنجاح!"}
-                </h4>
-                <p className="font-body text-xs md:text-sm text-zinc-700 max-w-lg mx-auto font-bold">
-                  {lang === "en"
-                    ? `Candidate ${form.name} registered for [${form.subRole}]. Your dedicated HR officer will review your dossier and invite you for an interview within 48 hours.`
-                    : `تم تسجيل المترشح ${form.name} للمسار [${form.subRole}]. سيقوم مسؤول الموارد البشرية بفحص ملفك والتواصل معك عبر واتساب خلال 48 ساعة.`}
-                </p>
-                <div className="bg-white border-2 border-[#0F0F0F] p-3 inline-block font-body text-xs font-bold">
-                  DOSSIER_ID: PUA-2026-{Math.floor(1000 + Math.random() * 9000)} // STATUS: PENDING_VETTING
-                </div>
-                <div>
-                  <button
-                    onClick={() => setRegistered(false)}
-                    className="btn-solid bg-[#0F0F0F] text-white font-display text-sm uppercase px-6 py-2.5 border-2 border-[#0F0F0F] hover:bg-[#7B2CBF]"
-                  >
-                    {lang === "en" ? "SUBMIT ANOTHER APPLICATION" : "تسجيل طلب آخر"}
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <form onSubmit={handleRegister} className="space-y-6">
-                {formError && (
-                  <div className="bg-[#FF0055] text-white p-3 font-body text-xs font-bold border-2 border-[#0F0F0F] shadow-[3px_3px_0px_#0F0F0F]">
-                    [ALERT] {formError}
-                  </div>
-                )}
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Name */}
-                  <div className="space-y-2">
-                    <label className="font-body text-xs font-bold uppercase tracking-wider block">
-                      {lang === "en" ? "Full Name *" : "الاسم الكامل *"}
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g. Ahmed Mostafa"
-                      value={form.name}
-                      onChange={(e) => setForm({ ...form, name: e.target.value })}
-                      className="w-full border-[3px] border-[#0F0F0F] bg-[#FFF4E0] p-3.5 font-body text-sm font-bold focus:bg-white focus:outline-none focus:border-[#7B2CBF]"
-                    />
-                  </div>
-
-                  {/* Student ID */}
-                  <div className="space-y-2">
-                    <label className="font-body text-xs font-bold uppercase tracking-wider block">
-                      {lang === "en" ? "Student ID *" : "الرقم الجامعي *"}
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g. 202300481"
-                      value={form.studentId}
-                      onChange={(e) => setForm({ ...form, studentId: e.target.value })}
-                      className="w-full border-[3px] border-[#0F0F0F] bg-[#FFF4E0] p-3.5 font-body text-sm font-bold focus:bg-white focus:outline-none focus:border-[#7B2CBF]"
-                    />
-                  </div>
-
-                  {/* Email */}
-                  <div className="space-y-2">
-                    <label className="font-body text-xs font-bold uppercase tracking-wider block">
-                      {lang === "en" ? "Email Address *" : "البريد الإلكتروني *"}
-                    </label>
-                    <input
-                      type="email"
-                      required
-                      placeholder="e.g. ahmed@pua.edu.eg"
-                      value={form.email}
-                      onChange={(e) => setForm({ ...form, email: e.target.value })}
-                      className="w-full border-[3px] border-[#0F0F0F] bg-[#FFF4E0] p-3.5 font-body text-sm font-bold focus:bg-white focus:outline-none focus:border-[#7B2CBF]"
-                    />
-                  </div>
-
-                  {/* Phone / WhatsApp */}
-                  <div className="space-y-2">
-                    <label className="font-body text-xs font-bold uppercase tracking-wider block">
-                      {lang === "en" ? "WhatsApp Phone Number *" : "رقم الواتساب *"}
-                    </label>
-                    <input
-                      type="tel"
-                      required
-                      placeholder="e.g. +20 10 1234 5678"
-                      value={form.phone}
-                      onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                      className="w-full border-[3px] border-[#0F0F0F] bg-[#FFF4E0] p-3.5 font-body text-sm font-bold focus:bg-white focus:outline-none focus:border-[#7B2CBF]"
-                    />
-                  </div>
-
-                  {/* Academic Year */}
-                  <div className="space-y-2">
-                    <label className="font-body text-xs font-bold uppercase tracking-wider block">
-                      {lang === "en" ? "Academic Year *" : "السنة الدراسية *"}
-                    </label>
-                    <select
-                      value={form.academicYear}
-                      onChange={(e) => setForm({ ...form, academicYear: e.target.value })}
-                      className="w-full border-[3px] border-[#0F0F0F] bg-[#FFF4E0] p-3.5 font-body text-sm font-bold focus:bg-white focus:outline-none focus:border-[#7B2CBF] cursor-pointer"
-                    >
-                      <option>Year 1 (Preparatory / Freshmen)</option>
-                      <option>Year 2 (Sophomore)</option>
-                      <option>Year 3 (Junior)</option>
-                      <option>Year 4 (Senior)</option>
-                    </select>
-                  </div>
-
-                  {/* Sub-Role Selector */}
-                  <div className="space-y-2">
-                    <label className="font-body text-xs font-bold uppercase tracking-wider block">
-                      {lang === "en" ? "Target Sub-Role in Committee *" : "المسار المحدد داخل اللجنة *"}
-                    </label>
-                    <select
-                      value={form.subRole}
-                      onChange={(e) => setForm({ ...form, subRole: e.target.value })}
-                      className="w-full border-[3px] border-[#0F0F0F] bg-[#FFF4E0] p-3.5 font-body text-sm font-bold focus:bg-white focus:outline-none focus:border-[#7B2CBF] cursor-pointer"
-                    >
-                      {data.handbook.subRoles.map((role, i) => (
-                        <option key={i} value={role}>
-                          {role}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                {/* Handle / Portfolio */}
-                <div className="space-y-2">
-                  <label className="font-body text-xs font-bold uppercase tracking-wider block">
-                    {lang === "en"
-                      ? "Codeforces / GitHub / Behance / LinkedIn URL"
-                      : "رابط الحساب على كودفورسيز / جيت هاب / بيهانس / لينكد إن"}
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="https://codeforces.com/profile/... or https://github.com/..."
-                    value={form.handleOrPortfolio}
-                    onChange={(e) => setForm({ ...form, handleOrPortfolio: e.target.value })}
-                    className="w-full border-[3px] border-[#0F0F0F] bg-[#FFF4E0] p-3.5 font-body text-sm font-bold focus:bg-white focus:outline-none focus:border-[#7B2CBF]"
-                  />
-                </div>
-
-                {/* Motivation */}
-                <div className="space-y-2">
-                  <label className="font-body text-xs font-bold uppercase tracking-wider block">
-                    {lang === "en"
-                      ? "Why this committee? What value will you engineer? *"
-                      : "لماذا اخترت هذه اللجنة؟ وما القيمة التي ستضيفها؟ *"}
-                  </label>
-                  <textarea
-                    required
-                    rows={4}
-                    placeholder={
-                      lang === "en"
-                        ? "Detail your technical or operational readiness. Mention any previous CP or team experience."
-                        : "وضح خبرتك السابقة واستعدادك الفني والالتزام بساعات العمل الأسبوعية..."
-                    }
-                    value={form.motivation}
-                    onChange={(e) => setForm({ ...form, motivation: e.target.value })}
-                    className="w-full border-[3px] border-[#0F0F0F] bg-[#FFF4E0] p-3.5 font-body text-sm font-bold focus:bg-white focus:outline-none focus:border-[#7B2CBF] resize-none"
-                  />
-                </div>
-
-                {/* Honor Code & Agreement */}
-                <div className="bg-[#FFF4E0] border-2 border-[#0F0F0F] p-4 flex items-start gap-3">
-                  <input
-                    type="checkbox"
-                    id="honor-check"
-                    checked={form.agreedToRules}
-                    onChange={(e) => setForm({ ...form, agreedToRules: e.target.checked })}
-                    className="mt-1 w-5 h-5 rounded-none border-2 border-[#0F0F0F] accent-[#7B2CBF] cursor-pointer"
-                  />
-                  <label htmlFor="honor-check" className="font-body text-xs font-bold text-[#0F0F0F] cursor-pointer leading-relaxed">
-                    {lang === "en" ? (
-                      <>
-                        <strong>HONOR CODE PLEDGE:</strong> I have read and agree to the{" "}
-                        <span className="text-[#7B2CBF]">Universal ICPC PUA Rules</span> (Zero Ego, Meeting Golden Rule,
-                        48h Delay Notices, Conflict Protocol, and Strict Division of Labor).
-                      </>
-                    ) : (
-                      <>
-                        <strong>ميثاق الشرف والالتزام:</strong> قرأت ووافقت على{" "}
-                        <span className="text-[#7B2CBF]">القواعد العامة لمجتمع ICPC PUA</span> (العقلية الخالية من الغرور،
-                        قاعدة الاجتماعات، إشعارات التأخير، بروتوكول النزاعات، وتقسيم العمل الصارم دون مساومة).
-                      </>
-                    )}
-                  </label>
-                </div>
-
-                {/* Submit button */}
-                <button
-                  type="submit"
-                  className="btn-solid w-full border-[3px] border-[#0F0F0F] py-5 px-6 font-display text-2xl uppercase tracking-wider shadow-[8px_8px_0px_#0F0F0F] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all flex items-center justify-center gap-3 cursor-pointer"
+            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 pb-6 border-b-2 border-[#0F0F0F]">
+              <div>
+                <span
+                  className="px-2.5 py-1 font-body text-xs font-bold uppercase tracking-widest border-2 border-[#0F0F0F] inline-block mb-3"
                   style={{ backgroundColor: data.themeColor, color: data.themeText }}
                 >
-                  <Send className="w-6 h-6" />
-                  <span>{lang === "en" ? "TRANSMIT CADET APPLICATION" : "إرسال ملف الترشح للجنة"}</span>
-                </button>
-              </form>
-            )}
+                  INFORMATIONAL SPECIFICATION // ARCHITECTURAL BLUEPRINT
+                </span>
+                <h3 className="font-display text-3xl md:text-4xl uppercase text-[#0F0F0F] leading-tight">
+                  {lang === "en" ? "OFFICIAL ROLE STANDARDS & COMPLIANCE" : "المعايير التشغيلية الرسمية للجنة"}
+                </h3>
+                <p className="font-body text-xs md:text-sm text-zinc-700 mt-2 font-bold max-w-2xl leading-relaxed">
+                  {lang === "en"
+                    ? "This specification serves as the formal operational reference manual for ICPC Pharos University. It establishes clear accountability, deliverables, anti-goals, and pedagogical metrics for the entire 2026-2027 season."
+                    : "تعتبر هذه الوثيقة الدليل المرجعي والتشغيلي الرسمي المعتمد لمجتمع ICPC بجامعة فاروس لموسم 2026-2027، وتحدد معايير الأداء والمسؤوليات غير القابلة للتفاوض."}
+                </p>
+              </div>
+
+              <div className="flex flex-wrap gap-3">
+                <Link
+                  href="/recruitment"
+                  className="btn-solid inline-flex items-center gap-2 bg-[#0F0F0F] text-white font-display text-base uppercase px-6 py-3 border-[3px] border-[#0F0F0F] shadow-[4px_4px_0px_#7B2CBF] hover:bg-[#7B2CBF] hover:translate-x-0.5 hover:-translate-y-0.5 transition-all"
+                >
+                  <span>{lang === "en" ? "EXPLORE ALL COMMITTEES" : "استعراض كافة اللجان"}</span>
+                  <ArrowRight className="w-5 h-5 rtl:rotate-180" />
+                </Link>
+                <a
+                  href="#"
+                  className="btn-solid inline-flex items-center gap-2 bg-white text-[#0F0F0F] font-display text-base uppercase px-6 py-3 border-[3px] border-[#0F0F0F] shadow-[4px_4px_0px_#0F0F0F] hover:bg-[#FFD500] hover:translate-x-0.5 hover:-translate-y-0.5 transition-all"
+                >
+                  <span>{lang === "en" ? "TOP OF SPEC" : "أعلى الصفحة"}</span>
+                </a>
+              </div>
+            </div>
+
+            {/* Other Committees Quick Navigator */}
+            <div className="mt-8">
+              <span className="font-body text-xs font-bold uppercase tracking-wider text-zinc-500 block mb-4">
+                {lang === "en" ? "JUMP TO OTHER COMMITTEE SPECIFICATIONS:" : "الانتقال إلى مواصفات اللجان الأخرى:"}
+              </span>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                {[
+                  { id: "instructor", title: "Instructor", ar: "التدريب", color: "#FFD500" },
+                  { id: "technical", title: "Technical", ar: "الفنية", color: "#00E5FF" },
+                  { id: "ops-pr", title: "Ops & PR", ar: "اللوجستيات", color: "#FF9100" },
+                  { id: "hr", title: "HR & People", ar: "الموارد البشرية", color: "#7B2CBF" },
+                  { id: "marketing", title: "Marketing", ar: "التسويق", color: "#00E5FF" },
+                  { id: "design-dev", title: "Design & Dev", ar: "التصميم والويب", color: "#FF0055" }
+                ].map((c) => (
+                  <Link
+                    key={c.id}
+                    href={`/specs/${c.id}`}
+                    className={`p-3 border-2 border-[#0F0F0F] font-body text-xs font-bold uppercase flex flex-col justify-between shadow-[3px_3px_0px_#0F0F0F] transition-transform hover:-translate-y-0.5 ${
+                      c.id === data.roleId.toLowerCase() || data.roleTitle.toLowerCase().includes(c.id)
+                        ? "ring-2 ring-[#7B2CBF] bg-[#FFF4E0]"
+                        : "bg-white hover:bg-[#FFF4E0]"
+                    }`}
+                  >
+                    <span className="w-2.5 h-2.5 border border-[#0F0F0F] mb-2 block" style={{ backgroundColor: c.color }} />
+                    <span className="font-display text-sm">{c.title}</span>
+                    <span className="text-zinc-600 text-[11px]">{c.ar}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
       </main>
