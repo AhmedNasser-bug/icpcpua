@@ -245,3 +245,21 @@ export async function claimBountyReward(
     return { success: false, error: err?.message || "Failed to submit claim." }
   }
 }
+
+/**
+ * Fetch top scouts sorted by recruits / points count
+ */
+export async function getTopScouts(limit = 5): Promise<ScoutProfile[]> {
+  try {
+    const { data, error } = await supabase
+      .from("bounty_scouts")
+      .select("*")
+      .order("recruits_count", { ascending: false })
+      .limit(limit)
+
+    if (error || !data) return []
+    return data as ScoutProfile[]
+  } catch {
+    return []
+  }
+}
