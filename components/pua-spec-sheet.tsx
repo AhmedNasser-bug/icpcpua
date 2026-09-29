@@ -367,7 +367,7 @@ export function PuaSpecSheet({ data }: { data: RoleData }) {
             {/* Quadrant 4: Anti-Goals */}
             <div
               className="relative border-[3px] border-[#0F0F0F] p-6 md:p-8 shadow-[8px_8px_0px_#0F0F0F]"
-              style={{ backgroundColor: data.antiGoalColor, color: "#FFFFFF" }}
+              style={{ backgroundColor: data.antiGoalColor || "#FF0055", color: "#FFFFFF" }}
             >
               <span className="vector-node vector-node-tl" />
               <span className="vector-node vector-node-tr" />

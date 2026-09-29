@@ -3,6 +3,7 @@ import { PuaNavbar } from '@/components/pua-navbar';
 import { Marquee } from '@/components/pua-marquee';
 import { Footer } from '@/components/footer';
 import { EcosystemGraph } from '@/components/EcosystemGraph';
+import { Role3DCanvas } from '@/components/recruitment/Role3DCanvas';
 
 export default function RecruitmentLandingPage() {
     return (
@@ -71,9 +72,16 @@ export default function RecruitmentLandingPage() {
                     <div className="group relative bg-[#FFD500] border-[3px] border-[#0F0F0F] p-8 shadow-[8px_8px_0px_0px_#0F0F0F] transition-all hover:-translate-y-2 hover:-translate-x-2 hover:shadow-[16px_16px_0px_0px_#0F0F0F]">
                         <div className="absolute w-3 h-3 bg-white border-[3px] border-[#0F0F0F] z-10 -top-[6px] -left-[6px]"></div>
                         <div className="absolute w-3 h-3 bg-white border-[3px] border-[#0F0F0F] z-10 -bottom-[6px] -right-[6px]"></div>
-                        <div className="flex justify-between items-start mb-6">
+                        <div className="flex justify-between items-start mb-4">
                             <h2 className="text-4xl font-black uppercase leading-none tracking-tight" style={{fontFamily: 'Fredoka One, sans-serif'}}>The Instructor</h2>
                             <span className="bg-[#0F0F0F] text-white px-3 py-1 text-sm font-black">LVL_01</span>
+                        </div>
+                        {/* 3D Generative Tree Visual */}
+                        <div className="mb-6 border-[3px] border-[#0F0F0F] bg-[#050505] relative overflow-hidden shadow-[4px_4px_0px_#0F0F0F]">
+                            <div className="absolute top-2 left-2 z-10 font-mono text-[10px] text-white/80 uppercase tracking-widest bg-black/80 px-2 py-0.5 border border-white/20">
+                                // 3D NODE: ALGO_BINARY_TREE
+                            </div>
+                            <Role3DCanvas role="instructor" height="210px" interactive={true} autoRotate={true} />
                         </div>
                         <div className="space-y-6 mb-8" style={{fontFamily: 'Space Grotesk, sans-serif'}}>
                             <div>
@@ -107,9 +115,16 @@ export default function RecruitmentLandingPage() {
                     <div className="group relative bg-[#00E5FF] border-[3px] border-[#0F0F0F] p-8 shadow-[8px_8px_0px_0px_#0F0F0F] transition-all hover:-translate-y-2 hover:-translate-x-2 hover:shadow-[16px_16px_0px_0px_#0F0F0F]">
                         <div className="absolute w-3 h-3 bg-white border-[3px] border-[#0F0F0F] z-10 -top-[6px] -left-[6px]"></div>
                         <div className="absolute w-3 h-3 bg-white border-[3px] border-[#0F0F0F] z-10 -bottom-[6px] -right-[6px]"></div>
-                        <div className="flex justify-between items-start mb-6">
+                        <div className="flex justify-between items-start mb-4">
                             <h2 className="text-4xl font-black uppercase leading-none tracking-tight" style={{fontFamily: 'Fredoka One, sans-serif'}}>Operations &amp; PR</h2>
                             <span className="bg-[#0F0F0F] text-white px-3 py-1 text-sm font-black">LVL_02</span>
+                        </div>
+                        {/* 3D Generative Radar Visual */}
+                        <div className="mb-6 border-[3px] border-[#0F0F0F] bg-[#050505] relative overflow-hidden shadow-[4px_4px_0px_#0F0F0F]">
+                            <div className="absolute top-2 left-2 z-10 font-mono text-[10px] text-white/80 uppercase tracking-widest bg-black/80 px-2 py-0.5 border border-white/20">
+                                // 3D NODE: RADAR_PHASED_ARRAY
+                            </div>
+                            <Role3DCanvas role="ops-pr" height="210px" interactive={true} autoRotate={true} />
                         </div>
                         <div className="space-y-6 mb-8" style={{fontFamily: 'Space Grotesk, sans-serif'}}>
                             <div>
@@ -143,9 +158,16 @@ export default function RecruitmentLandingPage() {
                     <div className="group relative bg-[#7B2CBF] border-[3px] border-[#0F0F0F] p-8 shadow-[8px_8px_0px_0px_#0F0F0F] transition-all hover:-translate-y-2 hover:-translate-x-2 hover:shadow-[16px_16px_0px_0px_#0F0F0F] text-white">
                         <div className="absolute w-3 h-3 bg-white border-[3px] border-[#0F0F0F] z-10 -top-[6px] -left-[6px]"></div>
                         <div className="absolute w-3 h-3 bg-white border-[3px] border-[#0F0F0F] z-10 -bottom-[6px] -right-[6px]"></div>
-                        <div className="flex justify-between items-start mb-6">
+                        <div className="flex justify-between items-start mb-4">
                             <h2 className="text-4xl font-black uppercase leading-none tracking-tight" style={{fontFamily: 'Fredoka One, sans-serif'}}>HR / Monitoring</h2>
                             <span className="bg-white text-[#0F0F0F] px-3 py-1 text-sm font-black">LVL_03</span>
+                        </div>
+                        {/* 3D Generative Gyroscope Visual */}
+                        <div className="mb-6 border-[3px] border-[#0F0F0F] bg-[#050505] relative overflow-hidden shadow-[4px_4px_0px_#0F0F0F]">
+                            <div className="absolute top-2 left-2 z-10 font-mono text-[10px] text-white/80 uppercase tracking-widest bg-black/80 px-2 py-0.5 border border-white/20">
+                                // 3D NODE: GYROSCOPIC_EQUILIBRIUM
+                            </div>
+                            <Role3DCanvas role="hr" height="210px" interactive={true} autoRotate={true} />
                         </div>
                         <div className="space-y-6 mb-8" style={{fontFamily: 'Space Grotesk, sans-serif'}}>
                             <div>
@@ -179,9 +201,16 @@ export default function RecruitmentLandingPage() {
                     <div className="group relative bg-[#FF0055] border-[3px] border-[#0F0F0F] p-8 shadow-[8px_8px_0px_0px_#0F0F0F] transition-all hover:-translate-y-2 hover:-translate-x-2 hover:shadow-[16px_16px_0px_0px_#0F0F0F] text-white">
                         <div className="absolute w-3 h-3 bg-white border-[3px] border-[#0F0F0F] z-10 -top-[6px] -left-[6px]"></div>
                         <div className="absolute w-3 h-3 bg-white border-[3px] border-[#0F0F0F] z-10 -bottom-[6px] -right-[6px]"></div>
-                        <div className="flex justify-between items-start mb-6">
+                        <div className="flex justify-between items-start mb-4">
                             <h2 className="text-4xl font-black uppercase leading-none tracking-tight" style={{fontFamily: 'Fredoka One, sans-serif'}}>Design / Dev</h2>
                             <span className="bg-white text-[#0F0F0F] px-3 py-1 text-sm font-black">LVL_04</span>
+                        </div>
+                        {/* 3D Generative Tesseract Visual */}
+                        <div className="mb-6 border-[3px] border-[#0F0F0F] bg-[#050505] relative overflow-hidden shadow-[4px_4px_0px_#0F0F0F]">
+                            <div className="absolute top-2 left-2 z-10 font-mono text-[10px] text-white/80 uppercase tracking-widest bg-black/80 px-2 py-0.5 border border-white/20">
+                                // 3D NODE: 4D_TESSERACT_LATTICE
+                            </div>
+                            <Role3DCanvas role="design-dev" height="210px" interactive={true} autoRotate={true} />
                         </div>
                         <div className="space-y-6 mb-8" style={{fontFamily: 'Space Grotesk, sans-serif'}}>
                             <div>
@@ -215,9 +244,16 @@ export default function RecruitmentLandingPage() {
                     <div className="group relative bg-[#FF6B00] border-[3px] border-[#0F0F0F] p-8 shadow-[8px_8px_0px_0px_#0F0F0F] transition-all hover:-translate-y-2 hover:-translate-x-2 hover:shadow-[16px_16px_0px_0px_#0F0F0F] text-white md:col-span-2">
                         <div className="absolute w-3 h-3 bg-white border-[3px] border-[#0F0F0F] z-10 -top-[6px] -left-[6px]"></div>
                         <div className="absolute w-3 h-3 bg-white border-[3px] border-[#0F0F0F] z-10 -bottom-[6px] -right-[6px]"></div>
-                        <div className="flex justify-between items-start mb-6">
+                        <div className="flex justify-between items-start mb-4">
                             <h2 className="text-4xl font-black uppercase leading-none tracking-tight" style={{fontFamily: 'Fredoka One, sans-serif'}}>Specialised Marketing</h2>
                             <span className="bg-[#0F0F0F] text-[#FFD500] px-3 py-1 text-sm font-black">LVL_05</span>
+                        </div>
+                        {/* 3D Generative Funnel Vortex Visual */}
+                        <div className="mb-6 border-[3px] border-[#0F0F0F] bg-[#050505] relative overflow-hidden shadow-[4px_4px_0px_#0F0F0F]">
+                            <div className="absolute top-2 left-2 z-10 font-mono text-[10px] text-white/80 uppercase tracking-widest bg-black/80 px-2 py-0.5 border border-white/20">
+                                // 3D NODE: GROWTH_FUNNEL_VORTEX
+                            </div>
+                            <Role3DCanvas role="marketing" height="230px" interactive={true} autoRotate={true} />
                         </div>
                         <div className="space-y-6 mb-8" style={{fontFamily: 'Space Grotesk, sans-serif'}}>
                             <div>

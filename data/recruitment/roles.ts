@@ -25,6 +25,7 @@ export interface RoleData {
   owns: string[];
   metrics: { value: string; label: string }[];
   antiGoals: string[];
+  antiGoalColor?: string;
   themeColor: string;
   themeText: string;
   applyUrl: string;
