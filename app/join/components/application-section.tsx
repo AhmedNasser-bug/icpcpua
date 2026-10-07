@@ -4,7 +4,7 @@ import { useState, useEffect, Suspense } from "react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { recordBountyReferral } from "@/lib/bounty"
-import { Check, Sparkles } from "lucide-react"
+import { Check, Sparkles, Loader2, AlertCircle, Trophy, UserCheck } from "lucide-react"
 
 /* ─── Inner Form Logic with URL Params ─── */
 function ApplicationFormContent() {
@@ -13,16 +13,18 @@ function ApplicationFormContent() {
 
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [creditedScout, setCreditedScout] = useState<string | null>(null)
+  const [awardedPoints, setAwardedPoints] = useState<number>(10)
 
   const [form, setForm] = useState({
-    name: "",
-    uniId: "",
+    fullName: "",
+    universityId: "",
     email: "",
-    year: "",
-    track: "",
-    codeforces: "",
-    motivation: "",
+    phone: "",
+    academicYear: "Year 1",
+    track: "level_1",
+    codeforcesHandle: "",
     referralCode: refCodeParam.toUpperCase(),
   })
 
@@ -34,62 +36,111 @@ function ApplicationFormContent() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setErrorMsg(null)
     setLoading(true)
 
-    // If referral code is present, record the referral in Supabase
-    if (form.referralCode.trim()) {
-      try {
-        const res = await recordBountyReferral(
-          form.referralCode.trim(),
-          form.name.trim(),
-          form.uniId.trim()
-        )
-        if (res.success) {
-          setCreditedScout(form.referralCode.trim())
-        }
-      } catch (err) {
-        console.error("Referral logging error:", err)
-      }
-    }
+    try {
+      // 1. Submit trainee registration to Firebase backend API
+      const res = await fetch("/api/trainees/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fullName: form.fullName,
+          universityId: form.universityId,
+          email: form.email,
+          phone: form.phone,
+          academicYear: form.academicYear,
+          track: form.track,
+          codeforcesHandle: form.codeforcesHandle,
+        }),
+      })
 
-    setLoading(false)
-    setSubmitted(true)
+      const data = await res.json()
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Failed to register. Please check your data.")
+      }
+
+      setAwardedPoints(data.trainee?.pointsTotal || 10)
+
+      // 2. If referral code is present, record the referral credit
+      if (form.referralCode.trim()) {
+        try {
+          const bountyRes = await recordBountyReferral(
+            form.referralCode.trim(),
+            form.fullName.trim(),
+            form.universityId.trim()
+          )
+          if (bountyRes.success) {
+            setCreditedScout(form.referralCode.trim())
+          }
+        } catch (err) {
+          console.error("Referral logging error:", err)
+        }
+      }
+
+      setSubmitted(true)
+    } catch (err: any) {
+      setErrorMsg(err.message || "An unexpected error occurred during submission.")
+    } finally {
+      setLoading(false)
+    }
   }
 
   if (submitted) {
     return (
-      <div className="flex flex-col items-center gap-8 py-20 text-center animate-slide-in">
-        <div className="w-32 h-32 bg-[#7B2CBF] border-[3px] border-[#0F0F0F] shadow-solid flex items-center justify-center">
-          <svg className="w-16 h-16 text-[#FFD500]" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M2 20h2c.55 0 1-.45 1-1v-9c0-.55-.45-1-1-1H2v11zm19.83-7.12c.11-.25.17-.52.17-.8V11c0-1.1-.9-2-2-2h-5.5l.92-4.65c.05-.22.02-.46-.08-.66-.23-.45-.52-.86-.88-1.22L14 2 7.59 8.41C7.21 8.79 7 9.3 7 9.83V19c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3-7.12z" />
-          </svg>
+      <div className="flex flex-col items-center gap-6 py-16 text-center animate-slide-in">
+        <div className="w-24 h-24 bg-[#FFD500] border-[4px] border-[#0F0F0F] shadow-[8px_8px_0px_#0F0F0F] flex items-center justify-center">
+          <Check className="w-14 h-14 text-[#0F0F0F] stroke-[3]" />
         </div>
-        <h3 className="font-display text-5xl uppercase text-[#7B2CBF] [text-shadow:4px_4px_0_#00E5FF]">
-          YOU&apos;RE IN THE QUEUE!
-        </h3>
-        <p className="font-body text-base max-w-md font-bold text-zinc-800">
-          Application received for Cadet {form.name} (ID: {form.uniId}). We&apos;ll reach out via email with next steps for the 2026 season. Stay sharp.
-        </p>
+        
+        <div className="space-y-2">
+          <span className="font-mono text-xs font-bold uppercase px-3 py-1 bg-[#00E5FF] border-2 border-[#0F0F0F]">
+            REGISTRATION ACTIVATED // SEASON 2026
+          </span>
+          <h3 className="font-display text-4xl sm:text-5xl uppercase text-[#7B2CBF] [text-shadow:4px_4px_0_#00E5FF]">
+            YOU&apos;RE IN THE SQUAD!
+          </h3>
+        </div>
+
+        <div className="p-5 bg-white border-[3px] border-[#0F0F0F] shadow-[6px_6px_0px_#0F0F0F] w-full max-w-md">
+          <div className="flex items-center justify-center gap-2 text-[#7B2CBF] mb-1">
+            <Trophy className="w-6 h-6" />
+            <p className="font-display text-3xl">+{awardedPoints} POINTS AWARDED</p>
+          </div>
+          <p className="font-mono text-xs text-neutral-600 uppercase">
+            Cadet {form.fullName} (Uni ID: {form.universityId}) is now active on the Leaderboard.
+          </p>
+        </div>
 
         {creditedScout && (
           <div className="bg-[#FFD500] border-[3px] border-[#0F0F0F] p-4 shadow-[4px_4px_0px_#0F0F0F] text-xs font-bold uppercase tracking-wider flex items-center gap-2">
-            <Check className="w-5 h-5 text-[#0F0F0F]" />
-            <span>SCOUT CREDIT DISPATCHED TO [{creditedScout}] // +1 BOUNTY XP LOGGED</span>
+            <UserCheck className="w-5 h-5 text-[#0F0F0F]" />
+            <span>SCOUT CREDIT DISPATCHED TO [{creditedScout}] // BOUNTY ATTACHED</span>
           </div>
         )}
 
-        <Link
-          href="/events"
-          className="btn-solid bg-[#FFD500] text-[#0F0F0F] font-display text-xl uppercase tracking-wider border-[3px] border-[#0F0F0F] shadow-solid px-10 py-4 hover:-translate-y-1 transition-transform"
-        >
-          VIEW UPCOMING EVENTS
-        </Link>
+        <div className="flex flex-col sm:flex-row gap-4 mt-2">
+          <Link
+            href="/leaderboard"
+            className="btn-solid bg-[#FFD500] text-[#0F0F0F] font-display text-lg uppercase tracking-wider border-[3px] border-[#0F0F0F] shadow-solid px-8 py-3.5 hover:-translate-y-1 transition-transform"
+          >
+            VIEW LEADERBOARD STANDING
+          </Link>
+          <Link
+            href="/events"
+            className="btn-solid bg-white text-[#0F0F0F] font-display text-lg uppercase tracking-wider border-[3px] border-[#0F0F0F] shadow-solid px-8 py-3.5 hover:-translate-y-1 transition-transform"
+          >
+            VIEW CALENDAR & SESSIONS
+          </Link>
+        </div>
       </div>
     )
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+      {/* Referral indicator */}
       {form.referralCode && (
         <div className="bg-[#00E5FF] border-[3px] border-[#0F0F0F] p-3 shadow-[3px_3px_0px_#0F0F0F] flex items-center justify-between text-xs font-bold uppercase">
           <div className="flex items-center gap-2">
@@ -102,34 +153,41 @@ function ApplicationFormContent() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {errorMsg && (
+        <div className="p-4 bg-red-100 border-[3px] border-[#FF0055] text-[#FF0055] font-mono text-xs flex items-center gap-3">
+          <AlertCircle className="w-5 h-5 shrink-0" />
+          <span>{errorMsg}</span>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <div>
-          <label className="font-body text-xs font-bold uppercase block mb-2 tracking-widest">
+          <label className="font-body text-xs font-bold uppercase block mb-1.5 tracking-widest">
             Full Name *
           </label>
           <input
             required
             className="w-full border-[3px] border-[#0F0F0F] bg-white px-4 py-3 font-body text-sm font-bold focus:outline-none focus:border-[#7B2CBF] shadow-neo"
-            placeholder="Ahmed Khalid"
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            placeholder="e.g. Ahmed Khalid"
+            value={form.fullName}
+            onChange={(e) => setForm({ ...form, fullName: e.target.value })}
           />
         </div>
         <div>
-          <label className="font-body text-xs font-bold uppercase block mb-2 tracking-widest">
-            University ID (Uni ID) *
+          <label className="font-body text-xs font-bold uppercase block mb-1.5 tracking-widest">
+            University ID *
           </label>
           <input
             required
             type="text"
             className="w-full border-[3px] border-[#0F0F0F] bg-white px-4 py-3 font-body text-sm font-bold focus:outline-none focus:border-[#7B2CBF] shadow-neo"
-            placeholder="202300481"
-            value={form.uniId}
-            onChange={(e) => setForm({ ...form, uniId: e.target.value })}
+            placeholder="e.g. 202300481"
+            value={form.universityId}
+            onChange={(e) => setForm({ ...form, universityId: e.target.value })}
           />
         </div>
         <div>
-          <label className="font-body text-xs font-bold uppercase block mb-2 tracking-widest">
+          <label className="font-body text-xs font-bold uppercase block mb-1.5 tracking-widest">
             Email Address *
           </label>
           <input
@@ -142,45 +200,66 @@ function ApplicationFormContent() {
           />
         </div>
         <div>
-          <label className="font-body text-xs font-bold uppercase block mb-2 tracking-widest">
+          <label className="font-body text-xs font-bold uppercase block mb-1.5 tracking-widest">
+            Phone / WhatsApp *
+          </label>
+          <input
+            required
+            type="tel"
+            className="w-full border-[3px] border-[#0F0F0F] bg-white px-4 py-3 font-body text-sm font-bold focus:outline-none focus:border-[#7B2CBF] shadow-neo"
+            placeholder="01012345678"
+            value={form.phone}
+            onChange={(e) => setForm({ ...form, phone: e.target.value })}
+          />
+        </div>
+        <div>
+          <label className="font-body text-xs font-bold uppercase block mb-1.5 tracking-widest">
             Academic Year *
           </label>
           <select
             required
             title="Academic Year"
             className="w-full border-[3px] border-[#0F0F0F] bg-white px-4 py-3 font-body text-sm font-bold focus:outline-none focus:border-[#7B2CBF] shadow-neo"
-            value={form.year}
-            onChange={(e) => setForm({ ...form, year: e.target.value })}
+            value={form.academicYear}
+            onChange={(e) => setForm({ ...form, academicYear: e.target.value })}
           >
-            <option value="">Select year</option>
-            <option>Year 1 (Preparatory / Freshmen)</option>
-            <option>Year 2 (Sophomore)</option>
-            <option>Year 3 (Junior)</option>
-            <option>Year 4 (Senior)</option>
+            <option value="Year 1">Year 1 (Preparatory / Freshman)</option>
+            <option value="Year 2">Year 2 (Sophomore)</option>
+            <option value="Year 3">Year 3 (Junior)</option>
+            <option value="Year 4">Year 4 (Senior)</option>
           </select>
         </div>
         <div>
-          <label className="font-body text-xs font-bold uppercase block mb-2 tracking-widest">
-            Track Selection *
+          <label className="font-body text-xs font-bold uppercase block mb-1.5 tracking-widest">
+            Training Track *
           </label>
           <select
             required
-            title="Track"
+            title="Training Track"
             className="w-full border-[3px] border-[#0F0F0F] bg-white px-4 py-3 font-body text-sm font-bold focus:outline-none focus:border-[#7B2CBF] shadow-neo"
             value={form.track}
             onChange={(e) => setForm({ ...form, track: e.target.value })}
           >
-            <option value="">Select track</option>
-            <option>Level 01 — Algorithmic Fundamentals</option>
-            <option>Level 02 — Advanced CP &amp; Graph/DP</option>
-            <option>Organizing Committee — Technical Lead</option>
-            <option>Organizing Committee — Design &amp; Web</option>
-            <option>Organizing Committee — Ops &amp; PR</option>
-            <option>Organizing Committee — HR</option>
+            <option value="level_1">Level 1 — Algorithmic Fundamentals (From Scratch)</option>
+            <option value="level_2">Level 2 — Advanced ECPC &amp; Graph/DP</option>
           </select>
         </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <div>
-          <label className="font-body text-xs font-bold uppercase block mb-2 tracking-widest">
+          <label className="font-body text-xs font-bold uppercase block mb-1.5 tracking-widest">
+            Codeforces Handle <span className="normal-case text-[#0F0F0F]/50">(optional)</span>
+          </label>
+          <input
+            className="w-full border-[3px] border-[#0F0F0F] bg-white px-4 py-3 font-body text-sm font-bold focus:outline-none focus:border-[#7B2CBF] shadow-neo"
+            placeholder="tourist"
+            value={form.codeforcesHandle}
+            onChange={(e) => setForm({ ...form, codeforcesHandle: e.target.value })}
+          />
+        </div>
+        <div>
+          <label className="font-body text-xs font-bold uppercase block mb-1.5 tracking-widest">
             Scout Referral Code <span className="normal-case text-[#0F0F0F]/50">(optional)</span>
           </label>
           <input
@@ -192,96 +271,60 @@ function ApplicationFormContent() {
         </div>
       </div>
 
-      <div>
-        <label className="font-body text-xs font-bold uppercase block mb-2 tracking-widest">
-          Codeforces Handle <span className="normal-case text-[#0F0F0F]/50">(optional)</span>
-        </label>
-        <input
-          className="w-full border-[3px] border-[#0F0F0F] bg-white px-4 py-3 font-body text-sm font-bold focus:outline-none focus:border-[#7B2CBF] shadow-neo"
-          placeholder="tourist"
-          value={form.codeforces}
-          onChange={(e) => setForm({ ...form, codeforces: e.target.value })}
-        />
-      </div>
-
-      <div>
-        <label className="font-body text-xs font-bold uppercase block mb-2 tracking-widest">
-          Why do you want to join? *
-        </label>
-        <textarea
-          required
-          rows={3}
-          className="w-full border-[3px] border-[#0F0F0F] bg-white px-4 py-3 font-body text-sm font-bold focus:outline-none focus:border-[#7B2CBF] shadow-neo resize-none"
-          placeholder="Tell us what drives you to compete and conquer algorithms..."
-          value={form.motivation}
-          onChange={(e) => setForm({ ...form, motivation: e.target.value })}
-        />
-      </div>
-
       <button
         type="submit"
         disabled={loading}
-        className="btn-solid bg-[#7B2CBF] text-white font-display text-2xl uppercase tracking-widest border-[3px] border-[#0F0F0F] shadow-solid py-5 hover:bg-[#FF0055] transition-colors relative group overflow-hidden disabled:opacity-50 cursor-pointer"
+        className="btn-solid mt-3 bg-[#7B2CBF] text-white font-display text-xl sm:text-2xl uppercase tracking-wider border-[3px] border-[#0F0F0F] shadow-solid py-4 hover:bg-[#FF0055] transition-all flex items-center justify-center gap-3 cursor-pointer disabled:opacity-50"
       >
-        <span className="relative z-10">
-          {loading ? "TRANSMITTING CADET FILE..." : "SUBMIT APPLICATION"}
-        </span>
-        <div className="absolute inset-0 bg-[#FF0055] translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-0" />
+        {loading ? (
+          <>
+            <Loader2 className="w-6 h-6 animate-spin" />
+            <span>CONFIRMING REGISTRATION...</span>
+          </>
+        ) : (
+          <>
+            <Sparkles className="w-6 h-6" />
+            <span>SUBMIT REGISTRATION &amp; CLAIM +10 POINTS</span>
+          </>
+        )}
       </button>
+
+      <p className="font-mono text-xs text-center text-neutral-600">
+        Interested in committee roles (Instructors, HR, Operations, Marketing, Design/Dev)?{" "}
+        <Link href="/recruitment" className="underline font-bold text-[#7B2CBF] hover:text-[#FF0055]">
+          Explore the Leadership Directory &rarr;
+        </Link>
+      </p>
     </form>
   )
 }
 
+/* ─── Exported Section with Suspense Boundary ─── */
 export function ApplicationSection() {
   return (
-    <section id="apply" className="w-full bg-[#FFF4E0] border-b-[3px] border-[#0F0F0F]">
-      <div className="max-w-[1440px] mx-auto px-10 py-24">
-        <div className="grid md:grid-cols-2 gap-20 items-start">
-          <div>
-            <h2 className="font-display text-6xl lg:text-7xl text-[#0F0F0F] uppercase mb-6 leading-none [text-shadow:4px_4px_0_#00E5FF]">
-              READY TO BE THE{" "}
-              <span className="text-[#7B2CBF] underline decoration-[#0F0F0F] decoration-8 underline-offset-8">
-                BEST?
-              </span>
+    <section className="bg-white border-b-[3px] border-[#0F0F0F] py-20 px-4">
+      <div className="max-w-3xl mx-auto">
+        <div className="bg-[#FFF4E0] border-[4px] border-[#0F0F0F] shadow-solid p-6 md:p-12 relative">
+          <span className="vector-node vector-node-tl" />
+          <span className="vector-node vector-node-tr" />
+          <span className="vector-node vector-node-bl" />
+          <span className="vector-node vector-node-br" />
+
+          <div className="mb-8 border-b-[3px] border-[#0F0F0F] pb-6">
+            <span className="font-mono text-xs font-bold uppercase tracking-widest text-[#FF0055] block mb-2">
+              Season 2026 Admissions
+            </span>
+            <h2 className="font-display text-3xl md:text-5xl uppercase text-[#0F0F0F]">
+              CADET ENROLLMENT FORM
             </h2>
-            <p className="font-body font-bold text-sm text-[#0F0F0F]/60 uppercase tracking-widest mb-10">
-              Applications for the 2026 season are now open.
+            <p className="font-body text-sm font-bold text-[#0F0F0F]/70 mt-2">
+              Registration is completely free and open to all PUA students regardless of faculty or level.
             </p>
-            <div className="flex flex-col gap-4">
-              <div className="flex items-center gap-4 bg-white border-[3px] border-[#0F0F0F] shadow-solid-sm p-4">
-                <span className="w-3 h-3 bg-[#FFD500] border-2 border-[#0F0F0F] flex-shrink-0" />
-                <span className="font-body text-sm font-bold uppercase">7 Months Intensive Coaching</span>
-              </div>
-              <div className="flex items-center gap-4 bg-white border-[3px] border-[#0F0F0F] shadow-solid-sm p-4">
-                <span className="w-3 h-3 bg-[#00E5FF] border-2 border-[#0F0F0F] flex-shrink-0" />
-                <span className="font-body text-sm font-bold uppercase">500+ Curated Contest Problems</span>
-              </div>
-              <div className="flex items-center gap-4 bg-white border-[3px] border-[#0F0F0F] shadow-solid-sm p-4">
-                <span className="w-3 h-3 bg-[#FF0055] border-2 border-[#0F0F0F] flex-shrink-0" />
-                <span className="font-body text-sm font-bold uppercase">Official ECPC Qualification Pathway</span>
-              </div>
-            </div>
           </div>
 
-          <div className="bg-white border-[4px] border-[#0F0F0F] shadow-solid p-8 md:p-12 relative">
-            <span className="vector-node vector-node-tl" />
-            <span className="vector-node vector-node-tr" />
-            <span className="vector-node vector-node-bl" />
-            <span className="vector-node vector-node-br" />
-
-            <div className="mb-8">
-              <span className="bg-[#FFD500] text-[#0F0F0F] font-body text-xs font-bold uppercase px-3 py-1 border-[2px] border-[#0F0F0F]">
-                OFFICIAL CADET DOSSIER
-              </span>
-              <h3 className="font-display text-3xl uppercase text-[#0F0F0F] mt-3">
-                APPLICATION FORM
-              </h3>
-            </div>
-
-            <Suspense fallback={<div className="font-body text-sm font-bold p-6">Loading form parameters...</div>}>
-              <ApplicationFormContent />
-            </Suspense>
-          </div>
+          <Suspense fallback={<div className="font-mono text-center py-12">Loading registration matrix...</div>}>
+            <ApplicationFormContent />
+          </Suspense>
         </div>
       </div>
     </section>

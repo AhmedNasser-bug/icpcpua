@@ -23,7 +23,7 @@ export default function HomePage() {
 
       {modalOpen && <JoinModal onClose={handleCloseModal} />}
 
-      <main className="flex-grow flex flex-col items-center w-full">
+      <main id="main-content" className="flex-grow flex flex-col items-center w-full">
         <HeroSection onOpenModal={handleOpenModal} />
         <StatsSection />
         <RoadmapSection onOpenModal={handleOpenModal} />

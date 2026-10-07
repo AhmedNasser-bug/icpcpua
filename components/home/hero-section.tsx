@@ -348,7 +348,7 @@ export function HeroSection({ onOpenModal }: HeroSectionProps) {
             </div>
 
             {/* Interactive Action Bar: Call to Action + Beacon Toggle */}
-            <div className="w-full flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-4 border-t-[3px] border-[#0F0F0F]/20 mt-2">
+            <div className="w-full flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 pt-4 border-t-[3px] border-[#0F0F0F]/20 mt-2">
               {/* Primary Join Button */}
               <motion.button
                 onClick={onOpenModal}
@@ -357,11 +357,20 @@ export function HeroSection({ onOpenModal }: HeroSectionProps) {
                 className="flex-grow sm:flex-grow-0 btn-solid flex items-center justify-center gap-3 px-8 py-4 bg-[#7B2CBF] text-white border-[3.5px] border-[#0F0F0F] shadow-[6px_6px_0px_#0F0F0F] font-display text-xl sm:text-2xl uppercase tracking-widest relative overflow-hidden group cursor-pointer"
               >
                 <span className="relative z-10 flex items-center gap-2.5">
-                  JOIN THE SQUAD
+                  JOIN TRAINING NOW
                   <ArrowRight className="w-6 h-6 group-hover:translate-x-1.5 transition-transform" />
                 </span>
                 <div className="absolute inset-0 bg-[#FF0055] translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out z-0" />
               </motion.button>
+
+              {/* View Full Training Plan Link */}
+              <a
+                href="#curriculum"
+                className="btn-solid px-6 py-4 bg-[#FFD500] text-[#0F0F0F] border-[3px] border-[#0F0F0F] shadow-[4px_4px_0px_#0F0F0F] font-display text-base uppercase tracking-wider hover:bg-white transition-colors flex items-center justify-center gap-2 text-center"
+              >
+                <span>VIEW TRAINING PLAN</span>
+                <span className="text-[#0F0F0F]">&darr;</span>
+              </a>
 
               {/* Beacon Light Switch Toggle Button */}
               <motion.button
@@ -369,14 +378,14 @@ export function HeroSection({ onOpenModal }: HeroSectionProps) {
                 onClick={() => setBeaconPowered(!beaconPowered)}
                 whileHover={{ y: -2 }}
                 whileTap={{ y: 2 }}
-                className={`px-5 py-4 border-[3px] border-[#0F0F0F] font-mono text-xs sm:text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer transition-colors shadow-[4px_4px_0px_#0F0F0F] ${
+                className={`px-4 py-4 border-[3px] border-[#0F0F0F] font-mono text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer transition-colors shadow-[4px_4px_0px_#0F0F0F] ${
                   beaconPowered 
-                    ? "bg-[#FFD500] text-black" 
+                    ? "bg-[#00E5FF] text-black" 
                     : "bg-white text-black hover:bg-slate-50"
                 }`}
               >
-                <span className={`w-3 h-3 rounded-full border-2 border-black ${beaconPowered ? "bg-[#00E5FF] animate-ping" : "bg-gray-300"}`} />
-                {beaconPowered ? "BEACON ACTIVE" : "IGNITE LIGHTHOUSE"}
+                <span className={`w-3 h-3 rounded-full border-2 border-black ${beaconPowered ? "bg-[#FF0055] animate-ping" : "bg-gray-300"}`} />
+                {beaconPowered ? "BEACON ON" : "IGNITE"}
               </motion.button>
             </div>
 
