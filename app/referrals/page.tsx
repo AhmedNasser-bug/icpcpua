@@ -136,7 +136,7 @@ export default function ReferralRewardPage() {
 
   // Active referral code & URL
   const activeReferralCode = scout ? scout.referral_code : "SCOUT-DEMO";
-  const referralUrl = `${origin}/join?ref=${activeReferralCode}`;
+  const referralUrl = `${origin}/register?ref=${activeReferralCode}`;
 
   const handleCopy = () => {
     if (typeof navigator !== "undefined" && navigator.clipboard) {
@@ -469,10 +469,10 @@ export default function ReferralRewardPage() {
             </p>
 
             <Link
-              href="/join"
+              href="/register"
               className="block w-full text-center bg-[#7B2CBF] text-white border-[2px] border-[#0F0F0F] py-3 px-4 font-mono text-xs font-black uppercase tracking-wider shadow-[3px_3px_0px_#0F0F0F] hover:bg-[#FF0055] transition-all"
             >
-              OPEN CADET INTAKE PORTAL →
+              OPEN CADET REGISTRATION PORTAL →
             </Link>
           </div>
         </section>

@@ -5,8 +5,8 @@ import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { PuaNavbar } from "@/components/pua-navbar"
 import { Footer } from "@/components/footer"
+import { useAuth } from "@/lib/auth-context"
 import {
-  QrCode,
   Sparkles,
   Trophy,
   CheckCircle2,
@@ -16,15 +16,48 @@ import {
   Flame,
   UserCheck,
   Zap,
+  Github,
+  Phone,
 } from "lucide-react"
+
+function GoogleIcon({ className = "w-4 h-4" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24">
+      <path
+        fill="#4285F4"
+        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+      />
+      <path
+        fill="#34A853"
+        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+      />
+      <path
+        fill="#FBBC05"
+        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+      />
+      <path
+        fill="#EA4335"
+        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+      />
+    </svg>
+  )
+}
 
 function ClaimContent() {
   const searchParams = useSearchParams()
   const initialCode = searchParams.get("code") || "CAMPUS_BOOTH_DAY1"
   const initialPoints = searchParams.get("points") || "10"
 
+  const {
+    user,
+    traineeProfile,
+    signInWithGoogle,
+    signInWithGithub,
+    signInWithMockDev,
+  } = useAuth()
+
   const [code, setCode] = useState(initialCode)
-  const [universityId, setUniversityId] = useState("")
+  const [manualUniId, setManualUniId] = useState("")
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<{
     success: boolean
@@ -42,9 +75,11 @@ function ClaimContent() {
     }
   }, [searchParams])
 
-  const handleClaim = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!universityId.trim()) return
+  const activeUniId = traineeProfile?.universityId || manualUniId
+
+  const handleClaim = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault()
+    if (!activeUniId.trim()) return
 
     setLoading(true)
     setResult(null)
@@ -54,8 +89,9 @@ function ClaimContent() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          universityId: universityId.trim(),
+          universityId: activeUniId.trim(),
           code: code.trim(),
+          authUid: user?.uid,
         }),
       })
 
@@ -71,7 +107,7 @@ function ClaimContent() {
       } else {
         setResult({
           success: false,
-          error: data.error || "Failed to claim points. Please check your details.",
+          error: data.error || "Failed to claim points.",
           alreadyClaimed: data.alreadyClaimed,
           needsRegistration: data.needsRegistration,
         })
@@ -79,7 +115,7 @@ function ClaimContent() {
     } catch {
       setResult({
         success: false,
-        error: "Network error occurred. Please check your connection and try again.",
+        error: "Network error occurred. Please check your connection.",
       })
     } finally {
       setLoading(false)
@@ -102,14 +138,16 @@ function ClaimContent() {
         </p>
       </div>
 
-      {/* Main Card */}
+      {/* Main Neo-Brutalist Card */}
       <div className="bg-white border-4 border-[#0F0F0F] p-6 sm:p-8 shadow-[8px_8px_0px_#0F0F0F] relative">
         <span className="vector-node vector-node-tl" />
         <span className="vector-node vector-node-tr" />
         <span className="vector-node vector-node-bl" />
         <span className="vector-node vector-node-br" />
 
-        {/* State 1: Claim Success */}
+        {/* ============================================================
+            CASE 1: SUCCESS REWARD UNLOCKED
+            ============================================================ */}
         {result?.success ? (
           <div className="text-center py-4 space-y-5 animate-in fade-in zoom-in-95 duration-200">
             <div className="w-20 h-20 bg-[#00E5FF] border-4 border-[#0F0F0F] shadow-[4px_4px_0px_#0F0F0F] mx-auto flex items-center justify-center">
@@ -130,17 +168,17 @@ function ClaimContent() {
 
             <div className="p-4 bg-[#F8F9FA] border-2 border-[#0F0F0F] text-left font-mono text-xs space-y-1">
               <div className="flex justify-between">
-                <span className="text-neutral-500">Cadet ID:</span>
-                <span className="font-bold text-[#0F0F0F]">{universityId}</span>
+                <span className="text-neutral-500">Cadet:</span>
+                <span className="font-bold text-[#0F0F0F]">{user?.displayName || "Verified Cadet"}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-neutral-500">Challenge:</span>
-                <span className="font-bold text-[#7B2CBF]">{result.campaign}</span>
+                <span className="text-neutral-500">Cadet ID:</span>
+                <span className="font-bold text-[#7B2CBF]">{activeUniId}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-neutral-500">Status:</span>
                 <span className="font-bold text-green-600 flex items-center gap-1">
-                  <CheckCircle2 className="w-3.5 h-3.5" /> VERIFIED &amp; SYNCED
+                  <CheckCircle2 className="w-3.5 h-3.5" /> SECURELY SYNCED
                 </span>
               </div>
             </div>
@@ -160,127 +198,187 @@ function ClaimContent() {
               </Link>
             </div>
           </div>
-        ) : (
-          /* State 2: Input Form */
-          <form onSubmit={handleClaim} className="space-y-5">
-            <div>
-              <label
-                htmlFor="universityId"
-                className="block font-mono text-xs font-bold uppercase text-[#0F0F0F] mb-1.5"
-              >
-                ENTER YOUR UNIVERSITY ID <span className="text-[#FF0055]">*</span>
-              </label>
-              <input
-                id="universityId"
-                type="text"
-                required
-                placeholder="e.g. 202300123"
-                value={universityId}
-                onChange={(e) => setUniversityId(e.target.value)}
-                disabled={loading}
-                autoFocus
-                className="w-full bg-[#FFF4E0] border-3 border-[#0F0F0F] p-3 font-mono text-base font-bold text-[#0F0F0F] focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#7B2CBF] transition-all"
-              />
-              <p className="font-mono text-[11px] text-neutral-500 mt-1">
-                Must match the University ID you used when applying to ICPC PUA.
+        ) : !user ? (
+          /* ============================================================
+             CASE 2: USER NOT LOGGED IN -> REQUIRE AUTH FIRST
+             ============================================================ */
+          <div className="space-y-5">
+            <div className="border-b-3 border-[#0F0F0F] pb-3">
+              <span className="inline-block bg-[#FF0055] text-white px-2.5 py-0.5 font-mono text-[11px] font-bold uppercase tracking-wider mb-1">
+                IDENTITY VERIFICATION REQUIRED
+              </span>
+              <h2 className="text-xl sm:text-2xl font-display uppercase text-[#0F0F0F]">
+                SIGN IN TO CLAIM YOUR +10 PTS
+              </h2>
+              <p className="font-mono text-xs text-neutral-600 mt-1">
+                Authenticate first with Google, GitHub, or Phone to link your reward to your official cadet account.
               </p>
             </div>
 
-            <div>
-              <label
-                htmlFor="code"
-                className="block font-mono text-xs font-bold uppercase text-[#0F0F0F] mb-1.5"
+            <div className="space-y-3 pt-1">
+              <button
+                type="button"
+                onClick={() => signInWithGoogle()}
+                className="w-full flex items-center justify-center gap-3 bg-white hover:bg-neutral-50 text-[#0F0F0F] border-3 border-[#0F0F0F] shadow-[4px_4px_0px_#0F0F0F] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none font-mono text-xs font-bold uppercase py-3.5 px-4 transition-all cursor-pointer"
               >
-                CHALLENGE CODE
-              </label>
-              <input
-                id="code"
-                type="text"
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-                disabled={loading}
-                className="w-full bg-neutral-100 border-2 border-[#0F0F0F] p-2.5 font-mono text-sm font-bold text-neutral-700 uppercase"
-              />
+                <GoogleIcon />
+                <span>SIGN IN WITH GOOGLE</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => signInWithGithub()}
+                className="w-full flex items-center justify-center gap-3 bg-[#0F0F0F] hover:bg-neutral-800 text-white border-3 border-[#0F0F0F] shadow-[4px_4px_0px_#7B2CBF] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none font-mono text-xs font-bold uppercase py-3.5 px-4 transition-all cursor-pointer"
+              >
+                <Github className="w-4 h-4 text-white" />
+                <span>SIGN IN WITH GITHUB</span>
+              </button>
+
+              <Link
+                href={`/register?code=${encodeURIComponent(code)}`}
+                className="w-full flex items-center justify-center gap-2 bg-[#FFF4E0] hover:bg-[#ffeac4] text-[#0F0F0F] border-2 border-dashed border-[#0F0F0F] font-mono text-xs font-bold uppercase py-3 px-4 transition-all"
+              >
+                <Phone className="w-4 h-4 text-[#7B2CBF]" />
+                <span>USE PHONE OR REGISTER NEW ACCOUNT</span>
+              </Link>
+
+              <div className="pt-2 text-center">
+                <button
+                  type="button"
+                  onClick={() =>
+                    signInWithMockDev({
+                      displayName: "Cadet Scout",
+                      email: "scout@pua.edu.eg",
+                      providerId: "mock",
+                    })
+                  }
+                  className="font-mono text-[11px] text-neutral-400 hover:text-[#7B2CBF] underline cursor-pointer"
+                >
+                  (Dev Quick Test Sign-in)
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          /* ============================================================
+             CASE 3: AUTHENTICATED -> 1-CLICK VERIFIED CLAIM
+             ============================================================ */
+          <div className="space-y-5">
+            {/* Authenticated Cadet Badge */}
+            <div className="bg-[#FFF4E0] border-3 border-[#0F0F0F] p-4 flex items-center justify-between">
+              <div>
+                <span className="font-mono text-[10px] font-bold uppercase text-[#7B2CBF] tracking-wider block">
+                  AUTHENTICATED CADET
+                </span>
+                <span className="font-display text-base text-[#0F0F0F] uppercase">
+                  {user.displayName || user.email}
+                </span>
+                {traineeProfile?.universityId && (
+                  <p className="font-mono text-xs text-neutral-600 mt-0.5">
+                    PUA ID: <span className="font-bold text-[#0F0F0F]">{traineeProfile.universityId}</span>
+                  </p>
+                )}
+              </div>
+              <ShieldCheck className="w-6 h-6 text-green-600" />
             </div>
 
-            {/* Error & Registration Alerts */}
-            {result?.error && (
-              <div
-                className={`border-3 border-[#0F0F0F] p-4 font-mono text-xs ${
-                  result.needsRegistration
-                    ? "bg-[#FFE8EC] text-[#9A0026]"
-                    : result.alreadyClaimed
-                    ? "bg-[#FFF9DB] text-[#856404]"
-                    : "bg-[#FFE8EC] text-[#9A0026]"
-                }`}
-              >
-                <div className="flex items-start gap-2.5">
-                  <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" />
-                  <div className="space-y-2">
-                    <p className="font-bold">{result.error}</p>
-
-                    {result.needsRegistration && (
-                      <div className="pt-2">
-                        <Link
-                          href={`/join?uniId=${encodeURIComponent(universityId)}`}
-                          className="inline-flex items-center gap-1.5 bg-[#FF0055] text-white px-3 py-1.5 border-2 border-[#0F0F0F] shadow-[2px_2px_0px_#0F0F0F] font-bold text-xs hover:bg-[#d90048] transition-all"
-                        >
-                          <UserCheck className="w-4 h-4" /> REGISTER FOR FREE SQUAD
-                          <ArrowRight className="w-3.5 h-3.5" />
-                        </Link>
-                      </div>
-                    )}
-
-                    {result.alreadyClaimed && (
-                      <div className="pt-2">
-                        <Link
-                          href="/leaderboard"
-                          className="inline-flex items-center gap-1.5 bg-[#FFD500] text-[#0F0F0F] px-3 py-1.5 border-2 border-[#0F0F0F] shadow-[2px_2px_0px_#0F0F0F] font-bold text-xs hover:bg-[#ecc500] transition-all"
-                        >
-                          <Trophy className="w-4 h-4" /> VIEW YOUR LEADERBOARD RANK
-                        </Link>
-                      </div>
-                    )}
-                  </div>
+            {/* If cadet doesn't have an enrolled University ID, prompt them */}
+            {!traineeProfile?.universityId ? (
+              <form onSubmit={handleClaim} className="space-y-4">
+                <div>
+                  <label htmlFor="uniId" className="block font-mono text-xs font-bold uppercase text-[#0F0F0F] mb-1.5">
+                    LINK UNIVERSITY ID <span className="text-[#FF0055]">*</span>
+                  </label>
+                  <input
+                    id="uniId"
+                    type="text"
+                    required
+                    placeholder="e.g. 202300123"
+                    value={manualUniId}
+                    onChange={(e) => setManualUniId(e.target.value)}
+                    className="w-full bg-[#FFF9F0] border-3 border-[#0F0F0F] p-3 font-mono text-base font-bold text-[#0F0F0F] focus:outline-none focus:ring-2 focus:ring-[#7B2CBF]"
+                  />
+                  <p className="font-mono text-[11px] text-neutral-500 mt-1">
+                    Your student ID links your claimed points to your leaderboard profile.
+                  </p>
                 </div>
+
+                {result?.error && (
+                  <div className="bg-[#FFE8EC] text-[#9A0026] border-3 border-[#0F0F0F] p-3 font-mono text-xs flex items-start gap-2">
+                    <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+                    <div className="space-y-1.5">
+                      <p>{result.error}</p>
+                      {result.needsRegistration && (
+                        <Link
+                          href={`/register?uniId=${encodeURIComponent(manualUniId)}`}
+                          className="inline-flex items-center gap-1.5 bg-[#FF0055] text-white px-2.5 py-1 font-bold text-[11px] border border-[#0F0F0F]"
+                        >
+                          <UserCheck className="w-3.5 h-3.5" /> Complete Registration First
+                        </Link>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={loading || !manualUniId.trim()}
+                  className="w-full bg-[#7B2CBF] hover:bg-[#6823a3] disabled:opacity-50 text-white py-3.5 px-6 border-3 border-[#0F0F0F] shadow-[4px_4px_0px_#0F0F0F] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none font-mono font-bold text-sm uppercase flex items-center justify-center gap-2 cursor-pointer transition-all"
+                >
+                  {loading ? (
+                    <span>VERIFYING &amp; CLAIMING...</span>
+                  ) : (
+                    <>
+                      <Zap className="w-4 h-4 text-[#FFD500]" />
+                      <span>CLAIM +{initialPoints} POINTS</span>
+                    </>
+                  )}
+                </button>
+              </form>
+            ) : (
+              /* Already has profile: 1-Click Instant Claim */
+              <div className="space-y-4">
+                {result?.error && (
+                  <div className="bg-[#FFE8EC] text-[#9A0026] border-3 border-[#0F0F0F] p-3 font-mono text-xs flex items-start gap-2">
+                    <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+                    <span>{result.error}</span>
+                  </div>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => handleClaim()}
+                  disabled={loading}
+                  className="w-full bg-[#7B2CBF] hover:bg-[#6823a3] disabled:opacity-50 text-white py-4 px-6 border-3 border-[#0F0F0F] shadow-[4px_4px_0px_#0F0F0F] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none font-mono font-bold text-base uppercase flex items-center justify-center gap-2 cursor-pointer transition-all"
+                >
+                  {loading ? (
+                    <span>CLAIMING...</span>
+                  ) : (
+                    <>
+                      <Zap className="w-5 h-5 text-[#FFD500]" />
+                      <span>1-TAP CLAIM +{initialPoints} POINTS</span>
+                    </>
+                  )}
+                </button>
               </div>
             )}
 
-            <button
-              type="submit"
-              disabled={loading || !universityId.trim()}
-              className="w-full bg-[#7B2CBF] hover:bg-[#6823a3] disabled:opacity-50 disabled:cursor-not-allowed border-3 border-[#0F0F0F] shadow-[4px_4px_0px_#0F0F0F] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none text-white py-3.5 px-6 font-mono font-bold text-base uppercase flex items-center justify-center gap-2 transition-all cursor-pointer"
-            >
-              {loading ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  <span>CLAIMING POINTS...</span>
-                </>
-              ) : (
-                <>
-                  <Zap className="w-5 h-5 text-[#FFD500]" />
-                  <span>CLAIM +{initialPoints} POINTS</span>
-                </>
-              )}
-            </button>
-
-            {/* Helper tips */}
-            <div className="border-t-2 border-dashed border-neutral-300 pt-4 flex items-center justify-between font-mono text-[11px] text-neutral-500">
+            <div className="border-t-2 border-dashed border-neutral-300 pt-3 flex items-center justify-between font-mono text-[11px] text-neutral-500">
               <span className="flex items-center gap-1">
-                <ShieldCheck className="w-3.5 h-3.5 text-green-600" /> 1-Claim Per Cadet
+                <ShieldCheck className="w-3.5 h-3.5 text-green-600" /> Authenticated &amp; Verified
               </span>
               <span className="flex items-center gap-1">
-                <Flame className="w-3.5 h-3.5 text-[#FF0055]" /> Syncs to Leaderboard
+                <Flame className="w-3.5 h-3.5 text-[#FF0055]" /> Instant Leaderboard Sync
               </span>
             </div>
-          </form>
+          </div>
         )}
       </div>
 
       {/* Bottom Info Box */}
       <div className="mt-8 bg-[#FFF4E0] border-3 border-[#0F0F0F] p-4 text-center font-mono text-xs">
         <p className="text-neutral-700">
-          Want to share the flyer or print one for your study group?{" "}
+          Need to invite friends or print flyers for your college floor?{" "}
           <Link href="/flyer" className="font-bold underline text-[#7B2CBF] hover:text-[#0F0F0F]">
             Open Printable Campus Flyer &rarr;
           </Link>

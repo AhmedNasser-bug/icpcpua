@@ -5,36 +5,51 @@ import { TraineeDocument, PointEventDocument } from "@/lib/firebase-schema"
 export async function POST(req: Request) {
   try {
     const body = await req.json()
-    const { fullName, universityId, email, phone, academicYear, track, codeforcesHandle } = body
+    const {
+      fullName,
+      universityId,
+      email,
+      phone,
+      academicYear,
+      track,
+      codeforcesHandle,
+      authUid,
+      authProvider,
+    } = body
 
-    // 1. Validate required fields (Lean registration)
-    if (!fullName || !universityId || !email || !phone || !academicYear || !track) {
+    // 1. Validate minimal required fields (ultra-lean registration)
+    if (!fullName || !universityId || !track) {
       return NextResponse.json(
-        { success: false, error: "Please fill in all required fields." },
+        { success: false, error: "Full Name, University ID, and Track selection are required." },
         { status: 400 }
       )
     }
 
     const cleanUniId = String(universityId).trim()
     const cleanCfHandle = String(codeforcesHandle || "").trim().replace(/^@/, "")
-    const cleanEmail = String(email).trim().toLowerCase()
-    const cleanPhone = String(phone).trim()
+    const cleanEmail = String(email || `${cleanUniId}@pua.edu.eg`).trim().toLowerCase()
+    const cleanPhone = String(phone || "Not provided").trim()
     const cleanName = String(fullName).trim()
+    const finalYear = academicYear || "Year 1"
+    const finalTrack = track === "level_2" ? "level_2" : "level_1"
 
     // 2. Check if Firebase Admin is available
     if (!adminDb) {
-      console.warn("Firebase Admin DB is not configured (missing environment variables). Returning simulated success.")
+      console.warn("Firebase Admin DB is not configured. Returning simulated registration success.")
       return NextResponse.json({
         success: true,
+        mock: true,
         message: "Registration received (development fallback mode).",
         trainee: {
-          id: `sim_${cleanUniId}`,
+          id: cleanUniId,
+          authUid: authUid || `sim_${cleanUniId}`,
+          authProvider: authProvider || "mock",
           fullName: cleanName,
           universityId: cleanUniId,
           email: cleanEmail,
           phone: cleanPhone,
-          academicYear,
-          track,
+          academicYear: finalYear,
+          track: finalTrack,
           codeforcesHandle: cleanCfHandle,
           pointsTotal: 10,
           status: "active",
@@ -46,28 +61,43 @@ export async function POST(req: Request) {
     const traineeRef = adminDb.collection("trainees").doc(cleanUniId)
     const existingDoc = await traineeRef.get()
 
-    if (existingDoc.exists) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "A trainee with this University ID is already registered in the system.",
-        },
-        { status: 409 }
-      )
-    }
-
     const now = new Date().toISOString()
     const initialPoints = 10 // Welcome points for signing up
 
+    if (existingDoc.exists) {
+      // If trainee exists, update their authUid and info without throwing duplicate error
+      const existingData = existingDoc.data() as TraineeDocument
+      const updatedData: Partial<TraineeDocument> = {
+        authUid: authUid || existingData.authUid,
+        authProvider: authProvider || existingData.authProvider,
+        fullName: cleanName || existingData.fullName,
+        email: cleanEmail || existingData.email,
+        track: finalTrack,
+        updatedAt: now,
+      }
+      if (cleanCfHandle) {
+        updatedData.codeforcesHandle = cleanCfHandle
+      }
+      await traineeRef.update(updatedData)
+
+      return NextResponse.json({
+        success: true,
+        message: "Cadet profile updated and linked successfully!",
+        trainee: { ...existingData, ...updatedData },
+      })
+    }
+
     const newTrainee: TraineeDocument = {
       id: cleanUniId,
+      authUid: authUid || undefined,
+      authProvider: authProvider || undefined,
       fullName: cleanName,
       universityId: cleanUniId,
       email: cleanEmail,
       phone: cleanPhone,
-      academicYear,
-      track,
-      codeforcesHandle: cleanCfHandle,
+      academicYear: finalYear,
+      track: finalTrack,
+      codeforcesHandle: cleanCfHandle || undefined,
       status: "active",
       pointsTotal: initialPoints,
       cfRating: 0,

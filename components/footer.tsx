@@ -115,8 +115,8 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/join" className="hover:text-[#FFD500] transition-colors">
-                  Cadet Intake Application
+                <Link href="/register" className="hover:text-[#FFD500] transition-colors">
+                  Cadet Registration (+10 PTS)
                 </Link>
               </li>
             </ul>

@@ -231,7 +231,7 @@ export default function FAQPage() {
             <span className="text-[#0F0F0F]">KNOWLEDGE_BASE // FAQ & RULES 2026</span>
           </div>
           <div className="hidden sm:flex gap-6 items-center">
-            <Link href="/join" className="hover:text-[#7B2CBF]">HOW TO JOIN</Link>
+            <Link href="/register" className="hover:text-[#7B2CBF]">HOW TO JOIN</Link>
             <Link href="/recruitment" className="hover:text-[#7B2CBF]">RECRUITMENT</Link>
             <Link href="/referrals" className="hover:text-[#7B2CBF]">BOUNTIES</Link>
           </div>

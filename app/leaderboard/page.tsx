@@ -335,12 +335,12 @@ export default function LeaderboardPage() {
               Points are earned through registration (+10), attending weekly training gyms, upsolving problems, and scanning on-campus challenge QR codes.
             </p>
           </div>
-          <a
-            href="/join"
+          <Link
+            href="/register"
             className="shrink-0 bg-[#FFD500] text-[#0F0F0F] border-[2px] border-[#0F0F0F] px-4 py-2 font-display text-xs uppercase tracking-wider shadow-[2px_2px_0px_#0F0F0F] hover:bg-white transition-colors"
           >
             JOIN TO COMPETE &rarr;
-          </a>
+          </Link>
         </div>
       </main>
 

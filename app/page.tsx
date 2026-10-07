@@ -1,10 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { PuaNavbar } from "@/components/pua-navbar"
 import { Marquee } from "@/components/pua-marquee"
 import { Footer } from "@/components/footer"
-import { JoinModal } from "@/components/home/join-modal"
 import { HeroSection } from "@/components/home/hero-section"
 import { StatsSection } from "@/components/home/stats-section"
 import { RoadmapSection } from "@/components/home/roadmap-section"
@@ -12,23 +11,19 @@ import { AboutSection } from "@/components/home/about-section"
 import { JoinCtaSection } from "@/components/home/join-cta-section"
 
 export default function HomePage() {
-  const [modalOpen, setModalOpen] = useState(false)
-
-  const handleOpenModal = () => setModalOpen(true)
-  const handleCloseModal = () => setModalOpen(false)
+  const router = useRouter()
+  const handleGoToRegister = () => router.push("/register")
 
   return (
     <div className="min-h-screen flex flex-col overflow-x-hidden">
       <PuaNavbar />
 
-      {modalOpen && <JoinModal onClose={handleCloseModal} />}
-
       <main id="main-content" className="flex-grow flex flex-col items-center w-full">
-        <HeroSection onOpenModal={handleOpenModal} />
+        <HeroSection onOpenModal={handleGoToRegister} />
         <StatsSection />
-        <RoadmapSection onOpenModal={handleOpenModal} />
+        <RoadmapSection onOpenModal={handleGoToRegister} />
         <AboutSection />
-        <JoinCtaSection onOpenModal={handleOpenModal} />
+        <JoinCtaSection onOpenModal={handleGoToRegister} />
       </main>
 
       {/* Scrolling marquee sits just above the footer */}

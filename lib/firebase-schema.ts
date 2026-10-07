@@ -4,13 +4,15 @@ export type TraineeStatus = "active" | "probation" | "graduated" | "inactive"
 
 export interface TraineeDocument {
   id: string
+  authUid?: string
+  authProvider?: "google" | "github" | "phone" | "email" | "mock"
   fullName: string
   universityId: string
   email: string
   phone: string
   academicYear: AcademicYear
   track: TraineeTrack
-  codeforcesHandle: string
+  codeforcesHandle?: string
   status: TraineeStatus
   pointsTotal: number
   cfRating: number

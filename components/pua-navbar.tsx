@@ -17,10 +17,14 @@ import {
   Briefcase,
   Share2,
   Sparkles,
+  User,
+  LogOut,
 } from "lucide-react"
 import { PuaLogo } from "./pua-logo"
+import { useAuth } from "@/lib/auth-context"
 
 export function PuaNavbar() {
+  const { user, traineeProfile, signOutUser } = useAuth()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [moreDropdownOpen, setMoreDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -181,14 +185,41 @@ export function PuaNavbar() {
 
           </nav>
 
-          {/* Primary High-Conversion CTA */}
-          <Link
-            href="/join"
-            className="btn-solid inline-flex items-center justify-center gap-1.5 border-[3px] border-[#0F0F0F] shadow-[4px_4px_0px_#0F0F0F] bg-[#7B2CBF] text-white text-xs lg:text-sm font-display uppercase tracking-wider px-4 lg:px-5 py-2.5 hover:bg-[#FF0055] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[2px_2px_0px_#0F0F0F] transition-all shrink-0"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-[#FFD500]" />
-            <span>JOIN TRAINING</span>
-          </Link>
+          {/* Primary High-Conversion CTA / Cadet Status */}
+          {user ? (
+            <div className="flex items-center gap-2 shrink-0">
+              <Link
+                href="/register"
+                className="inline-flex items-center gap-1.5 border-[3px] border-[#0F0F0F] shadow-[3px_3px_0px_#0F0F0F] bg-[#00E5FF] hover:bg-[#00c9e0] text-[#0F0F0F] text-xs font-mono font-bold uppercase px-3 py-2 transition-all"
+              >
+                <div className="w-5 h-5 bg-[#FFD500] border border-[#0F0F0F] rounded-full flex items-center justify-center text-[10px] font-black">
+                  {user.displayName ? user.displayName.charAt(0).toUpperCase() : "C"}
+                </div>
+                <span className="truncate max-w-[100px] lg:max-w-[130px]">
+                  {traineeProfile?.fullName?.split(" ")[0] || user.displayName?.split(" ")[0] || "CADET"}
+                </span>
+                <span className="bg-[#FFD500] px-1 border border-[#0F0F0F] text-[10px]">
+                  {traineeProfile?.pointsTotal || 10}P
+                </span>
+              </Link>
+              <button
+                type="button"
+                onClick={() => signOutUser()}
+                title="Sign out"
+                className="p-2 bg-white border-[2px] border-[#0F0F0F] hover:bg-[#FFE8EC] shadow-[2px_2px_0px_#0F0F0F] text-neutral-700 hover:text-[#FF0055] transition-all cursor-pointer"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          ) : (
+            <Link
+              href="/register"
+              className="btn-solid inline-flex items-center justify-center gap-1.5 border-[3px] border-[#0F0F0F] shadow-[4px_4px_0px_#0F0F0F] bg-[#7B2CBF] text-white text-xs lg:text-sm font-display uppercase tracking-wider px-4 lg:px-5 py-2.5 hover:bg-[#FF0055] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[2px_2px_0px_#0F0F0F] transition-all shrink-0"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-[#FFD500]" />
+              <span>JOIN TRAINING</span>
+            </Link>
+          )}
 
           {/* Mobile Menu Toggle */}
           <button
@@ -244,14 +275,37 @@ export function PuaNavbar() {
             </div>
 
             {/* High-Impact CTA button */}
-            <Link
-              href="/join"
-              className="btn-solid flex items-center justify-center gap-2 border-[3px] border-[#0F0F0F] shadow-[4px_4px_0px_#0F0F0F] bg-[#7B2CBF] text-white text-sm font-display uppercase tracking-wider py-3.5 hover:bg-[#FF0055]"
-              onClick={() => setMobileOpen(false)}
-            >
-              <Sparkles className="w-4 h-4 text-[#FFD500]" />
-              <span>JOIN TRAINING (+10 PTS)</span>
-            </Link>
+            {user ? (
+              <div className="flex gap-2">
+                <Link
+                  href="/register"
+                  className="flex-1 btn-solid flex items-center justify-center gap-2 border-[3px] border-[#0F0F0F] shadow-[4px_4px_0px_#0F0F0F] bg-[#00E5FF] text-[#0F0F0F] text-sm font-display uppercase tracking-wider py-3.5 hover:bg-[#00c9e0]"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  <User className="w-4 h-4" />
+                  <span>MY CADET PROFILE ({traineeProfile?.pointsTotal || 10}P)</span>
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => {
+                    signOutUser()
+                    setMobileOpen(false)
+                  }}
+                  className="p-3 bg-white border-[3px] border-[#0F0F0F] text-[#FF0055]"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+              <Link
+                href="/register"
+                className="btn-solid flex items-center justify-center gap-2 border-[3px] border-[#0F0F0F] shadow-[4px_4px_0px_#0F0F0F] bg-[#7B2CBF] text-white text-sm font-display uppercase tracking-wider py-3.5 hover:bg-[#FF0055]"
+                onClick={() => setMobileOpen(false)}
+              >
+                <Sparkles className="w-4 h-4 text-[#FFD500]" />
+                <span>JOIN TRAINING (+10 PTS)</span>
+              </Link>
+            )}
 
             {/* Grouped Secondary Links Accordion */}
             <div className="pt-3 border-t-2 border-[#0F0F0F]/20">
