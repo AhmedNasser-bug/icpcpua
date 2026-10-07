@@ -103,7 +103,7 @@ interface RoadmapSectionProps {
 
 export function RoadmapSection({ onOpenModal }: RoadmapSectionProps) {
   return (
-    <section className="w-full bg-white border-y-[3px] border-[#0F0F0F]" id="roadmap">
+    <section className="w-full bg-white border-y-[3px] border-[#0F0F0F]" id="curriculum">
       <div className="max-w-[1440px] mx-auto px-10 py-24">
         {/* Section header */}
         <div className="mb-20 relative">

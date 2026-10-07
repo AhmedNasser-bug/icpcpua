@@ -20,7 +20,7 @@ export function JoinCtaSection({ onOpenModal }: JoinCtaSectionProps) {
 
         <div className="relative z-10 flex flex-col items-center text-center gap-8">
           <span className="font-body font-bold text-xs uppercase tracking-widest bg-[#FFD500] text-[#0F0F0F] border-[2px] border-[#0F0F0F] px-4 py-1 shadow-neo">
-            Season 2024 — Registration Open
+            Season 2026 — Registration Open
           </span>
           <h2 className="font-display text-[64px] lg:text-[80px] leading-none text-white uppercase text-shadow-cyan">
             READY TO<br />CRACK THE<br />CODE?
@@ -31,16 +31,16 @@ export function JoinCtaSection({ onOpenModal }: JoinCtaSectionProps) {
           <div className="flex flex-wrap gap-6 justify-center">
             <button
               onClick={onOpenModal}
-              className="btn-solid h-16 px-10 bg-[#FFD500] text-[#0F0F0F] text-2xl font-display uppercase tracking-widest border-[3px] border-[#0F0F0F] shadow-solid relative overflow-hidden group"
+              className="btn-solid h-16 px-10 bg-[#FFD500] text-[#0F0F0F] text-2xl font-display uppercase tracking-widest border-[3px] border-[#0F0F0F] shadow-solid relative overflow-hidden group cursor-pointer"
             >
-              <span className="relative z-10">JOIN THE SQUAD</span>
+              <span className="relative z-10">JOIN TRAINING SQUAD</span>
               <div className="absolute inset-0 bg-[#00E5FF] translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-0" />
             </button>
             <Link
-              href="/resources"
-              className="btn-solid h-16 px-10 bg-transparent text-white text-2xl font-display uppercase tracking-widest border-[3px] border-white shadow-[8px_8px_0px_white] hover:bg-white hover:text-[#7B2CBF] transition-colors"
+              href="/events"
+              className="btn-solid h-16 px-10 bg-transparent text-white text-2xl font-display uppercase tracking-widest border-[3px] border-white shadow-[8px_8px_0px_white] hover:bg-white hover:text-[#7B2CBF] transition-colors flex items-center justify-center"
             >
-              EXPLORE RESOURCES
+              VIEW EVENTS &amp; SESSIONS
             </Link>
           </div>
         </div>
