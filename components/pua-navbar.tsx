@@ -49,6 +49,7 @@ export function PuaNavbar() {
     { href: "/faq", label: "FAQ", desc: "Answers to common student questions", icon: HelpCircle },
     { href: "/testimonials", label: "Testimonials", desc: "Success stories from alumni", icon: MessageSquare },
     { href: "/recruitment", label: "Committee Roles", desc: "Instructor, HR, Ops, Marketing & Dev specs", icon: Briefcase },
+    { href: "/flyer", label: "Campus Flyer & QR", desc: "Printable +10 PTS challenge poster", icon: Sparkles },
     { href: "/referrals", label: "Referral Hub", desc: "Invite peers and collect points", icon: Share2 },
     { href: "/feedback", label: "Feedback Bucket", desc: "Voice thoughts to leadership directly", icon: Users },
   ]

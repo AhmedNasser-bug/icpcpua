@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Link from "next/link"
 import { PuaNavbar } from "@/components/pua-navbar"
 import { Marquee } from "@/components/pua-marquee"
 import { Footer } from "@/components/footer"
@@ -123,16 +124,23 @@ export default function LeaderboardPage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             {lastRefreshed && (
-              <span className="font-mono text-[10px] text-neutral-600 uppercase">
+              <span className="hidden sm:inline font-mono text-[10px] text-neutral-600 uppercase">
                 Synced: {lastRefreshed}
               </span>
             )}
+            <Link
+              href="/claim"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-[#FFD500] hover:bg-[#ecc500] border-[2px] border-[#0F0F0F] font-mono text-xs font-bold uppercase shadow-[2px_2px_0px_#0F0F0F] active:translate-x-0.5 active:translate-y-0.5 transition-all"
+            >
+              <QrCode className="w-3.5 h-3.5 text-[#0F0F0F]" />
+              <span>Claim Code</span>
+            </Link>
             <button
               onClick={() => fetchLeaderboard(selectedTrack)}
               disabled={loading}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-white border-[2px] border-[#0F0F0F] font-mono text-xs font-bold uppercase hover:bg-neutral-100 shadow-[2px_2px_0px_#0F0F0F] active:translate-x-0.5 active:translate-y-0.5"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-white border-[2px] border-[#0F0F0F] font-mono text-xs font-bold uppercase hover:bg-neutral-100 shadow-[2px_2px_0px_#0F0F0F] active:translate-x-0.5 active:translate-y-0.5 cursor-pointer"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin text-[#7B2CBF]" : ""}`} />
               <span>Refresh</span>
