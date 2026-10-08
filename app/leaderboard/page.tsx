@@ -87,13 +87,13 @@ export default function LeaderboardPage() {
         </div>
 
         {/* Filter Controls & Track Switcher */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 bg-[#FFF4E0] border-[3px] border-[#0F0F0F] p-3 shadow-solid-sm">
-          <div className="flex items-center gap-2">
-            <span className="font-mono text-xs font-bold uppercase text-[#0F0F0F]">Track Filter:</span>
-            <div className="flex gap-1.5">
+        <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 mb-8 bg-[#FFF4E0] border-[3px] border-[#0F0F0F] p-3 shadow-solid-sm">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="font-mono text-xs font-bold uppercase text-[#0F0F0F] shrink-0">Track Filter:</span>
+            <div className="flex flex-wrap gap-1.5">
               <button
                 onClick={() => setSelectedTrack("all")}
-                className={`px-3 py-1.5 border-[2px] border-[#0F0F0F] font-mono text-xs font-bold uppercase transition-all ${
+                className={`min-h-[44px] px-3 py-2 border-[2px] border-[#0F0F0F] font-mono text-xs font-bold uppercase transition-all flex items-center justify-center ${
                   selectedTrack === "all"
                     ? "bg-[#7B2CBF] text-white shadow-[2px_2px_0px_#0F0F0F]"
                     : "bg-white text-[#0F0F0F] hover:bg-neutral-100"
@@ -103,7 +103,7 @@ export default function LeaderboardPage() {
               </button>
               <button
                 onClick={() => setSelectedTrack("level_1")}
-                className={`px-3 py-1.5 border-[2px] border-[#0F0F0F] font-mono text-xs font-bold uppercase transition-all ${
+                className={`min-h-[44px] px-3 py-2 border-[2px] border-[#0F0F0F] font-mono text-xs font-bold uppercase transition-all flex items-center justify-center ${
                   selectedTrack === "level_1"
                     ? "bg-[#00E5FF] text-[#0F0F0F] shadow-[2px_2px_0px_#0F0F0F]"
                     : "bg-white text-[#0F0F0F] hover:bg-neutral-100"
@@ -113,7 +113,7 @@ export default function LeaderboardPage() {
               </button>
               <button
                 onClick={() => setSelectedTrack("level_2")}
-                className={`px-3 py-1.5 border-[2px] border-[#0F0F0F] font-mono text-xs font-bold uppercase transition-all ${
+                className={`min-h-[44px] px-3 py-2 border-[2px] border-[#0F0F0F] font-mono text-xs font-bold uppercase transition-all flex items-center justify-center ${
                   selectedTrack === "level_2"
                     ? "bg-[#FF0055] text-white shadow-[2px_2px_0px_#0F0F0F]"
                     : "bg-white text-[#0F0F0F] hover:bg-neutral-100"
@@ -124,7 +124,7 @@ export default function LeaderboardPage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             {lastRefreshed && (
               <span className="hidden sm:inline font-mono text-[10px] text-neutral-600 uppercase">
                 Synced: {lastRefreshed}
@@ -132,7 +132,7 @@ export default function LeaderboardPage() {
             )}
             <Link
               href="/claim"
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-[#FFD500] hover:bg-[#ecc500] border-[2px] border-[#0F0F0F] font-mono text-xs font-bold uppercase shadow-[2px_2px_0px_#0F0F0F] active:translate-x-0.5 active:translate-y-0.5 transition-all"
+              className="min-h-[44px] flex items-center gap-1.5 px-3 py-2 bg-[#FFD500] hover:bg-[#ecc500] border-[2px] border-[#0F0F0F] font-mono text-xs font-bold uppercase shadow-[2px_2px_0px_#0F0F0F] active:translate-x-0.5 active:translate-y-0.5 transition-all"
             >
               <QrCode className="w-3.5 h-3.5 text-[#0F0F0F]" />
               <span>Claim Code</span>
@@ -140,7 +140,7 @@ export default function LeaderboardPage() {
             <button
               onClick={() => fetchLeaderboard(selectedTrack)}
               disabled={loading}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-white border-[2px] border-[#0F0F0F] font-mono text-xs font-bold uppercase hover:bg-neutral-100 shadow-[2px_2px_0px_#0F0F0F] active:translate-x-0.5 active:translate-y-0.5 cursor-pointer"
+              className="min-h-[44px] flex items-center gap-1.5 px-3 py-2 bg-white border-[2px] border-[#0F0F0F] font-mono text-xs font-bold uppercase hover:bg-neutral-100 shadow-[2px_2px_0px_#0F0F0F] active:translate-x-0.5 active:translate-y-0.5 cursor-pointer"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin text-[#7B2CBF]" : ""}`} />
               <span>Refresh</span>
@@ -150,73 +150,73 @@ export default function LeaderboardPage() {
 
         {/* Podium Display (Top 3) */}
         {top3.length > 0 && (
-          <div className="flex items-end justify-center gap-4 sm:gap-6 mb-12 relative px-2 sm:px-4">
+          <div className="flex items-end justify-center gap-2 sm:gap-6 mb-12 relative px-2 sm:px-4">
             {/* 2nd place */}
             {top3[1] && (
-              <div className="flex flex-col items-center gap-2">
+              <div className="flex flex-col items-center gap-1.5 sm:gap-2">
                 <div
-                  className="w-16 sm:w-20 h-16 sm:h-20 border-[3px] border-[#0F0F0F] shadow-solid-sm flex items-center justify-center font-display text-xl sm:text-2xl text-[#0F0F0F]"
+                  className="w-14 sm:w-20 h-14 sm:h-20 border-[3px] border-[#0F0F0F] shadow-solid-sm flex items-center justify-center font-display text-lg sm:text-2xl text-[#0F0F0F]"
                   style={{ backgroundColor: top3[1].color || "#E0E0E0" }}
                 >
                   {top3[1].initials}
                 </div>
-                <span className="font-body text-[9px] sm:text-[10px] font-bold uppercase text-[#0F0F0F] bg-white border-[2px] border-[#0F0F0F] px-2 py-0.5 truncate max-w-[110px]">
+                <span className="font-body text-[9px] sm:text-[10px] font-bold uppercase text-[#0F0F0F] bg-white border-[2px] border-[#0F0F0F] px-1.5 sm:px-2 py-0.5 truncate max-w-[85px] sm:max-w-[110px]">
                   {top3[1].handle}
                 </span>
                 <div
-                  className={`w-24 sm:w-28 ${PODIUM_HEIGHTS[1]} border-[3px] border-[#0F0F0F] shadow-solid flex flex-col items-center justify-center gap-1`}
+                  className={`w-20 sm:w-28 ${PODIUM_HEIGHTS[1]} border-[3px] border-[#0F0F0F] shadow-solid flex flex-col items-center justify-center gap-1`}
                   style={{ backgroundColor: PODIUM_COLORS[1] }}
                 >
-                  <span className="font-display text-3xl sm:text-4xl text-[#0F0F0F]">2</span>
-                  <span className="font-body text-xs font-bold">{top3[1].pointsTotal} PTS</span>
-                  <span className="font-mono text-[9px] text-neutral-700">R: {top3[1].rating}</span>
+                  <span className="font-display text-2xl sm:text-4xl text-[#0F0F0F]">2</span>
+                  <span className="font-body text-[10px] sm:text-xs font-bold">{top3[1].pointsTotal} PTS</span>
+                  <span className="font-mono text-[8px] sm:text-[9px] text-neutral-700">R: {top3[1].rating}</span>
                 </div>
               </div>
             )}
 
             {/* 1st place */}
             {top3[0] && (
-              <div className="flex flex-col items-center gap-2 relative">
+              <div className="flex flex-col items-center gap-1.5 sm:gap-2 relative">
                 <CrownIcon />
                 <div
-                  className="w-20 sm:w-24 h-20 sm:h-24 border-[3px] border-[#0F0F0F] shadow-solid flex items-center justify-center font-display text-2xl sm:text-3xl text-[#0F0F0F]"
+                  className="w-16 sm:w-24 h-16 sm:h-24 border-[3px] border-[#0F0F0F] shadow-solid flex items-center justify-center font-display text-xl sm:text-3xl text-[#0F0F0F]"
                   style={{ backgroundColor: top3[0].color || "#FFD500" }}
                 >
                   {top3[0].initials}
                 </div>
-                <span className="font-body text-[10px] sm:text-xs font-bold uppercase text-[#0F0F0F] bg-[#00E5FF] border-[2px] border-[#0F0F0F] px-2.5 py-0.5 truncate max-w-[130px]">
+                <span className="font-body text-[10px] sm:text-xs font-bold uppercase text-[#0F0F0F] bg-[#00E5FF] border-[2px] border-[#0F0F0F] px-2 sm:px-2.5 py-0.5 truncate max-w-[100px] sm:max-w-[130px]">
                   {top3[0].handle}
                 </span>
                 <div
-                  className={`w-28 sm:w-32 ${PODIUM_HEIGHTS[0]} border-[3px] border-[#0F0F0F] shadow-solid flex flex-col items-center justify-center gap-1`}
+                  className={`w-24 sm:w-32 ${PODIUM_HEIGHTS[0]} border-[3px] border-[#0F0F0F] shadow-solid flex flex-col items-center justify-center gap-1`}
                   style={{ backgroundColor: PODIUM_COLORS[0] }}
                 >
-                  <span className="font-display text-4xl sm:text-5xl text-[#0F0F0F]">1</span>
-                  <span className="font-body text-sm font-bold">{top3[0].pointsTotal} PTS</span>
-                  <span className="font-mono text-[10px] text-neutral-800 font-bold">R: {top3[0].rating} // S: {top3[0].solved}</span>
+                  <span className="font-display text-3xl sm:text-5xl text-[#0F0F0F]">1</span>
+                  <span className="font-body text-xs sm:text-sm font-bold">{top3[0].pointsTotal} PTS</span>
+                  <span className="font-mono text-[9px] sm:text-[10px] text-neutral-800 font-bold">R: {top3[0].rating} // S: {top3[0].solved}</span>
                 </div>
               </div>
             )}
 
             {/* 3rd place */}
             {top3[2] && (
-              <div className="flex flex-col items-center gap-2">
+              <div className="flex flex-col items-center gap-1.5 sm:gap-2">
                 <div
-                  className="w-16 sm:w-20 h-16 sm:h-20 border-[3px] border-[#0F0F0F] shadow-solid-sm flex items-center justify-center font-display text-xl sm:text-2xl text-white"
+                  className="w-14 sm:w-20 h-14 sm:h-20 border-[3px] border-[#0F0F0F] shadow-solid-sm flex items-center justify-center font-display text-lg sm:text-2xl text-white"
                   style={{ backgroundColor: top3[2].color || "#FF0055" }}
                 >
                   {top3[2].initials}
                 </div>
-                <span className="font-body text-[9px] sm:text-[10px] font-bold uppercase text-[#0F0F0F] bg-white border-[2px] border-[#0F0F0F] px-2 py-0.5 truncate max-w-[110px]">
+                <span className="font-body text-[9px] sm:text-[10px] font-bold uppercase text-[#0F0F0F] bg-white border-[2px] border-[#0F0F0F] px-1.5 sm:px-2 py-0.5 truncate max-w-[85px] sm:max-w-[110px]">
                   {top3[2].handle}
                 </span>
                 <div
-                  className={`w-24 sm:w-28 ${PODIUM_HEIGHTS[2]} border-[3px] border-[#0F0F0F] shadow-solid flex flex-col items-center justify-center gap-1`}
+                  className={`w-20 sm:w-28 ${PODIUM_HEIGHTS[2]} border-[3px] border-[#0F0F0F] shadow-solid flex flex-col items-center justify-center gap-1`}
                   style={{ backgroundColor: PODIUM_COLORS[2] }}
                 >
-                  <span className="font-display text-3xl sm:text-4xl text-white">3</span>
-                  <span className="font-body text-xs font-bold text-white">{top3[2].pointsTotal} PTS</span>
-                  <span className="font-mono text-[9px] text-neutral-100">R: {top3[2].rating}</span>
+                  <span className="font-display text-2xl sm:text-4xl text-white">3</span>
+                  <span className="font-body text-[10px] sm:text-xs font-bold text-white">{top3[2].pointsTotal} PTS</span>
+                  <span className="font-mono text-[8px] sm:text-[9px] text-neutral-100">R: {top3[2].rating}</span>
                 </div>
               </div>
             )}
@@ -337,7 +337,7 @@ export default function LeaderboardPage() {
           </div>
           <Link
             href="/register"
-            className="shrink-0 bg-[#FFD500] text-[#0F0F0F] border-[2px] border-[#0F0F0F] px-4 py-2 font-display text-xs uppercase tracking-wider shadow-[2px_2px_0px_#0F0F0F] hover:bg-white transition-colors"
+            className="shrink-0 min-h-[44px] flex items-center justify-center bg-[#FFD500] text-[#0F0F0F] border-[2px] border-[#0F0F0F] px-4 py-2 font-display text-xs uppercase tracking-wider shadow-[2px_2px_0px_#0F0F0F] hover:bg-white transition-colors"
           >
             JOIN TO COMPETE &rarr;
           </Link>

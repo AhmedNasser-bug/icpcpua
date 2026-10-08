@@ -241,12 +241,15 @@ export default function FlyerPage() {
         @media print {
           @page {
             size: A4 portrait;
-            margin: 0;
+            margin: 8mm;
           }
+          html,
           body {
             background: white !important;
             margin: 0 !important;
             padding: 0 !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
           }
           .skip-link {
             display: none !important;
@@ -255,7 +258,16 @@ export default function FlyerPage() {
             border: 4px solid #0f0f0f !important;
             margin: 0 auto !important;
             box-shadow: none !important;
-            page-break-inside: avoid;
+            width: 100% !important;
+            max-width: 194mm !important;
+            max-height: 275mm !important;
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+            overflow: hidden !important;
+          }
+          #printable-flyer * {
+            box-shadow: none !important;
+            text-shadow: none !important;
           }
         }
       `}</style>
