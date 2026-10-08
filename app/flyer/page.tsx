@@ -31,26 +31,26 @@ export default function FlyerPage() {
       </div>
 
       {/* Control Bar (hidden during printing) */}
-      <div className="print:hidden bg-[#0F0F0F] text-white border-b-4 border-[#0F0F0F] py-3.5 px-4 sticky top-[68px] z-40 shadow-md">
-        <div className="max-w-4xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      <div className="print:hidden bg-[#0F0F0F] text-white border-b-4 border-[#0F0F0F] py-2.5 sm:py-3.5 px-3 sm:px-4 sticky top-[60px] sm:top-[68px] z-40 shadow-md">
+        <div className="max-w-4xl mx-auto flex flex-wrap items-center justify-between gap-2.5 sm:gap-3">
           <div className="flex items-center gap-2 font-mono text-xs sm:text-sm font-bold uppercase text-[#FFD500]">
-            <Sparkles className="w-4 h-4 text-[#FFD500]" />
-            <span>CAMPUS FLYER &amp; SCANNER GENERATOR</span>
+            <Sparkles className="w-4 h-4 text-[#FFD500] shrink-0" />
+            <span className="truncate">BOOTH FLYER &amp; SCANNER</span>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center flex-wrap gap-2">
             <button
               onClick={handlePrint}
-              className="bg-[#FFD500] hover:bg-[#e6c000] text-[#0F0F0F] font-mono font-bold text-xs uppercase px-3.5 py-2 border-2 border-[#0F0F0F] shadow-[3px_3px_0px_#FFFFFF] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none flex items-center gap-1.5 transition-all cursor-pointer"
+              className="min-h-[44px] bg-[#FFD500] hover:bg-[#e6c000] text-[#0F0F0F] font-mono font-bold text-xs uppercase px-3 py-2 border-2 border-[#0F0F0F] shadow-[2px_2px_0px_#FFFFFF] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none flex items-center gap-1.5 transition-all cursor-pointer"
             >
               <Printer className="w-4 h-4" />
-              <span>PRINT FLYER (A4)</span>
+              <span>PRINT (A4)</span>
             </button>
 
             <a
               href="/qr_campus_challenge_10pts.png"
               download="icpcpua_qr_10pts.png"
-              className="bg-[#00E5FF] hover:bg-[#00cae0] text-[#0F0F0F] font-mono font-bold text-xs uppercase px-3.5 py-2 border-2 border-[#0F0F0F] shadow-[3px_3px_0px_#FFFFFF] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none flex items-center gap-1.5 transition-all"
+              className="min-h-[44px] bg-[#00E5FF] hover:bg-[#00cae0] text-[#0F0F0F] font-mono font-bold text-xs uppercase px-3 py-2 border-2 border-[#0F0F0F] shadow-[2px_2px_0px_#FFFFFF] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none flex items-center gap-1.5 transition-all"
             >
               <Download className="w-4 h-4" />
               <span>QR PNG</span>
@@ -59,7 +59,7 @@ export default function FlyerPage() {
             <Link
               href="/claim?code=CAMPUS_BOOTH_DAY1&points=10"
               target="_blank"
-              className="bg-white hover:bg-neutral-100 text-[#0F0F0F] font-mono font-bold text-xs uppercase px-3.5 py-2 border-2 border-[#0F0F0F] shadow-[3px_3px_0px_#FFFFFF] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none flex items-center gap-1.5 transition-all"
+              className="min-h-[44px] bg-white hover:bg-neutral-100 text-[#0F0F0F] font-mono font-bold text-xs uppercase px-3 py-2 border-2 border-[#0F0F0F] shadow-[2px_2px_0px_#FFFFFF] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none flex items-center gap-1.5 transition-all"
             >
               <ExternalLink className="w-4 h-4" />
               <span>TEST CLAIM</span>
@@ -73,7 +73,7 @@ export default function FlyerPage() {
         {/* Printable Poster Canvas */}
         <div
           id="printable-flyer"
-          className="w-full max-w-[794px] bg-[#FFF4E0] border-4 sm:border-8 border-[#0F0F0F] shadow-[12px_12px_0px_#0F0F0F] print:shadow-none print:border-4 print:max-w-none print:w-full print:m-0 relative overflow-hidden"
+          className="w-full max-w-[794px] bg-[#FFF4E0] border-4 sm:border-8 border-[#0F0F0F] shadow-[6px_6px_0px_#0F0F0F] sm:shadow-[12px_12px_0px_#0F0F0F] print:shadow-none print:border-4 print:max-w-none print:w-full print:m-0 relative overflow-hidden"
           style={{ WebkitPrintColorAdjust: "exact", printColorAdjust: "exact" }}
         >
           {/* Decorative Corner Vector Nodes */}
@@ -83,47 +83,47 @@ export default function FlyerPage() {
           <span className="vector-node vector-node-br" />
 
           {/* Top Header Marquee Bar */}
-          <div className="bg-[#7B2CBF] text-white border-b-4 border-[#0F0F0F] px-4 py-2 flex items-center justify-between font-mono text-xs font-bold tracking-widest uppercase">
+          <div className="bg-[#7B2CBF] text-white border-b-4 border-[#0F0F0F] px-3 sm:px-4 py-2 flex items-center justify-between font-mono text-[11px] sm:text-xs font-bold tracking-wider sm:tracking-widest uppercase">
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 bg-[#FFD500] rounded-full animate-pulse" />
-              <span>PHAROS UNIVERSITY IN ALEXANDRIA</span>
+              <span className="w-2.5 h-2.5 bg-[#FFD500] rounded-full animate-pulse shrink-0" />
+              <span className="truncate">PHAROS UNIVERSITY IN ALEXANDRIA</span>
             </div>
-            <span className="hidden sm:inline bg-[#FF0055] text-white px-2 py-0.5 border border-[#0F0F0F]">
+            <span className="hidden sm:inline bg-[#FF0055] text-white px-2 py-0.5 border border-[#0F0F0F] shrink-0">
               SEASON 2026 OFFICIAL
             </span>
           </div>
 
-          <div className="p-6 sm:p-10 space-y-6">
+          <div className="p-4 sm:p-8 lg:p-10 space-y-5 sm:space-y-6">
             {/* Logo and Identity */}
-            <div className="flex items-center justify-between border-b-4 border-[#0F0F0F] pb-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b-4 border-[#0F0F0F] pb-4 sm:pb-5">
               <div className="flex items-center gap-3">
-                <PuaLogo size={52} className="shadow-[4px_4px_0px_#0F0F0F]" />
+                <PuaLogo size={46} className="shadow-[4px_4px_0px_#0F0F0F] shrink-0" />
                 <div>
-                  <h1 className="text-3xl sm:text-4xl font-display uppercase tracking-wider text-[#0F0F0F] leading-none">
+                  <h1 className="text-2xl sm:text-4xl font-display uppercase tracking-wider text-[#0F0F0F] leading-none">
                     ICPC PUA
                   </h1>
-                  <p className="font-mono text-xs sm:text-sm font-bold text-[#7B2CBF] tracking-widest uppercase mt-1">
+                  <p className="font-mono text-[10px] sm:text-sm font-bold text-[#7B2CBF] tracking-wider uppercase mt-1">
                     ALGORITHMIC TRAINING COMMUNITY
                   </p>
                 </div>
               </div>
 
-              <div className="text-right font-mono">
-                <span className="inline-block bg-[#FFD500] border-2 border-[#0F0F0F] shadow-[2px_2px_0px_#0F0F0F] px-2.5 py-1 text-xs font-bold uppercase text-[#0F0F0F]">
+              <div className="text-left sm:text-right font-mono">
+                <span className="inline-block bg-[#FFD500] border-2 border-[#0F0F0F] shadow-[2px_2px_0px_#0F0F0F] px-2.5 py-0.5 text-xs font-bold uppercase text-[#0F0F0F]">
                   LIMITED CAMPUS BONUS
                 </span>
-                <p className="text-[11px] font-bold text-neutral-600 mt-1">BOOTH CHALLENGE // DAY 1</p>
+                <p className="text-[10px] sm:text-[11px] font-bold text-neutral-600 mt-0.5">BOOTH CHALLENGE // DAY 1</p>
               </div>
             </div>
 
             {/* Explosive Hero Catchphrase */}
             <div className="text-center space-y-2">
-              <div className="inline-flex items-center gap-2 bg-[#FF0055] text-white border-3 border-[#0F0F0F] shadow-[4px_4px_0px_#0F0F0F] px-4 py-1.5 font-mono text-xs sm:text-sm font-black uppercase tracking-wider">
+              <div className="inline-flex items-center gap-2 bg-[#FF0055] text-white border-3 border-[#0F0F0F] shadow-[4px_4px_0px_#0F0F0F] print:shadow-none px-3.5 sm:px-4 py-1 font-mono text-xs sm:text-sm font-black uppercase tracking-wider">
                 <Flame className="w-4 h-4 fill-white" />
                 <span>BOOST YOUR SQUAD STANDING</span>
               </div>
 
-              <h2 className="text-4xl sm:text-6xl font-display uppercase text-[#0F0F0F] leading-[0.95] tracking-tight">
+              <h2 className="text-3xl sm:text-5xl lg:text-6xl font-display uppercase text-[#0F0F0F] leading-[0.95] tracking-tight">
                 CRACK THE CODE.
                 <br />
                 <span className="text-[#7B2CBF] underline decoration-4 decoration-[#FFD500]">

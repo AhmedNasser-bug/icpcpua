@@ -6,7 +6,7 @@
 
 ```mermaid
 graph TD
-  LAYOUT["app/layout.tsx"]
+  LAYOUT["app/layout.tsx (next/font self-hosted)"]
   PAGE_HOME["app/page.tsx"]
   PAGE_FEEDBACK["app/feedback/page.tsx"]
   PAGE_JOIN["app/join/page.tsx"]
@@ -18,6 +18,9 @@ graph TD
   FOOTER["components/footer.tsx"]
   LOGO["components/pua-logo.tsx"]
   MARQUEE["components/pua-marquee.tsx"]
+
+  WRAPPER["components/recruitment/Role3DCanvasWrapper.tsx (Client Boundary)"]
+  THREE_CANVAS["components/recruitment/Role3DCanvas.tsx (Three.js WebGL)"]
 
   LAYOUT --> PAGE_HOME
   LAYOUT --> PAGE_FEEDBACK
@@ -45,6 +48,8 @@ graph TD
 
   PAGE_RECRUIT --> NAV
   PAGE_RECRUIT --> FOOTER
+  PAGE_RECRUIT --> WRAPPER
+  WRAPPER -.->|"next/dynamic (ssr: false)"| THREE_CANVAS
 
   NAV --> LOGO
   FOOTER -.->|"Links to /feedback & /referrals"| PAGE_FEEDBACK
@@ -54,5 +59,7 @@ graph TD
 ## Analysis Notes
 
 - **Hub nodes:** `components/pua-navbar.tsx` and `components/footer.tsx` are top hubs consumed across all primary routes.
+- **Dynamic Decoupling:** `Role3DCanvas` (546 KB Three.js) is decoupled from the server component route `/recruitment` via `Role3DCanvasWrapper` and `next/dynamic({ ssr: false })`.
+- **Typography:** Self-hosted `next/font/google` in `app/layout.tsx` eliminates external render-blocking font requests.
 - **Orphans:** None.
 - **Circular dependencies:** None. Route links are clean string hrefs.

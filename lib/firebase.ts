@@ -1,5 +1,4 @@
 import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app"
-import { getFirestore, Firestore } from "firebase/firestore"
 import {
   getAuth,
   GoogleAuthProvider,
@@ -18,9 +17,6 @@ const firebaseConfig = {
 
 // Initialize Firebase client safely for SSR/Edge/Client
 export const app: FirebaseApp = !getApps().length ? initializeApp(firebaseConfig) : getApp()
-
-// Client Firestore
-export const db: Firestore = getFirestore(app)
 
 // Client Firebase Authentication
 export const auth: Auth = getAuth(app)

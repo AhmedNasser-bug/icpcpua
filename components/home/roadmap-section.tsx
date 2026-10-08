@@ -103,15 +103,15 @@ interface RoadmapSectionProps {
 
 export function RoadmapSection({ onOpenModal }: RoadmapSectionProps) {
   return (
-    <section className="w-full bg-white border-y-[3px] border-[#0F0F0F]" id="curriculum">
-      <div className="max-w-[1440px] mx-auto px-10 py-24">
+    <section className="w-full bg-white border-y-[3px] border-[#0F0F0F] overflow-hidden" id="curriculum">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 md:px-10 py-12 sm:py-24">
         {/* Section header */}
-        <div className="mb-20 relative">
+        <div className="mb-12 sm:mb-20 relative">
           <span className="vector-node vector-node-tl" />
-          <h2 className="font-display text-[64px] lg:text-[80px] leading-none text-[#0F0F0F] uppercase">
+          <h2 className="font-display text-4xl sm:text-6xl lg:text-[80px] leading-none text-[#0F0F0F] uppercase">
             ICPC <span className="text-[#7B2CBF]">ROADMAP.</span>
           </h2>
-          <p className="font-body text-lg mt-4 max-w-xl border-[3px] border-[#0F0F0F] bg-[#FFF4E0] px-6 py-4 shadow-solid-sm relative">
+          <p className="font-body text-sm sm:text-lg mt-3 sm:mt-4 max-w-xl border-[3px] border-[#0F0F0F] bg-[#FFF4E0] p-4 sm:px-6 sm:py-4 shadow-solid-sm relative">
             <span className="vector-node vector-node-br" />
             Level up through 6 chapters. From programming basics to ICPC finals preparation.
           </p>
@@ -122,9 +122,9 @@ export function RoadmapSection({ onOpenModal }: RoadmapSectionProps) {
           {/* Vertical line */}
           <div className="absolute left-[22px] top-0 bottom-0 w-[3px] bg-[#0F0F0F] hidden lg:block" />
 
-          <div className="flex flex-col gap-20">
+          <div className="flex flex-col gap-12 sm:gap-20">
             {roadmapChapters.map((ch, i) => (
-              <div key={ch.num} className="relative flex flex-col lg:flex-row gap-10 items-start">
+              <div key={ch.num} className="relative flex flex-col lg:flex-row gap-6 sm:gap-10 items-start">
                 {/* Timeline dot */}
                 <div
                   className="hidden lg:flex absolute left-0 top-0 w-[46px] h-[46px] items-center justify-center border-[3px] border-[#0F0F0F] shrink-0 font-display text-lg z-10"
@@ -134,22 +134,22 @@ export function RoadmapSection({ onOpenModal }: RoadmapSectionProps) {
                 </div>
 
                 {/* Chapter label + description */}
-                <div className="lg:ml-16 lg:w-1/3 flex flex-col gap-4">
+                <div className="lg:ml-16 lg:w-1/3 flex flex-col gap-3 sm:gap-4">
                   <span
                     className="inline-block font-body font-bold text-xs px-3 py-1 border-[2px] border-[#0F0F0F] shadow-neo w-fit"
                     style={{ backgroundColor: ch.color, color: ch.textColor }}
                   >
                     CHAPTER {ch.num}
                   </span>
-                  <h3 className="font-display text-4xl leading-tight text-[#0F0F0F]">
+                  <h3 className="font-display text-2xl sm:text-4xl leading-tight text-[#0F0F0F]">
                     {ch.title}{" "}
                     <span className="px-2" style={{ backgroundColor: ch.highlightBg, color: ch.highlightText }}>
                       {ch.highlight}
                     </span>
                   </h3>
-                  <p className="font-body text-sm text-[#0F0F0F]/70 leading-relaxed">{ch.desc}</p>
+                  <p className="font-body text-xs sm:text-sm text-[#0F0F0F]/70 leading-relaxed">{ch.desc}</p>
                   <div
-                    className="w-20 h-20 border-[3px] border-[#0F0F0F] flex items-center justify-center shadow-neo"
+                    className="w-16 h-16 sm:w-20 sm:h-20 border-[3px] border-[#0F0F0F] flex items-center justify-center shadow-neo"
                     style={{ backgroundColor: ch.color + "22", transform: `rotate(${i % 2 === 0 ? 6 : -6}deg)` }}
                   >
                     {ch.icon}
@@ -157,11 +157,11 @@ export function RoadmapSection({ onOpenModal }: RoadmapSectionProps) {
                 </div>
 
                 {/* Topic cards */}
-                <div className="lg:w-2/3 w-full grid grid-cols-2 gap-4">
+                <div className="lg:w-2/3 w-full grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   {ch.items.map((item, j) => (
                     <div
                       key={item}
-                      className="border-[3px] border-[#0F0F0F] p-4 relative overflow-hidden shadow-neo hover:-translate-y-1 transition-transform duration-150"
+                      className="border-[3px] border-[#0F0F0F] p-3.5 sm:p-4 relative overflow-hidden shadow-neo hover:-translate-y-1 transition-transform duration-150"
                       style={{ backgroundColor: j % 2 === 0 ? "#FFF4E0" : "white" }}
                     >
                       <div className="stipple-pattern absolute inset-0 pointer-events-none opacity-10" style={{ color: ch.color }} />
@@ -177,14 +177,14 @@ export function RoadmapSection({ onOpenModal }: RoadmapSectionProps) {
           </div>
 
           {/* Milestone banner */}
-          <div className="relative py-20 mt-20">
-            <div className="absolute inset-0 bg-[#FFD500] border-y-[8px] border-[#0F0F0F]" style={{ transform: "rotate(-1deg) scaleX(1.1)" }} />
+          <div className="relative py-16 sm:py-20 mt-16 sm:mt-20 overflow-hidden">
+            <div className="absolute inset-0 bg-[#FFD500] border-y-[8px] border-[#0F0F0F]" style={{ transform: "rotate(-1deg) scaleX(1.05)" }} />
             <div className="relative z-10 text-center max-w-2xl mx-auto px-4">
-              <h3 className="font-display text-5xl text-[#0F0F0F] mb-4 uppercase">MILESTONE: THE ASCENT</h3>
-              <p className="font-body font-bold text-lg text-[#0F0F0F] mb-8 italic">&ldquo;You have mastered the tools. Now, you must master the logic.&rdquo;</p>
+              <h3 className="font-display text-3xl sm:text-5xl text-[#0F0F0F] mb-3 sm:mb-4 uppercase">MILESTONE: THE ASCENT</h3>
+              <p className="font-body font-bold text-sm sm:text-lg text-[#0F0F0F] mb-6 sm:mb-8 italic">&ldquo;You have mastered the tools. Now, you must master the logic.&rdquo;</p>
               <button
                 onClick={onOpenModal}
-                className="btn-solid bg-[#0F0F0F] text-white px-12 py-5 font-display text-xl uppercase italic tracking-tighter shadow-neo hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all border-[3px] border-[#0F0F0F]"
+                className="w-full sm:w-auto btn-solid bg-[#0F0F0F] text-white px-8 sm:px-12 py-4 sm:py-5 font-display text-lg sm:text-xl uppercase italic tracking-tighter shadow-neo hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all border-[3px] border-[#0F0F0F]"
               >
                 Join to Unlock All Chapters
               </button>

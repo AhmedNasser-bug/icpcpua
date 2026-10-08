@@ -3,7 +3,6 @@
 import { useState, useEffect, Suspense } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import Link from "next/link"
-import Image from "next/image"
 import { PuaNavbar } from "@/components/pua-navbar"
 import { Footer } from "@/components/footer"
 import { useAuth, AuthUser } from "@/lib/auth-context"

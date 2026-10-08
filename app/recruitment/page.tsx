@@ -3,7 +3,7 @@ import { PuaNavbar } from '@/components/pua-navbar';
 import { Marquee } from '@/components/pua-marquee';
 import { Footer } from '@/components/footer';
 import { EcosystemGraph } from '@/components/EcosystemGraph';
-import { Role3DCanvas } from '@/components/recruitment/Role3DCanvas';
+import { Role3DCanvasWrapper as Role3DCanvas } from '@/components/recruitment/Role3DCanvasWrapper';
 
 export default function RecruitmentLandingPage() {
     return (

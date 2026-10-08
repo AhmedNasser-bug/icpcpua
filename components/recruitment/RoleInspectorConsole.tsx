@@ -2,7 +2,20 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Role3DCanvas, Role3DType } from "./Role3DCanvas";
+import type { Role3DType } from "./Role3DCanvas";
+import dynamic from "next/dynamic";
+
+const Role3DCanvas = dynamic(
+  () => import("./Role3DCanvas").then((mod) => mod.Role3DCanvas),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-[260px] bg-[#050505] flex items-center justify-center font-mono text-xs text-white/40">
+        INITIALIZING 3D ENGINE...
+      </div>
+    ),
+  }
+);
 
 interface RoleMeta {
   id: Role3DType;

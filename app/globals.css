@@ -12,8 +12,8 @@
   --color-accent-cyan: #00E5FF;
   --color-accent-pink: #FF0055;
   --color-muted: #E0E0E0;
-  --font-heading: 'Fredoka One', cursive;
-  --font-body: 'Space Mono', monospace;
+  --font-heading: var(--font-heading), 'Fredoka One', cursive;
+  --font-body: var(--font-body), 'Space Mono', monospace;
   --border-color: #0F0F0F;
   --shadow-offset: 8px 8px 0px #0F0F0F;
 
@@ -40,13 +40,19 @@
 }
 
 @theme inline {
-  --font-sans: 'Space Mono', monospace;
-  --font-mono: 'Space Mono', monospace;
+  --font-sans: var(--font-body), 'Space Mono', monospace;
+  --font-mono: var(--font-body), 'Space Mono', monospace;
+  --font-display: var(--font-heading), 'Fredoka One', cursive;
+  --font-label: var(--font-label), 'Space Grotesk', sans-serif;
 }
 
 @layer base {
   * {
     box-sizing: border-box;
+  }
+
+  button, a, input, select, textarea {
+    touch-action: manipulation;
   }
 
   html {
@@ -143,6 +149,12 @@
   font-family: 'Space Mono', monospace;
 }
 
+.font-label {
+  font-family: var(--font-label), 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
 /* ---- Text shadows ---- */
 .text-shadow-cyan {
   text-shadow: 6px 6px 0px #00E5FF;
@@ -184,8 +196,14 @@
 }
 
 .btn-solid:active {
-  transform: translate(8px, 8px);
+  transform: translate(3px, 3px);
   box-shadow: 0px 0px 0px #0F0F0F !important;
+}
+
+@media (min-width: 768px) {
+  .btn-solid:active {
+    transform: translate(6px, 6px);
+  }
 }
 
 /* ---- Marquee ---- */
@@ -198,6 +216,8 @@
 .marquee-content {
   display: inline-flex;
   animation: marquee 18s linear infinite;
+  will-change: transform;
+  contain: paint;
 }
 
 .marquee-content span {
@@ -288,8 +308,13 @@
   font-weight: 700;
   text-transform: uppercase;
   border: 3px solid #0F0F0F;
-  padding: 6px 16px;
+  padding: 10px 16px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
+  touch-action: manipulation;
 }
 
 .filter-pill:active {

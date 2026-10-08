@@ -1,6 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
+import Image from "next/image"
 
 const testimonials = [
   {
@@ -73,10 +74,12 @@ export function Testimonials() {
               </p>
               
               <div className="flex items-center gap-3">
-                <img 
+                <Image 
                   src={testimonial.avatar} 
                   alt={testimonial.author}
-                  className="h-10 w-10 rounded-full"
+                  width={40}
+                  height={40}
+                  className="h-10 w-10 rounded-full object-cover"
                 />
                 <div>
                   <p className="font-medium text-white">{testimonial.author}</p>

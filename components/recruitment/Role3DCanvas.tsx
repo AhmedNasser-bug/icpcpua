@@ -682,27 +682,17 @@ export function Role3DCanvas({
     window.addEventListener("resize", handleResize);
 
     // -------------------------------------------------------------
-    // Intersection Observer to prevent 0-progress CPU spinning
+    // Animation Loop (Strictly paused when offscreen)
     // -------------------------------------------------------------
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          isVisible = entry.isIntersecting;
-        });
-      },
-      { threshold: 0.05 }
-    );
-    observer.observe(container);
-
-    // -------------------------------------------------------------
-    // Animation Loop
-    // -------------------------------------------------------------
+    let isRunning = false;
     const clock = new THREE.Clock();
 
     const animate = () => {
+      if (!isVisible) {
+        isRunning = false;
+        return;
+      }
       animationFrameId = requestAnimationFrame(animate);
-
-      if (!isVisible) return;
 
       const delta = clock.getDelta();
       const elapsedTime = clock.getElapsedTime();
@@ -721,7 +711,28 @@ export function Role3DCanvas({
       renderer.render(scene, camera);
     };
 
-    animate();
+    const startAnimation = () => {
+      if (!isRunning) {
+        isRunning = true;
+        animationFrameId = requestAnimationFrame(animate);
+      }
+    };
+
+    // -------------------------------------------------------------
+    // Intersection Observer to prevent 0-progress CPU/GPU spinning
+    // -------------------------------------------------------------
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          isVisible = entry.isIntersecting;
+          if (isVisible) {
+            startAnimation();
+          }
+        });
+      },
+      { threshold: 0.05 }
+    );
+    observer.observe(container);
 
     // -------------------------------------------------------------
     // Teardown & Resource Hygiene
