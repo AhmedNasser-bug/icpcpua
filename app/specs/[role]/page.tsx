@@ -1,6 +1,4 @@
-import { notFound } from 'next/navigation';
-import { PuaSpecSheet } from '@/components/pua-spec-sheet';
-import { rolesData, RoleId } from '@/data/recruitment/roles';
+import { RoleSpecPage, roleSpecParams } from '@/components/recruitment/RoleSpecPage';
 
 interface PageProps {
     params: Promise<{
@@ -9,19 +7,10 @@ interface PageProps {
 }
 
 export function generateStaticParams() {
-    return Object.keys(rolesData).map((role) => ({
-        role: role,
-    }));
+    return roleSpecParams();
 }
 
 export default async function SpecSheetPage({ params }: PageProps) {
     const { role } = await params;
-    const roleKey = role as RoleId;
-    const data = rolesData[roleKey];
-
-    if (!data) {
-        notFound();
-    }
-
-    return <PuaSpecSheet data={data} />;
+    return <RoleSpecPage role={role} />;
 }
