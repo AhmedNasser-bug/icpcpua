@@ -1,9 +1,6 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { PuaNavbar } from "@/components/pua-navbar"
-import { Marquee } from "@/components/pua-marquee"
-import { Footer } from "@/components/footer"
 
 type EventType = "Bootcamp" | "Contest" | "Meetup"
 
@@ -116,9 +113,7 @@ export default function EventsPage() {
   while (cells.length < totalCells) cells.push(null)
 
   return (
-    <div className="min-h-screen flex flex-col overflow-x-hidden">
-      <PuaNavbar />
-
+    <>
       {selectedEvent && (
         <EventDetailModal event={selectedEvent} onClose={() => setSelectedEvent(null)} />
       )}
@@ -268,9 +263,6 @@ export default function EventsPage() {
           </div>
         </div>
       </main>
-
-      <Marquee />
-      <Footer />
-    </div>
+    </>
   )
 }

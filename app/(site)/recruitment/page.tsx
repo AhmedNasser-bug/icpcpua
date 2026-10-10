@@ -1,16 +1,10 @@
 import Link from 'next/link';
-import { PuaNavbar } from '@/components/pua-navbar';
-import { Marquee } from '@/components/pua-marquee';
-import { Footer } from '@/components/footer';
 import { EcosystemGraph } from '@/components/EcosystemGraph';
 import { Role3DCanvas } from '@/components/recruitment/Role3DCanvas';
 
 export default function RecruitmentLandingPage() {
     return (
-        <div className="bg-[#FFF4E0] text-[#0F0F0F] min-h-screen flex flex-col justify-between selection:bg-[#00E5FF] selection:text-[#0F0F0F]">
-            {/* Unified Site Navbar */}
-            <PuaNavbar />
-
+        <div className="bg-[#FFF4E0] text-[#0F0F0F] selection:bg-[#00E5FF] selection:text-[#0F0F0F]">
             {/* Quick Context Sub-Bar */}
             <div className="w-full bg-white border-b-[3px] border-[#0F0F0F] px-6 py-2.5 shadow-[4px_4px_0px_#0F0F0F]">
                 <div className="max-w-7xl mx-auto flex items-center justify-between text-xs font-bold uppercase tracking-wider font-mono">
@@ -286,10 +280,6 @@ export default function RecruitmentLandingPage() {
                 </section>
 
             </main>
-
-            {/* Unified Marquee & Footer */}
-            <Marquee />
-            <Footer />
         </div>
     );
 }

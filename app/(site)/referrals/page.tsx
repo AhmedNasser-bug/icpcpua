@@ -2,9 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { PuaNavbar } from "@/components/pua-navbar";
-import { Footer } from "@/components/footer";
-import { Marquee } from "@/components/pua-marquee";
 import {
   Share2,
   Copy,
@@ -147,8 +144,8 @@ export default function ReferralRewardPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FFF4E0] text-[#0F0F0F] selection:bg-[#00E5FF] selection:text-[#0F0F0F]">
-      <PuaNavbar />
+    <div className="flex-grow flex flex-col bg-[#FFF4E0] text-[#0F0F0F] selection:bg-[#00E5FF] selection:text-[#0F0F0F]">
+
 
       <main className="max-w-6xl mx-auto px-6 py-12 md:py-16 flex-1 w-full">
         {/* ── HERO BANNER ── */}
@@ -477,9 +474,6 @@ export default function ReferralRewardPage() {
           </div>
         </section>
       </main>
-
-      <Marquee />
-      <Footer />
     </div>
   );
 }

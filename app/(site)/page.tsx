@@ -1,9 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { PuaNavbar } from "@/components/pua-navbar"
-import { Marquee } from "@/components/pua-marquee"
-import { Footer } from "@/components/footer"
 import { JoinModal } from "@/components/home/join-modal"
 import { HeroSection } from "@/components/home/hero-section"
 import { StatsSection } from "@/components/home/stats-section"
@@ -18,9 +15,7 @@ export default function HomePage() {
   const handleCloseModal = () => setModalOpen(false)
 
   return (
-    <div className="min-h-screen flex flex-col overflow-x-hidden">
-      <PuaNavbar />
-
+    <>
       {modalOpen && <JoinModal onClose={handleCloseModal} />}
 
       <main id="main-content" className="flex-grow flex flex-col items-center w-full">
@@ -30,12 +25,6 @@ export default function HomePage() {
         <AboutSection />
         <JoinCtaSection onOpenModal={handleOpenModal} />
       </main>
-
-      {/* Scrolling marquee sits just above the footer */}
-      <Marquee />
-
-      {/* ── FEEDBACK BUCKET FOOTER ────────────── */}
-      <Footer />
-    </div>
+    </>
   )
 }

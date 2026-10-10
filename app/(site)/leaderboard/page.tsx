@@ -1,9 +1,6 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { PuaNavbar } from "@/components/pua-navbar"
-import { Marquee } from "@/components/pua-marquee"
-import { Footer } from "@/components/footer"
 import { Trophy, Flame, Sparkles, QrCode, RefreshCw, CheckCircle2 } from "lucide-react"
 
 interface LeaderboardUser {
@@ -63,9 +60,7 @@ export default function LeaderboardPage() {
   const rest = coders.slice(3)
 
   return (
-    <div className="min-h-screen flex flex-col overflow-x-hidden bg-[#FFFDF9]">
-      <PuaNavbar />
-
+    <div className="flex-grow flex flex-col bg-[#FFFDF9]">
       <main className="flex-grow w-full max-w-[1060px] mx-auto px-4 sm:px-6 py-12">
         {/* Page Header */}
         <div className="text-center mb-8 relative">
@@ -335,9 +330,6 @@ export default function LeaderboardPage() {
           </a>
         </div>
       </main>
-
-      <Marquee />
-      <Footer />
     </div>
   )
 }

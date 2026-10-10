@@ -1,9 +1,6 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { PuaNavbar } from "@/components/pua-navbar"
-import { Marquee } from "@/components/pua-marquee"
-import { Footer } from "@/components/footer"
 
 type Category = "All Sheets" | "Algorithms" | "Platforms" | "Bootcamps"
 
@@ -173,104 +170,97 @@ export default function ResourcesPage() {
   }, [filtered])
 
   return (
-    <div className="min-h-screen flex flex-col overflow-x-hidden">
-      <PuaNavbar />
+    <main className="flex-grow w-full max-w-[1440px] mx-auto px-10 py-12">
+      {/* Page Header */}
+      <div className="text-center mb-4">
+        <h1 className="font-display text-[56px] lg:text-[72px] leading-[0.9] uppercase text-shadow-cyan">
+          TRAINING<br />ARMORY
+        </h1>
+      </div>
+      <div className="flex justify-center mb-8">
+        <p className="font-body text-base max-w-xl text-center bg-[#FFD500] border-[3px] border-[#0F0F0F] shadow-solid-sm px-6 py-3 relative">
+          <span className="vector-node vector-node-tl" />
+          <span className="vector-node vector-node-br" />
+          Master the algorithms. Dominate the leaderboards. The tools of destruction are here.
+        </p>
+      </div>
 
-      <main className="flex-grow w-full max-w-[1440px] mx-auto px-10 py-12">
-        {/* Page Header */}
-        <div className="text-center mb-4">
-          <h1 className="font-display text-[56px] lg:text-[72px] leading-[0.9] uppercase text-shadow-cyan">
-            TRAINING<br />ARMORY
-          </h1>
-        </div>
-        <div className="flex justify-center mb-8">
-          <p className="font-body text-base max-w-xl text-center bg-[#FFD500] border-[3px] border-[#0F0F0F] shadow-solid-sm px-6 py-3 relative">
-            <span className="vector-node vector-node-tl" />
-            <span className="vector-node vector-node-br" />
-            Master the algorithms. Dominate the leaderboards. The tools of destruction are here.
-          </p>
-        </div>
+      {/* Filter pills */}
+      <div className="flex flex-wrap justify-center gap-3 mb-12">
+        {CATEGORIES.map((cat) => (
+          <button
+            key={cat}
+            onClick={() => setActiveCategory(cat)}
+            className={`filter-pill shadow-solid-sm ${
+              activeCategory === cat
+                ? "bg-[#7B2CBF] text-white border-[#7B2CBF] shadow-none translate-x-[4px] translate-y-[4px]"
+                : "bg-[#FFF4E0] text-[#0F0F0F] border-[#0F0F0F] hover:bg-[#0F0F0F] hover:text-white"
+            }`}
+          >
+            {cat.toUpperCase()}
+          </button>
+        ))}
+      </div>
 
-        {/* Filter pills */}
-        <div className="flex flex-wrap justify-center gap-3 mb-12">
-          {CATEGORIES.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`filter-pill shadow-solid-sm ${
-                activeCategory === cat
-                  ? "bg-[#7B2CBF] text-white border-[#7B2CBF] shadow-none translate-x-[4px] translate-y-[4px]"
-                  : "bg-[#FFF4E0] text-[#0F0F0F] border-[#0F0F0F] hover:bg-[#0F0F0F] hover:text-white"
-              }`}
-            >
-              {cat.toUpperCase()}
-            </button>
-          ))}
-        </div>
-
-        {/* Resource grid by category */}
-        {categoryGroups.map((group) => {
-          const groupResources = groupedResources[group] || []
-          if (groupResources.length === 0) return null
-          return (
-            <div key={group} className="mb-12">
-              {/* Category header with vector nodes */}
-              <div className="relative inline-flex items-center gap-3 mb-6">
-                <span className="w-4 h-4 border-[3px] border-[#0F0F0F] bg-[#7B2CBF] flex-shrink-0" />
-                <h2 className="font-display text-3xl uppercase text-[#0F0F0F]">{group.toUpperCase()}</h2>
-                <span className="w-4 h-4 border-[3px] border-[#0F0F0F] bg-[#7B2CBF] flex-shrink-0" />
-                <div className="ml-2 flex-1 border-b-[3px] border-dashed border-[#0F0F0F] min-w-[60px]" />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {groupResources.map((resource, i) => (
-                  <a
-                    key={i}
-                    href={resource.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="resource-card border-[3px] border-[#0F0F0F] shadow-solid p-6 flex flex-col gap-3 relative"
-                    style={{ backgroundColor: resource.bg }}
-                  >
-                    <span className="vector-node vector-node-tl" />
-                    <span className="vector-node vector-node-br" />
-
-                    {/* Icon + tag */}
-                    <div className="flex items-start justify-between">
-                      <div className="w-12 h-12 bg-white border-[3px] border-[#0F0F0F] flex items-center justify-center text-[#0F0F0F]">
-                        {resource.icon}
-                      </div>
-                      <span className={`font-body text-[10px] font-bold uppercase px-2 py-1 border-[2px] border-[#0F0F0F] ${
-                        resource.bg === "#FF0055" ? "bg-white text-[#0F0F0F]" : resource.bg === "#7B2CBF" ? "bg-[#FFD500] text-[#0F0F0F]" : "bg-[#7B2CBF] text-white"
-                      }`}>
-                        {resource.tag}
-                      </span>
-                    </div>
-
-                    {/* Title */}
-                    <h3 className={`font-display text-xl uppercase leading-tight ${resource.bg === "#FF0055" || resource.bg === "#7B2CBF" ? "text-white" : "text-[#0F0F0F]"}`}>
-                      {resource.title}
-                    </h3>
-
-                    {/* Description */}
-                    <p className={`font-body text-xs leading-relaxed flex-1 ${resource.bg === "#FF0055" || resource.bg === "#7B2CBF" ? "text-white/90" : "text-[#0F0F0F]"}`}>
-                      {resource.description}
-                    </p>
-
-                    {/* Arrow CTA */}
-                    <div className={`flex justify-end mt-2 font-display text-2xl font-bold ${resource.bg === "#FF0055" || resource.bg === "#7B2CBF" ? "text-white" : "text-[#0F0F0F]"}`}>
-                      -&gt;
-                    </div>
-                  </a>
-                ))}
-              </div>
+      {/* Resource grid by category */}
+      {categoryGroups.map((group) => {
+        const groupResources = groupedResources[group] || []
+        if (groupResources.length === 0) return null
+        return (
+          <div key={group} className="mb-12">
+            {/* Category header with vector nodes */}
+            <div className="relative inline-flex items-center gap-3 mb-6">
+              <span className="w-4 h-4 border-[3px] border-[#0F0F0F] bg-[#7B2CBF] flex-shrink-0" />
+              <h2 className="font-display text-3xl uppercase text-[#0F0F0F]">{group.toUpperCase()}</h2>
+              <span className="w-4 h-4 border-[3px] border-[#0F0F0F] bg-[#7B2CBF] flex-shrink-0" />
+              <div className="ml-2 flex-1 border-b-[3px] border-dashed border-[#0F0F0F] min-w-[60px]" />
             </div>
-          )
-        })}
-      </main>
 
-      <Marquee />
-      <Footer />
-    </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {groupResources.map((resource, i) => (
+                <a
+                  key={i}
+                  href={resource.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="resource-card border-[3px] border-[#0F0F0F] shadow-solid p-6 flex flex-col gap-3 relative"
+                  style={{ backgroundColor: resource.bg }}
+                >
+                  <span className="vector-node vector-node-tl" />
+                  <span className="vector-node vector-node-br" />
+
+                  {/* Icon + tag */}
+                  <div className="flex items-start justify-between">
+                    <div className="w-12 h-12 bg-white border-[3px] border-[#0F0F0F] flex items-center justify-center text-[#0F0F0F]">
+                      {resource.icon}
+                    </div>
+                    <span className={`font-body text-[10px] font-bold uppercase px-2 py-1 border-[2px] border-[#0F0F0F] ${
+                      resource.bg === "#FF0055" ? "bg-white text-[#0F0F0F]" : resource.bg === "#7B2CBF" ? "bg-[#FFD500] text-[#0F0F0F]" : "bg-[#7B2CBF] text-white"
+                    }`}>
+                      {resource.tag}
+                    </span>
+                  </div>
+
+                  {/* Title */}
+                  <h3 className={`font-display text-xl uppercase leading-tight ${resource.bg === "#FF0055" || resource.bg === "#7B2CBF" ? "text-white" : "text-[#0F0F0F]"}`}>
+                    {resource.title}
+                  </h3>
+
+                  {/* Description */}
+                  <p className={`font-body text-xs leading-relaxed flex-1 ${resource.bg === "#FF0055" || resource.bg === "#7B2CBF" ? "text-white/90" : "text-[#0F0F0F]"}`}>
+                    {resource.description}
+                  </p>
+
+                  {/* Arrow CTA */}
+                  <div className={`flex justify-end mt-2 font-display text-2xl font-bold ${resource.bg === "#FF0055" || resource.bg === "#7B2CBF" ? "text-white" : "text-[#0F0F0F]"}`}>
+                    -&gt;
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
+        )
+      })}
+    </main>
   )
 }

@@ -1,9 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { PuaNavbar } from "@/components/pua-navbar"
-import { Footer } from "@/components/footer"
-import { Marquee } from "@/components/pua-marquee"
 import { 
   Terminal, 
   Bug, 
@@ -145,8 +142,8 @@ export default function FeedbackBucketPage() {
     : drops.filter((d) => d.category === activeFilter)
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FFF4E0] text-[#0F0F0F]">
-      <PuaNavbar />
+    <div className="flex-grow flex flex-col bg-[#FFF4E0] text-[#0F0F0F]">
+
 
       <main className="max-w-[1440px] mx-auto px-6 md:px-10 py-12 flex-1 w-full">
         {/* ── HERO SECTION ── */}
@@ -424,9 +421,6 @@ export default function FeedbackBucketPage() {
           </div>
         </section>
       </main>
-
-      <Marquee />
-      <Footer />
     </div>
   )
 }

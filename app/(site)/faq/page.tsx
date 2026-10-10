@@ -2,9 +2,6 @@
 
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
-import { PuaNavbar } from "@/components/pua-navbar";
-import { Marquee } from "@/components/pua-marquee";
-import { Footer } from "@/components/footer";
 import {
   CORE_FAQ_ITEMS,
   CONTEST_LOGISTICS_FAQ,
@@ -219,9 +216,7 @@ export default function FAQPage() {
   }, [searchQuery]);
 
   return (
-    <div className="min-h-screen bg-[#FFF4E0] text-[#0F0F0F] selection:bg-[#00E5FF] selection:text-[#0F0F0F] flex flex-col justify-between">
-      {/* Unified Site Navbar */}
-      <PuaNavbar />
+    <div className="bg-[#FFF4E0] text-[#0F0F0F] selection:bg-[#00E5FF] selection:text-[#0F0F0F]">
 
       {/* Quick Context Sub-Bar */}
       <div className="w-full bg-white border-b-[3px] border-[#0F0F0F] px-6 py-2.5 shadow-[4px_4px_0px_#0F0F0F]">
@@ -545,10 +540,6 @@ export default function FAQPage() {
           </div>
         </section>
       </main>
-
-      {/* Unified Marquee & Footer */}
-      <Marquee />
-      <Footer />
     </div>
   );
 }
