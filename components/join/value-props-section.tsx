@@ -44,7 +44,7 @@ export function ValuePropsSection() {
           ].map((card) => (
             <div
               key={card.title}
-              className={`p-8 border-[3px] relative overflow-hidden hover:-translate-y-2 transition-transform duration-200 vector-node ${card.borderClass} ${card.bgClass}`}
+              className={`p-8 border-[3px] relative overflow-hidden hover:-translate-y-2 transition-transform duration-200 ${card.borderClass} ${card.bgClass}`}
             >
               <div className="mb-4">{card.icon}</div>
               <h3 className="font-display text-2xl text-white mb-3">{card.title}</h3>
