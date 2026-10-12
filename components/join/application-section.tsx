@@ -1,9 +1,10 @@
 "use client"
 
-import { useState, useEffect, Suspense } from "react"
+import { useState, Suspense } from "react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { recordBountyReferral } from "@/lib/bounty"
+import { useTraineeRegistration } from "@/hooks/use-trainee-registration"
 import { Check, Sparkles, Loader2, AlertCircle, Trophy, UserCheck } from "lucide-react"
 
 /* ─── Inner Form Logic with URL Params ─── */
@@ -11,81 +12,28 @@ function ApplicationFormContent() {
   const searchParams = useSearchParams()
   const refCodeParam = searchParams.get("ref") || ""
 
-  const [submitted, setSubmitted] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [creditedScout, setCreditedScout] = useState<string | null>(null)
-  const [awardedPoints, setAwardedPoints] = useState<number>(10)
 
-  const [form, setForm] = useState({
-    fullName: "",
-    universityId: "",
-    email: "",
-    phone: "",
-    academicYear: "Year 1",
-    track: "level_1",
-    codeforcesHandle: "",
-    referralCode: refCodeParam.toUpperCase(),
-  })
+  const { form, setForm, submitted, loading, errorMsg, awardedPoints, handleSubmit } =
+    useTraineeRegistration({
+      initialReferralCode: refCodeParam,
+      onRegistered: async (submittedForm) => {
+        if (!submittedForm.referralCode.trim()) return
 
-  useEffect(() => {
-    if (refCodeParam) {
-      setForm((prev) => ({ ...prev, referralCode: refCodeParam.toUpperCase() }))
-    }
-  }, [refCodeParam])
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setErrorMsg(null)
-    setLoading(true)
-
-    try {
-      // 1. Submit trainee registration to Firebase backend API
-      const res = await fetch("/api/trainees/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          fullName: form.fullName,
-          universityId: form.universityId,
-          email: form.email,
-          phone: form.phone,
-          academicYear: form.academicYear,
-          track: form.track,
-          codeforcesHandle: form.codeforcesHandle,
-        }),
-      })
-
-      const data = await res.json()
-
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || "Failed to register. Please check your data.")
-      }
-
-      setAwardedPoints(data.trainee?.pointsTotal || 10)
-
-      // 2. If referral code is present, record the referral credit
-      if (form.referralCode.trim()) {
         try {
           const bountyRes = await recordBountyReferral(
-            form.referralCode.trim(),
-            form.fullName.trim(),
-            form.universityId.trim()
+            submittedForm.referralCode.trim(),
+            submittedForm.fullName.trim(),
+            submittedForm.universityId.trim()
           )
           if (bountyRes.success) {
-            setCreditedScout(form.referralCode.trim())
+            setCreditedScout(submittedForm.referralCode.trim())
           }
         } catch (err) {
           console.error("Referral logging error:", err)
         }
-      }
-
-      setSubmitted(true)
-    } catch (err: any) {
-      setErrorMsg(err.message || "An unexpected error occurred during submission.")
-    } finally {
-      setLoading(false)
-    }
-  }
+      },
+    })
 
   if (submitted) {
     return (

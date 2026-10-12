@@ -1,26 +1,22 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useEffect, useRef } from "react"
 import Link from "next/link"
 import { Check, Sparkles, Loader2, AlertCircle } from "lucide-react"
+import { useTraineeRegistration } from "@/hooks/use-trainee-registration"
 
 export function JoinModal({ onClose }: { onClose: () => void }) {
-  const [submitted, setSubmitted] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [errorMsg, setErrorMsg] = useState<string | null>(null)
-  const [awardedPoints, setAwardedPoints] = useState<number>(10)
+  const {
+    form,
+    setForm,
+    submitted,
+    loading,
+    errorMsg,
+    awardedPoints,
+    handleSubmit,
+  } = useTraineeRegistration()
   const modalRef = useRef<HTMLDivElement>(null)
   const firstInputRef = useRef<HTMLInputElement>(null)
-
-  const [form, setForm] = useState({
-    fullName: "",
-    universityId: "",
-    email: "",
-    phone: "",
-    academicYear: "Year 1",
-    track: "level_1",
-    codeforcesHandle: "",
-  })
 
   // Keyboard accessibility: Escape key to close & focus trap
   useEffect(() => {
@@ -34,33 +30,6 @@ export function JoinModal({ onClose }: { onClose: () => void }) {
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [onClose])
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setErrorMsg(null)
-    setLoading(true)
-
-    try {
-      const res = await fetch("/api/trainees/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      })
-
-      const data = await res.json()
-
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || "Failed to register. Please check your data.")
-      }
-
-      setAwardedPoints(data.trainee?.pointsTotal || 10)
-      setSubmitted(true)
-    } catch (err: any) {
-      setErrorMsg(err.message || "An unexpected error occurred.")
-    } finally {
-      setLoading(false)
-    }
-  }
 
   return (
     <div
