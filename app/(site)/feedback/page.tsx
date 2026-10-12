@@ -24,10 +24,7 @@ interface DropItem {
   time: string
   message: string
   handle: string
-  badgeBg: string
-  badgeText: string
-  avatarBg: string
-  borderColor: string
+  avatarBg?: string
 }
 
 const INITIAL_DROPS: DropItem[] = [
@@ -37,10 +34,6 @@ const INITIAL_DROPS: DropItem[] = [
     time: "2m_AGO",
     message: "The leaderboard doesn't update in real-time on mobile Safari. Needs a fix ASAP for the upcoming contest!",
     handle: "USER_01",
-    badgeBg: "bg-[#0F0F0F]",
-    badgeText: "text-[#00E5FF]",
-    avatarBg: "bg-[#7B2CBF]",
-    borderColor: "shadow-[6px_6px_0px_#00E5FF]",
   },
   {
     id: "drop-2",
@@ -48,10 +41,6 @@ const INITIAL_DROPS: DropItem[] = [
     time: "1h_AGO",
     message: "Shoutout to the dev team for the new dark mode and neo-brutalist theme. Late-night practice is so much cleaner now.",
     handle: "DARK_MODE_LOVER",
-    badgeBg: "bg-[#7B2CBF]",
-    badgeText: "text-white",
-    avatarBg: "bg-[#00E5FF]",
-    borderColor: "shadow-[6px_6px_0px_#7B2CBF]",
   },
   {
     id: "drop-3",
@@ -59,10 +48,7 @@ const INITIAL_DROPS: DropItem[] = [
     time: "3h_AGO",
     message: "Can we add a 'Duel' mode where we can challenge specific people to a speed-coding round in C++?",
     handle: "COMP_GENIUS",
-    badgeBg: "bg-[#FFD500]",
-    badgeText: "text-[#0F0F0F]",
     avatarBg: "bg-[#0F0F0F]",
-    borderColor: "shadow-[6px_6px_0px_#0F0F0F]",
   },
 ]
 
@@ -114,17 +100,12 @@ export default function FeedbackBucketPage() {
     }
 
     setErrorMsg("")
-    const style = CATEGORY_STYLES[category]
     const newDrop: DropItem = {
       id: `drop-${Date.now()}`,
       category,
       time: "JUST_NOW",
       message: message.trim(),
       handle: "COMMUNITY_CODER",
-      badgeBg: style.badgeBg,
-      badgeText: style.badgeText,
-      avatarBg: style.avatarBg,
-      borderColor: style.borderShadow,
     }
 
     setDrops([newDrop, ...drops])
@@ -348,14 +329,15 @@ export default function FeedbackBucketPage() {
             {/* Drops List */}
             <div className="space-y-4">
               {filteredDrops.map((drop) => {
-                const IconComponent = CATEGORY_STYLES[drop.category]?.icon || MessageSquare
+                const style = CATEGORY_STYLES[drop.category]
+                const IconComponent = style?.icon || MessageSquare
                 return (
                   <div
                     key={drop.id}
-                    className={`bg-white border-[3px] border-[#0F0F0F] p-5 ${drop.borderColor} relative group hover:-rotate-1 transition-transform`}
+                    className={`bg-white border-[3px] border-[#0F0F0F] p-5 ${style.borderShadow} relative group hover:-rotate-1 transition-transform`}
                   >
                     <div className="flex justify-between items-start mb-3">
-                      <span className={`${drop.badgeBg} ${drop.badgeText} px-2 py-1 font-body text-xs font-bold border border-[#0F0F0F] flex items-center gap-1.5`}>
+                      <span className={`${style.badgeBg} ${style.badgeText} px-2 py-1 font-body text-xs font-bold border border-[#0F0F0F] flex items-center gap-1.5`}>
                         <IconComponent className="w-3.5 h-3.5" />
                         #{drop.category}
                       </span>
@@ -369,7 +351,7 @@ export default function FeedbackBucketPage() {
                     </p>
 
                     <div className="flex items-center gap-2 pt-2 border-t border-zinc-200">
-                      <div className={`w-5 h-5 rounded-full ${drop.avatarBg} border-2 border-[#0F0F0F] shrink-0`} />
+                      <div className={`w-5 h-5 rounded-full ${drop.avatarBg || style.avatarBg} border-2 border-[#0F0F0F] shrink-0`} />
                       <span className="text-xs font-bold font-body text-[#0F0F0F]">
                         {drop.handle}
                       </span>
