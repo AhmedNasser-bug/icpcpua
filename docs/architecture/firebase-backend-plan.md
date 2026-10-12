@@ -21,6 +21,7 @@
 > and `registration_welcome` is an additional point-event type.
 
 **Target Subsystems:**
+
 1. Trainee Registration Engine (`/join`, `JoinModal`, `/api/trainees/register`)
 2. Event-Driven Extensible Leaderboard (`/leaderboard`, `/api/leaderboard`, `/api/points/event`)
 3. Multi-Committee Role Schema & HR Audit Logs (`trainees`, `applications`, `point_events`, `hr_records`)
@@ -79,7 +80,9 @@ flowchart TD
 ## 2. Firestore Collections Schema Definition
 
 ### A. `trainees` (Collection)
+
 Primary identifier: `id` (Auto-generated UID or sanitized University ID).
+
 ```typescript
 interface TraineeDocument {
   id: string;
@@ -106,7 +109,9 @@ interface TraineeDocument {
 ```
 
 ### B. `point_events` (Collection - Immutable Ledger)
+
 Tracks every single point mutation, ensuring mathematical traceability and prevention of double-scanning.
+
 ```typescript
 interface PointEventDocument {
   id: string;
@@ -126,7 +131,9 @@ interface PointEventDocument {
 ```
 
 ### C. `applications` (Collection - Future Committee Hiring)
+
 Directly mapped to the Leadership Directory Handbook for 5 committees.
+
 ```typescript
 interface ApplicationDocument {
   id: string;
@@ -146,7 +153,9 @@ interface ApplicationDocument {
 ```
 
 ### D. `hr_records` (Collection - HR Monitoring & Strict Zero Martyrdom)
+
 Directly implementing the Universal Rules of the ICPC PUA Handbook.
+
 ```typescript
 interface HRRecordDocument {
   id: string;

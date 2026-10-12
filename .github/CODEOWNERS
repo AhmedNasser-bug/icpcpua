@@ -1,0 +1,8 @@
+# Documentation owners. Keep docs changes reviewed by the maintainer.
+
+/docs/           @AhmedNasser-bug
+/README.md       @AhmedNasser-bug
+/CONTRIBUTING.md @AhmedNasser-bug
+/AGENTS.md       @AhmedNasser-bug
+/SECURITY.md     @AhmedNasser-bug
+/LICENSE         @AhmedNasser-bug

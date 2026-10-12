@@ -1,0 +1,16 @@
+{
+  "globs": ["**/*.md"],
+  "ignores": [
+    ".next/**",
+    "coverage/**",
+    "node_modules/**",
+    "playwright-report/**",
+    "test-results/**"
+  ],
+  // Keep line-length out of scope: docs use long URLs, tables and Mermaid lines.
+  // MD060 only enforces table pipe spacing, which the existing docs do not use.
+  "config": {
+    "MD013": false,
+    "MD060": false
+  }
+}

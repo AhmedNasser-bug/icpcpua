@@ -13,15 +13,19 @@ pnpm dev                # dev server on :3000
 pnpm build              # production build
 pnpm start              # serve the production build
 pnpm lint               # eslint (flat config)
+pnpm lint:md            # markdownlint
+pnpm check:docs         # relative markdown link check
+pnpm knip               # dead code and unused dependency check
 pnpm typecheck          # tsc --noEmit
 pnpm test               # vitest run
 pnpm test:coverage      # vitest run --coverage (enforces thresholds)
 pnpm test:e2e           # playwright (builds + serves unless E2E_SKIP_BUILD=1)
 ```
 
-Run `pnpm lint`, `pnpm typecheck` and `pnpm test` after changes. Anything that
-touches `components/recruitment/*` or `app/(site)/recruitment/page.tsx` should
-also run `pnpm test:e2e` (Playwright browsers: `pnpm exec playwright install chromium`).
+Run `pnpm lint`, `pnpm typecheck` and `pnpm test` after changes; docs changes
+also need `pnpm lint:md` and `pnpm check:docs`. Anything that touches
+`components/recruitment/*` or `app/(site)/recruitment/page.tsx` should also run
+`pnpm test:e2e` (Playwright browsers: `pnpm exec playwright install chromium`).
 
 ## Where to look
 
@@ -59,7 +63,7 @@ under `tests/`; browser specs live in `e2e/`. Start architecture work from
   alias of `instructor` and must stay out of the card count
   (`data/recruitment/roles.ts`).
 - Coverage thresholds live in `vitest.config.mts`; CI runs `test:coverage`
-  (which runs the suite once), then lint, typecheck and build, plus a separate
-  Playwright job.
+  (which runs the suite once), then lint, markdown lint, the docs link check,
+  knip, typecheck and build, plus a separate Playwright job.
 - `.next/`, `coverage/`, `playwright-report/` and `test-results/` are ignored
   build artifacts; never commit them.

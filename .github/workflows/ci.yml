@@ -39,6 +39,15 @@ jobs:
       - name: Lint
         run: pnpm lint
 
+      - name: Markdown lint
+        run: pnpm lint:md
+
+      - name: Documentation link check
+        run: pnpm check:docs
+
+      - name: Dead code and unused dependency check
+        run: pnpm knip
+
       - name: Typecheck
         run: pnpm typecheck
 

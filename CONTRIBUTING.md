@@ -34,6 +34,13 @@ pnpm typecheck     # tsc --noEmit
 pnpm test          # Vitest, one run
 ```
 
+Docs changes also need the documentation checks:
+
+```bash
+pnpm lint:md       # markdownlint
+pnpm check:docs    # relative markdown links
+```
+
 Anything that touches `components/recruitment/*` or
 `app/(site)/recruitment/page.tsx` should also run the browser suite:
 
@@ -57,8 +64,8 @@ covered by Playwright instead and is excluded from Vitest coverage.
 `.github/workflows/ci.yml` runs two jobs on every push to `main` and every pull
 request:
 
-- **quality** — `pnpm test:coverage`, then `pnpm lint`, `pnpm typecheck` and
-  `pnpm build`.
+- **quality** — `pnpm test:coverage`, then `pnpm lint`, `pnpm lint:md`,
+  `pnpm check:docs`, `pnpm knip`, `pnpm typecheck` and `pnpm build`.
 - **e2e** — a production build followed by `pnpm test:e2e` with
   `E2E_SKIP_BUILD=1`; the Playwright report is uploaded as an artifact.
 

@@ -52,15 +52,19 @@ components:
     boxShadow: "0px 0px 0px 0px #0F0F0F"
 ---
 
+# PUA ICPC design system
+
 These tokens are implemented in `app/globals.css` (`:root` variables and the
 `.font-display`, `.shadow-solid`, `.vector-node` and related utilities).
 
 ## Brand & Style
+
 The design system embraces a high-contrast **Neo-Brutalist** aesthetic meant to reflect the raw, "no soft code allowed" culture of the ICPC PUA technical corps. It prioritizes bold structural lines, high-impact typography, and saturated brand colors that demand attention.
 
 The visual language is chaotic yet controlled, mirroring the intensity of algorithmic competitive programming. Shadows are harsh and solid, eschewing soft blur effects for strict geometric drops. UI borders are thick and unyielding, signaling a system without ambiguity.
 
 ## Colors
+
 The color palette relies on a stark canvas interrupted by aggressive primary and accent colors that provide energy and hierarchy.
 
 - **Background:** `Peach Cream (#FFF4E0)` provides a slightly warmer foundation than stark white, allowing the intense colors to stand out.
@@ -70,6 +74,7 @@ The color palette relies on a stark canvas interrupted by aggressive primary and
 - **Structure:** `Onyx (#0F0F0F)` is used relentlessly for all boundaries, text, and shadows to maintain the brutalist grounding.
 
 ## Typography
+
 The system employs clashing but intentional typography to enforce hierarchy and identity.
 
 - **Headlines:** Uses **Fredoka**, heavily weighted and uppercase, to yell at the user. Tracking is extremely tight (`tracking-tighter` or `-0.04em`) to forge block-like visual masses.
@@ -77,6 +82,7 @@ The system employs clashing but intentional typography to enforce hierarchy and 
 - **Sub-headers & Labels:** **Space Grotesk** serves as the bridge between the headline and body, used heavily in italicized uppercase for metadata labels.
 
 ## Layout & Spacing
+
 The layout ignores traditional delicate whitespace padding in favor of block-based rigid architectures.
 
 - **Grids:** Interfaces heavily utilize structural grids with pronounced borders, enforcing hard separation of concerns.
@@ -84,12 +90,14 @@ The layout ignores traditional delicate whitespace padding in favor of block-bas
 - **Vector Nodes:** Uniquely, the system incorporates absolute-positioned decorative `[ ]` bounding boxes ("vector nodes", white squares with black borders) sitting atop structural corners, pushing a blueprint/architectural feel.
 
 ## Elevation & Depth
+
 Depth is mechanical and analog rather than simulated light.
 
 - **Shadows:** Cast shadows have exactly `0px` blur radius (`4px`, `8px`, `12px`, or `16px` solid `#0F0F0F` offset drops).
 - **Interactions (Push-down):** Hover or active states translate components physically down and right while compressing the shadow to `0px`, perfectly simulating a heavy mechanical switch being pushed into the screen.
 
 ## Shapes
+
 Curves do not belong here.
 
 - **Containers:** All components maintain a rigid `0px` border radius (`rounded-none`).
