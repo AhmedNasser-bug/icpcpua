@@ -41,7 +41,7 @@ graph TD
   subgraph State ["Shared Logic (hooks/, lib/, data/)"]
     REG_HOOK["useTraineeRegistration (intake form state + API call)"]
     BOUNTY["lib/bounty (Supabase referral tracking)"]
-    FIREBASE["lib/firebase-schema, firebase-admin, firebase"]
+    FIREBASE["lib/firebase-schema, firebase-admin"]
     FAQ_DATA["data/faq, data/recruitment/roles"]
   end
 

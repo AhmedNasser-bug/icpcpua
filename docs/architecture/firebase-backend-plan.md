@@ -6,7 +6,7 @@
 1. Trainee Registration Engine (`/join`, `JoinModal`, `/api/trainees/register`)
 2. Event-Driven Extensible Leaderboard (`/leaderboard`, `/api/leaderboard`, `/api/points/event`)
 3. Multi-Committee Role Schema & HR Audit Logs (`trainees`, `applications`, `point_events`, `hr_records`)
-4. Firebase & Firestore Data Access Layer (`lib/firebase.ts`, `lib/firebase-admin.ts`)
+4. Firestore Data Access Layer (`lib/firebase-admin.ts`, `lib/firebase-schema.ts`)
 
 ---
 
@@ -148,8 +148,8 @@ interface HRRecordDocument {
 ## 3. Atomic Execution Plan
 
 1. **Firebase Dependencies & Configuration:**
-   - Install `firebase` and `firebase-admin`.
-   - Setup client configuration (`lib/firebase.ts`) and server-side admin initialization with graceful fallback (`lib/firebase-admin.ts`).
+   - Install `firebase-admin` (all data access runs server-side through the API routes).
+   - Setup server-side admin initialization with graceful fallback (`lib/firebase-admin.ts`).
 2. **Backend API Endpoints:**
    - `POST /api/trainees/register`: Lean registration validation, duplicate ID check, initial welcome point allocation event.
    - `POST /api/points/event`: Scalable event-driven point router (supports QR scans, session attendance, manual coach increments).
