@@ -62,6 +62,12 @@ const FALLBACK_LEADERBOARD = [
   },
 ]
 
+function getFallbackLeaderboard(track: string | null) {
+  return track && track !== "all"
+    ? FALLBACK_LEADERBOARD.filter((u) => u.track === track)
+    : FALLBACK_LEADERBOARD
+}
+
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url)
@@ -70,9 +76,7 @@ export async function GET(req: Request) {
 
     if (!adminDb) {
       // Return filtered fallback data
-      const filtered = track && track !== "all"
-        ? FALLBACK_LEADERBOARD.filter((u) => u.track === track)
-        : FALLBACK_LEADERBOARD
+      const filtered = getFallbackLeaderboard(track)
 
       return NextResponse.json({
         success: true,
@@ -97,9 +101,7 @@ export async function GET(req: Request) {
 
     if (snapshot.empty) {
       // If collection is empty, gracefully return initial seed leaderboard
-      const filtered = track && track !== "all"
-        ? FALLBACK_LEADERBOARD.filter((u) => u.track === track)
-        : FALLBACK_LEADERBOARD
+      const filtered = getFallbackLeaderboard(track)
 
       return NextResponse.json({
         success: true,
