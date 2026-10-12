@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Role3DCanvas, Role3DType } from "./Role3DCanvas";
+import { rolesData } from "@/data/recruitment/roles";
 
 interface RoleMeta {
   id: Role3DType;
@@ -17,68 +18,59 @@ interface RoleMeta {
   desc: string;
 }
 
-const ROLES_META: RoleMeta[] = [
+type RoleConsoleCopy = Omit<RoleMeta, "lvl" | "color" | "textColor" | "specUrl">;
+
+const ROLE_CONSOLE_COPY: RoleConsoleCopy[] = [
   {
     id: "instructor",
     title: "The Instructor",
-    lvl: "LVL_01",
-    color: "#FFD500",
-    textColor: "#0F0F0F",
     engineName: "BINARY_TREE_TRAVERSAL_v4",
     complexity: "O(log N) SEARCH SPACE",
     metric: "99% RUNTIME OPTIMIZATION",
-    specUrl: "/specs/instructor",
     desc: "Algorithmic problem set architecture, dynamic tree traversal, and low-latency competitive training simulations.",
   },
   {
     id: "ops-pr",
     title: "Operations & PR",
-    lvl: "LVL_02",
-    color: "#00E5FF",
-    textColor: "#0F0F0F",
     engineName: "RADAR_PHASED_ARRAY_2.4GHZ",
     complexity: "360° SWEEP OMNICHANNEL",
     metric: "ENGAGEMENT VELOCITY",
-    specUrl: "/specs/ops-pr",
     desc: "Surgical logistics, broadcast wave propagation, and campus brand domination without generic templates.",
   },
   {
     id: "hr",
     title: "HR / Monitoring",
-    lvl: "LVL_03",
-    color: "#7B2CBF",
-    textColor: "#FFFFFF",
     engineName: "GYROSCOPIC_EQUILIBRIUM_CORE",
     complexity: "3-AXIS PSYCHOLOGICAL SHIELD",
     metric: "ZERO OPERATIONAL CRISES",
-    specUrl: "/specs/hr",
     desc: "Human behavioral analysis, conflict de-escalation, and systemic equilibrium to protect student leaders from burnout.",
   },
   {
     id: "design-dev",
     title: "Design / Dev",
-    lvl: "LVL_04",
-    color: "#FF0055",
-    textColor: "#FFFFFF",
     engineName: "4D_TESSERACT_HYPERCUBE",
     complexity: "16-VERTEX MATRIX PROJECTION",
     metric: "<200MS SSR LATENCY",
-    specUrl: "/specs/design-dev",
     desc: "Brutalist geometric architecture, high-density component engineering, and total elimination of soft shadows.",
   },
   {
     id: "marketing",
     title: "Specialised Marketing",
-    lvl: "LVL_05",
-    color: "#FF6B00",
-    textColor: "#FFFFFF",
     engineName: "HYPERBOLIC_GROWTH_VORTEX",
     complexity: "140-PARTICLE ACCELERATOR",
     metric: "3.5X REGISTRATION GROWTH",
-    specUrl: "/specs/marketing",
     desc: "Ground game offensive, high-conversion short clips, and leaderboards designed to engineer omnipresent hype.",
   },
 ];
+
+/** Presentation copy plus structural metadata sourced from the role registry. */
+const ROLES_META: RoleMeta[] = ROLE_CONSOLE_COPY.map((copy) => ({
+  ...copy,
+  lvl: rolesData[copy.id].levelBadge,
+  color: rolesData[copy.id].themeColor,
+  textColor: rolesData[copy.id].themeText,
+  specUrl: `/specs/${copy.id}`,
+}));
 
 export function RoleInspectorConsole() {
   const [selectedRole, setSelectedRole] = useState<Role3DType>("instructor");
