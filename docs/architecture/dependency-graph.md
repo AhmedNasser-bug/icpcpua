@@ -31,6 +31,8 @@ graph TD
   CONSOLE["components/recruitment/RoleInspectorConsole.tsx"]
   CARD["components/recruitment/role-card.tsx"]
   CANVAS["components/recruitment/Role3DCanvas.tsx"]
+  CANVAS_SCENE["components/recruitment/role-canvas-scene.ts (lazy)"]
+  SCENES["components/recruitment/role-scenes.ts"]
 
   HOME_SECTIONS["components/home/*"]
   JOIN_SECTIONS["components/join/*"]
@@ -81,6 +83,8 @@ graph TD
   CARD --> CANVAS
   CARD --> ROLE_DATA
   CONSOLE --> CANVAS
+  CANVAS -.->|"dynamic import"| CANVAS_SCENE
+  CANVAS_SCENE --> SCENES
   PAGE_REFERRALS --> REFERRAL_SECTIONS
   PAGE_REFERRALS --> BOUNTY
   PAGE_REFERRALS --> BOUNTY_STORAGE

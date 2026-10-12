@@ -35,7 +35,7 @@ graph TD
     MARQUEE["PuaMarquee (Brutalist Banner)"]
     SPEC["PuaSpecSheet + RoleSpecPage (Role Specifications)"]
     CONSOLE["RoleInspectorConsole (3D Role Matrix)"]
-    CANVAS["Role3DCanvas (Procedural Three.js Scenes)"]
+    CANVAS["Role3DCanvas + role-canvas-scene (Procedural Three.js Scenes, lazy-loaded)"]
   end
 
   subgraph State ["Shared Logic (hooks/, lib/, data/)"]

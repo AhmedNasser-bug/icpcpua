@@ -85,13 +85,14 @@ proposed except the Tier 4 extraction of the 3D scene module (own commit).
 
 1. docs: plan + baseline
 2. refactor: un-export module-local types (Tier 1.1–1.3)
-3. chore(deps): drop unused `@testing-library/dom` (Tier 1.4)
-4. docs: fix README commands and stale architecture claims (Tier 1.5–1.6)
-5. refactor: move three.js scene code into `role-canvas-scene.ts` (pure move)
-6. perf: lazy-load the 3D scene module (Tier 4.1)
-7. chore(deps): patch/minor + security updates (Tier 3.5)
-8. ci: drop duplicate unit-test step (Tier 4.2)
-9. docs: AGENTS.md + cleanup report
+3. docs: fix README commands and stale architecture claims (Tier 1.5–1.6)
+4. refactor: move three.js scene code into `role-canvas-scene.ts` (pure move)
+5. perf: lazy-load the 3D scene module (Tier 4.1)
+6. chore(deps): patch/minor + security updates (Tier 3.5)
+7. ci: drop duplicate unit-test step (Tier 4.2)
+8. docs: AGENTS.md + cleanup report
+
+(Tier 1.4 was verified as a false positive and intentionally skipped.)
 
 ## Needs decision (not executed)
 
