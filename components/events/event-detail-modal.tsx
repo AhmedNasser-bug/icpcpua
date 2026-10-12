@@ -1,5 +1,6 @@
+import Link from "next/link"
 import { VectorNodes } from "@/components/vector-nodes"
-import { CalendarEvent, TYPE_COLORS } from "./event-meta"
+import { CalendarEvent, TYPE_COLORS, formatEventDate } from "./event-meta"
 
 export function EventDetailModal({ event, onClose }: { event: CalendarEvent; onClose: () => void }) {
   return (
@@ -20,7 +21,7 @@ export function EventDetailModal({ event, onClose }: { event: CalendarEvent; onC
         <div className="bg-white border-[3px] border-[#0F0F0F] p-4 flex flex-col gap-2">
           <div className="flex items-center gap-2 font-body text-sm">
             <span className="font-bold uppercase">Date:</span>
-            <span>{event.date}</span>
+            <span>{formatEventDate(event.date)}</span>
           </div>
           {event.time && (
             <div className="flex items-center gap-2 font-body text-sm">
@@ -37,9 +38,12 @@ export function EventDetailModal({ event, onClose }: { event: CalendarEvent; onC
           <p className="font-body text-sm mt-2 pt-2 border-t-[2px] border-[#0F0F0F]">{event.description}</p>
         </div>
         {event.registration && (
-          <button className="btn-solid mt-4 w-full bg-[#7B2CBF] text-white font-display text-lg uppercase tracking-wider border-[3px] border-[#0F0F0F] shadow-solid py-3">
+          <Link
+            href="/join"
+            className="btn-solid mt-4 w-full bg-[#7B2CBF] text-white font-display text-lg uppercase tracking-wider border-[3px] border-[#0F0F0F] shadow-solid py-3 text-center block"
+          >
             REGISTER NOW
-          </button>
+          </Link>
         )}
       </div>
     </div>

@@ -2,27 +2,34 @@
 
 import { useState, useMemo } from "react"
 import { VectorNodes } from "@/components/vector-nodes"
-import { EventType, CalendarEvent, TYPE_COLORS } from "@/components/events/event-meta"
+import {
+  EventType,
+  CalendarEvent,
+  TYPE_COLORS,
+  MONTH_NAMES,
+  formatEventDate,
+  getEventDateParts,
+} from "@/components/events/event-meta"
 import { EventDetailModal } from "@/components/events/event-detail-modal"
 
 const EVENTS: CalendarEvent[] = [
-  { day: 4, title: "Codeforces Round #888 (Div. 2)", type: "Contest", date: "OCT 04", time: "17:35 UTC+3", description: "Rated Codeforces round for all Div. 2 participants. Form a team or go solo.", registration: false },
-  { day: 5, title: "Graph Theory Bootcamp - Day 1", type: "Bootcamp", date: "OCT 05", location: "Lab 402, Building C", description: "BFS, DFS, and shortest path foundations. Bring your laptop.", registration: true },
-  { day: 6, title: "Graph Theory Bootcamp - Day 2", type: "Bootcamp", date: "OCT 06", location: "Lab 402, Building C", description: "Dijkstra, MST, and DSU heavy practice.", registration: true },
-  { day: 13, title: "ECPC Qualifications", type: "Contest", date: "OCT 13", description: "Egyptian Collegiate Programming Contest qualifications. Registration required.", registration: true },
-  { day: 18, title: "Team Meetup", type: "Meetup", date: "OCT 18", location: "Building C - Room 204", description: "Weekly team sync. Discuss contest strategies and problem sets.", registration: false },
+  { date: "2023-10-04", title: "Codeforces Round #888 (Div. 2)", type: "Contest", time: "17:35 UTC+3", description: "Rated Codeforces round for all Div. 2 participants. Form a team or go solo.", registration: false },
+  { date: "2023-10-05", title: "Graph Theory Bootcamp - Day 1", type: "Bootcamp", location: "Lab 402, Building C", description: "BFS, DFS, and shortest path foundations. Bring your laptop.", registration: true },
+  { date: "2023-10-06", title: "Graph Theory Bootcamp - Day 2", type: "Bootcamp", location: "Lab 402, Building C", description: "Dijkstra, MST, and DSU heavy practice.", registration: true },
+  { date: "2023-10-13", title: "ECPC Qualifications", type: "Contest", description: "Egyptian Collegiate Programming Contest qualifications. Registration required.", registration: true },
+  { date: "2023-10-18", title: "Team Meetup", type: "Meetup", location: "Building C - Room 204", description: "Weekly team sync. Discuss contest strategies and problem sets.", registration: false },
 ]
 
 const DAYS_OF_WEEK = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
 
-// October 2023 starts on Sunday
-const OCTOBER_OFFSET = 0
-const OCTOBER_DAYS = 31
+// The Events & Training calendar opens on the season kickoff month.
+const INITIAL_MONTH = { year: 2023, month: 9 } // October 2023 (0-indexed month)
+const TOTAL_CELLS = 42
 
 export default function EventsPage() {
   const [activeFilter, setActiveFilter] = useState<EventType | "All">("All")
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null)
-  const [currentMonth] = useState({ month: "OCTOBER", year: "2023" })
+  const [currentMonth, setCurrentMonth] = useState(INITIAL_MONTH)
 
   const filteredEvents = useMemo(() => {
     return activeFilter === "All"
@@ -30,8 +37,22 @@ export default function EventsPage() {
       : EVENTS.filter((e) => e.type === activeFilter)
   }, [activeFilter])
 
+  const { year, month } = currentMonth
+  const firstWeekday = new Date(Date.UTC(year, month, 1)).getUTCDay()
+  const daysInMonth = new Date(Date.UTC(year, month + 1, 0)).getUTCDate()
+
   const getDayEvents = (day: number) =>
-    filteredEvents.filter((e) => e.day === day)
+    filteredEvents.filter((e) => {
+      const parts = getEventDateParts(e.date)
+      return parts.year === year && parts.month === month && parts.day === day
+    })
+
+  const goToMonth = (offset: number) => {
+    setCurrentMonth((prev) => {
+      const next = new Date(Date.UTC(prev.year, prev.month + offset, 1))
+      return { year: next.getUTCFullYear(), month: next.getUTCMonth() }
+    })
+  }
 
   const filters: Array<EventType | "All"> = ["All", "Bootcamp", "Contest", "Meetup"]
   const filterColors: Record<string, string> = {
@@ -41,12 +62,11 @@ export default function EventsPage() {
     Meetup: "bg-[#7B2CBF] text-white border-[#7B2CBF]",
   }
 
-  // Build calendar grid cells (Oct 2023 starts Sunday = day 0)
-  const totalCells = 42
+  // Build the displayed month grid from its leading weekday offset and length.
   const cells: Array<number | null> = []
-  for (let i = 0; i < OCTOBER_OFFSET; i++) cells.push(null)
-  for (let d = 1; d <= OCTOBER_DAYS; d++) cells.push(d)
-  while (cells.length < totalCells) cells.push(null)
+  for (let i = 0; i < firstWeekday; i++) cells.push(null)
+  for (let d = 1; d <= daysInMonth; d++) cells.push(d)
+  while (cells.length < TOTAL_CELLS) cells.push(null)
 
   return (
     <>
@@ -88,14 +108,24 @@ export default function EventsPage() {
 
               {/* Calendar header */}
               <div className="flex items-center justify-between px-6 py-4 border-b-[3px] border-[#0F0F0F] bg-[#FFF4E0]">
-                <button className="w-10 h-10 border-[3px] border-[#0F0F0F] bg-[#7B2CBF] text-white font-display text-lg shadow-solid-sm btn-solid flex items-center justify-center">
+                <button
+                  type="button"
+                  onClick={() => goToMonth(-1)}
+                  aria-label="Previous month"
+                  className="w-10 h-10 border-[3px] border-[#0F0F0F] bg-[#7B2CBF] text-white font-display text-lg shadow-solid-sm btn-solid flex items-center justify-center"
+                >
                   &#8249;
                 </button>
                 <h2 className="font-display text-2xl uppercase tracking-wider">
-                  {currentMonth.month}{" "}
-                  <span className="text-[#7B2CBF]">{currentMonth.year}</span>
+                  {MONTH_NAMES[month]}{" "}
+                  <span className="text-[#7B2CBF]">{year}</span>
                 </h2>
-                <button className="w-10 h-10 border-[3px] border-[#0F0F0F] bg-[#7B2CBF] text-white font-display text-lg shadow-solid-sm btn-solid flex items-center justify-center">
+                <button
+                  type="button"
+                  onClick={() => goToMonth(1)}
+                  aria-label="Next month"
+                  className="w-10 h-10 border-[3px] border-[#0F0F0F] bg-[#7B2CBF] text-white font-display text-lg shadow-solid-sm btn-solid flex items-center justify-center"
+                >
                   &#8250;
                 </button>
               </div>
@@ -116,7 +146,7 @@ export default function EventsPage() {
               <div className="grid grid-cols-7">
                 {cells.map((day, i) => {
                   const dayEvents = day ? getDayEvents(day) : []
-                  const isLastRow = i >= totalCells - 7
+                  const isLastRow = i >= TOTAL_CELLS - 7
                   const isLastCol = (i + 1) % 7 === 0
                   return (
                     <div
@@ -175,7 +205,7 @@ export default function EventsPage() {
                 >
                   <span className="vector-node vector-node-tl" />
                   <div className="flex items-center justify-between mb-2">
-                    <span className="font-body text-[10px] font-bold uppercase bg-[#FFF4E0] border-[2px] border-[#0F0F0F] px-2 py-0.5">{ev.date}</span>
+                    <span className="font-body text-[10px] font-bold uppercase bg-[#FFF4E0] border-[2px] border-[#0F0F0F] px-2 py-0.5">{formatEventDate(ev.date)}</span>
                     <span className={`font-body text-[10px] font-bold uppercase px-2 py-0.5 border-[2px] border-[#0F0F0F] ${TYPE_COLORS[ev.type]}`}>{ev.type}</span>
                   </div>
                   <h4 className="font-display text-lg uppercase text-[#0F0F0F] leading-tight">{ev.title}</h4>
