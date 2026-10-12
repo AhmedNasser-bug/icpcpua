@@ -12,7 +12,6 @@ import {
   RotateCcw,
   Sparkles,
   Layers,
-  Flame,
   MessageSquare
 } from "lucide-react"
 

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 
 export type Role3DType = "instructor" | "ops-pr" | "hr" | "design-dev" | "marketing";

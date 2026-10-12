@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Trophy, Flame, Sparkles, QrCode, RefreshCw, CheckCircle2 } from "lucide-react"
+import { Trophy, Flame, QrCode, RefreshCw, CheckCircle2 } from "lucide-react"
 
 interface LeaderboardUser {
   rank: number

@@ -1,5 +1,3 @@
-import React from "react";
-
 export function PuaLogo({ className = "", size = 400 }: { className?: string, size?: number }) {
   const scale = size / 400;
 

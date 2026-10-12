@@ -7,21 +7,16 @@ import { Footer } from "@/components/footer"
 import { Marquee } from "@/components/pua-marquee"
 import { RoleData } from "@/data/recruitment/roles"
 import {
-  Terminal,
   Shield,
   Star,
-  CheckCircle2,
   AlertTriangle,
   HelpCircle,
   ChevronDown,
   ArrowRight,
   BookOpen,
   Globe,
-  Award,
-  Sparkles,
   Zap,
-  Target,
-  FileCheck
+  Target
 } from "lucide-react"
 
 export function PuaSpecSheet({ data }: { data: RoleData }) {

@@ -6,15 +6,12 @@ import {
   Share2,
   Copy,
   Check,
-  Users,
   Trophy,
   RefreshCw,
   UserCheck,
   AlertCircle,
   CheckCircle2,
-  ArrowRight,
   Sparkles,
-  TrendingUp,
 } from "lucide-react";
 import {
   ScoutProfile,

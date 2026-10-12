@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { Role3DCanvas, Role3DType } from "./Role3DCanvas";
 
