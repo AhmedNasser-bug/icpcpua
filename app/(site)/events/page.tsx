@@ -22,6 +22,14 @@ const EVENTS: CalendarEvent[] = [
 
 const DAYS_OF_WEEK = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
 
+const FILTERS: Array<EventType | "All"> = ["All", "Bootcamp", "Contest", "Meetup"]
+const FILTER_COLORS: Record<EventType | "All", string> = {
+  All: "bg-[#7B2CBF] text-white border-[#7B2CBF]",
+  Bootcamp: "bg-[#FF0055] text-white border-[#FF0055]",
+  Contest: "bg-[#FFD500] text-[#0F0F0F] border-[#FFD500]",
+  Meetup: "bg-[#7B2CBF] text-white border-[#7B2CBF]",
+}
+
 // The Events & Training calendar opens on the season kickoff month.
 const INITIAL_MONTH = { year: 2023, month: 9 } // October 2023 (0-indexed month)
 const TOTAL_CELLS = 42
@@ -54,14 +62,6 @@ export default function EventsPage() {
     })
   }
 
-  const filters: Array<EventType | "All"> = ["All", "Bootcamp", "Contest", "Meetup"]
-  const filterColors: Record<string, string> = {
-    All: "bg-[#7B2CBF] text-white border-[#7B2CBF]",
-    Bootcamp: "bg-[#FF0055] text-white border-[#FF0055]",
-    Contest: "bg-[#FFD500] text-[#0F0F0F] border-[#FFD500]",
-    Meetup: "bg-[#7B2CBF] text-white border-[#7B2CBF]",
-  }
-
   // Build the displayed month grid from its leading weekday offset and length.
   const cells: Array<number | null> = []
   for (let i = 0; i < firstWeekday; i++) cells.push(null)
@@ -87,11 +87,11 @@ export default function EventsPage() {
           </div>
           {/* Filter pills */}
           <div className="flex flex-wrap gap-3">
-            {filters.map((f) => (
+            {FILTERS.map((f) => (
               <button
                 key={f}
                 onClick={() => setActiveFilter(f)}
-                className={`filter-pill shadow-solid-sm ${activeFilter === f ? filterColors[f] + " shadow-none translate-x-[4px] translate-y-[4px]" : "bg-[#FFF4E0] text-[#0F0F0F] border-[#0F0F0F] hover:bg-[#0F0F0F] hover:text-white"}`}
+                className={`filter-pill shadow-solid-sm ${activeFilter === f ? FILTER_COLORS[f] + " shadow-none translate-x-[4px] translate-y-[4px]" : "bg-[#FFF4E0] text-[#0F0F0F] border-[#0F0F0F] hover:bg-[#0F0F0F] hover:text-white"}`}
               >
                 {f === "All" ? "ALL SHEETS" : f.toUpperCase()}
               </button>

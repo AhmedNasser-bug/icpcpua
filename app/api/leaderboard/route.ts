@@ -62,6 +62,9 @@ const FALLBACK_LEADERBOARD = [
   },
 ]
 
+// Rotating avatar colors, assigned by rank position.
+const RANK_COLORS = ["#FFD500", "#E0E0E0", "#FF0055", "#00E5FF", "#7B2CBF"]
+
 function getFallbackLeaderboard(track: string | null) {
   return track && track !== "all"
     ? FALLBACK_LEADERBOARD.filter((u) => u.track === track)
@@ -120,8 +123,6 @@ export async function GET(req: Request) {
         .join("")
         .toUpperCase()
 
-      const colors = ["#FFD500", "#E0E0E0", "#FF0055", "#00E5FF", "#7B2CBF"]
-
       return {
         rank: index + 1,
         handle: data.codeforcesHandle ? `@${data.codeforcesHandle}` : `@user_${data.universityId.slice(-4)}`,
@@ -131,7 +132,7 @@ export async function GET(req: Request) {
         pointsTotal: data.pointsTotal || 0,
         track: data.track,
         initials: initials || "TR",
-        color: colors[index % colors.length],
+        color: RANK_COLORS[index % RANK_COLORS.length],
         universityId: data.universityId,
         attendedSessionsCount: data.attendedSessionsCount || 0,
         qrScansCount: data.qrScansCount || 0,
