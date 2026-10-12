@@ -37,14 +37,31 @@ pnpm test:watch     # re-run on change
 Tests mock Supabase and Firebase Admin, so no production credentials or live databases are required.
 Coverage thresholds are configured in `vitest.config.mts` and enforced by CI.
 
+The browser layer runs on [Playwright](https://playwright.dev) against a production build:
+
+```bash
+pnpm exec playwright install chromium  # once per machine (downloads the browser)
+pnpm test:e2e                          # build, start on port 3000 and run headless
+pnpm test:e2e:ui                       # interactive UI mode
+```
+
+`pnpm test:e2e` builds the app and serves it on `http://localhost:3000` before
+the specs run; set `E2E_SKIP_BUILD=1` to reuse an existing build. The shared
+fixture blocks Firebase and Supabase traffic and fails the test if any is
+attempted, so no credentials are needed. A dedicated `e2e` job in
+`.github/workflows/ci.yml` runs the same suite.
+
 ### Testing boundaries
 
 `components/recruitment/Role3DCanvas.tsx` and the procedural scenes in
 `components/recruitment/role-scenes.ts` are intentionally excluded from the
 Vitest suite and from coverage (`vitest.config.mts`). They require a real
 WebGL/Three.js rendering context that jsdom cannot provide, so unit tests would
-only exercise brittle mocks instead of observable 3D behavior. These components
-are deferred to end-to-end testing; no E2E suite exists in this repository yet.
+only exercise brittle mocks instead of observable 3D behavior. The E2E suite
+covers that boundary instead: `e2e/recruitment.spec.ts` asserts that each of
+the five recruitment cards mounts a visible canvas and obtains a live WebGL
+context with no context-loss errors. It does not compare pixels and is not a
+visual regression check.
 
 The surrounding `RoleInspectorConsole` is unit-tested with `Role3DCanvas`
 mocked, so the console's selection, telemetry and dossier logic stays covered.
