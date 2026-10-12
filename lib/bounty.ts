@@ -12,15 +12,6 @@ export interface ScoutProfile {
   updated_at: string
 }
 
-export interface BountyClaim {
-  id: string
-  scout_id: string
-  tier_id: string
-  tier_title: string
-  status: "pending" | "approved" | "dispatched"
-  created_at: string
-}
-
 /**
  * Generate a deterministic or clean referral code from name and uniId
  */
@@ -197,53 +188,6 @@ export async function recordBountyReferral(
     return { success: true, error: null }
   } catch (err) {
     return { success: false, error: getErrorMessage(err, "Failed to record referral.") }
-  }
-}
-
-/**
- * Claim an unlocked tier reward
- */
-export async function claimBountyReward(
-  scoutId: string,
-  tierId: string,
-  tierTitle: string
-): Promise<{ success: boolean; error: string | null }> {
-  try {
-    // 1. Insert claim record
-    const { error: claimError } = await supabase.from("bounty_claims").insert([
-      {
-        scout_id: scoutId,
-        tier_id: tierId,
-        tier_title: tierTitle,
-        status: "pending",
-      },
-    ])
-
-    if (claimError) {
-      return { success: false, error: claimError.message }
-    }
-
-    // 2. Fetch current claimed_tiers
-    const { data: scout } = await supabase
-      .from("bounty_scouts")
-      .select("claimed_tiers")
-      .eq("id", scoutId)
-      .single()
-
-    const currentClaimed = scout?.claimed_tiers || []
-    if (!currentClaimed.includes(tierId)) {
-      await supabase
-        .from("bounty_scouts")
-        .update({
-          claimed_tiers: [...currentClaimed, tierId],
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", scoutId)
-    }
-
-    return { success: true, error: null }
-  } catch (err) {
-    return { success: false, error: getErrorMessage(err, "Failed to submit claim.") }
   }
 }
 
