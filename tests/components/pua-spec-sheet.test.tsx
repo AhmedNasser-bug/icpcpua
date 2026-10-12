@@ -18,6 +18,13 @@ describe("PuaSpecSheet", () => {
     }
   })
 
+  it("links the TOP OF SPEC control to an existing top anchor", () => {
+    const { container } = render(<PuaSpecSheet data={instructor} />)
+
+    expect(container.querySelector("#top")).toBeTruthy()
+    expect(container.querySelector('a[href="#top"]')).toBeTruthy()
+  })
+
   it("links to every committee spec in the blueprint navigator", () => {
     const { container } = render(<PuaSpecSheet data={instructor} />)
 

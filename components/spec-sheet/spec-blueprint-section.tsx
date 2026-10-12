@@ -46,7 +46,7 @@ export function SpecBlueprintSection({ data, lang }: { data: RoleData; lang: Spe
               <ArrowRight className="w-5 h-5 rtl:rotate-180" />
             </Link>
             <a
-              href="#"
+              href="#top"
               className="btn-solid inline-flex items-center gap-2 bg-white text-[#0F0F0F] font-display text-base uppercase px-6 py-3 border-[3px] border-[#0F0F0F] shadow-[4px_4px_0px_#0F0F0F] hover:bg-[#FFD500] hover:translate-x-0.5 hover:-translate-y-0.5 transition-all"
             >
               <span>{lang === "en" ? "TOP OF SPEC" : "أعلى الصفحة"}</span>

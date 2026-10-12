@@ -19,6 +19,7 @@ export function PuaSpecSheet({ data }: { data: RoleData }) {
 
   return (
     <div
+      id="top"
       className={`min-h-screen flex flex-col bg-[#FFF4E0] text-[#0F0F0F] selection:bg-[#00E5FF] selection:text-[#0F0F0F] ${
         lang === "ar" ? "dir-rtl text-right font-sans" : "dir-ltr text-left font-sans"
       }`}
