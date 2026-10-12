@@ -1,33 +1,22 @@
 "use client"
 
 import { useState } from "react"
-import { 
-  Terminal, 
-  Bug, 
-  Lightbulb, 
-  Heart, 
-  HelpCircle, 
-  Send, 
-  CheckCircle2, 
+import {
+  Terminal,
+  CheckCircle2,
   RotateCcw,
-  Sparkles,
   Layers,
-  MessageSquare
+  Sparkles,
 } from "lucide-react"
 import { VectorNodes } from "@/components/vector-nodes"
+import {
+  type FeedbackCategory,
+  type FeedbackDrop,
+} from "@/components/feedback/drop-card"
+import { FeedbackDispatchForm } from "@/components/feedback/feedback-dispatch-form"
+import { RecentDropsSidebar } from "@/components/feedback/recent-drops-sidebar"
 
-type Category = "SUGGESTION" | "BUG_REPORT" | "SHOUTOUT" | "OTHER_NULL"
-
-interface DropItem {
-  id: string
-  category: Category
-  time: string
-  message: string
-  handle: string
-  avatarBg?: string
-}
-
-const INITIAL_DROPS: DropItem[] = [
+const INITIAL_DROPS: FeedbackDrop[] = [
   {
     id: "drop-1",
     category: "BUG_REPORT",
@@ -52,45 +41,13 @@ const INITIAL_DROPS: DropItem[] = [
   },
 ]
 
-const CATEGORY_STYLES: Record<Category, { badgeBg: string; badgeText: string; avatarBg: string; borderShadow: string; icon: typeof Bug }> = {
-  SUGGESTION: {
-    badgeBg: "bg-[#FFD500]",
-    badgeText: "text-[#0F0F0F]",
-    avatarBg: "bg-[#FFD500]",
-    borderShadow: "shadow-[6px_6px_0px_#0F0F0F]",
-    icon: Lightbulb,
-  },
-  BUG_REPORT: {
-    badgeBg: "bg-[#0F0F0F]",
-    badgeText: "text-[#00E5FF]",
-    avatarBg: "bg-[#7B2CBF]",
-    borderShadow: "shadow-[6px_6px_0px_#00E5FF]",
-    icon: Bug,
-  },
-  SHOUTOUT: {
-    badgeBg: "bg-[#7B2CBF]",
-    badgeText: "text-white",
-    avatarBg: "bg-[#00E5FF]",
-    borderShadow: "shadow-[6px_6px_0px_#7B2CBF]",
-    icon: Heart,
-  },
-  OTHER_NULL: {
-    badgeBg: "bg-zinc-700",
-    badgeText: "text-white",
-    avatarBg: "bg-zinc-800",
-    borderShadow: "shadow-[6px_6px_0px_#0F0F0F]",
-    icon: HelpCircle,
-  },
-}
-
 export default function FeedbackBucketPage() {
   // Simplified strictly to two fields: category & message
-  const [category, setCategory] = useState<Category>("SUGGESTION")
+  const [category, setCategory] = useState<FeedbackCategory>("SUGGESTION")
   const [message, setMessage] = useState("")
-  const [drops, setDrops] = useState<DropItem[]>(INITIAL_DROPS)
+  const [drops, setDrops] = useState<FeedbackDrop[]>(INITIAL_DROPS)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [errorMsg, setErrorMsg] = useState("")
-  const [activeFilter, setActiveFilter] = useState<string>("ALL")
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -100,7 +57,7 @@ export default function FeedbackBucketPage() {
     }
 
     setErrorMsg("")
-    const newDrop: DropItem = {
+    const newDrop: FeedbackDrop = {
       id: `drop-${Date.now()}`,
       category,
       time: "JUST_NOW",
@@ -117,10 +74,6 @@ export default function FeedbackBucketPage() {
     setIsSubmitted(false)
     setErrorMsg("")
   }
-
-  const filteredDrops = activeFilter === "ALL" 
-    ? drops 
-    : drops.filter((d) => d.category === activeFilter)
 
   return (
     <div className="flex-grow flex flex-col bg-[#FFF4E0] text-[#0F0F0F]">
@@ -162,7 +115,7 @@ export default function FeedbackBucketPage() {
 
         {/* ── MAIN CONTENT GRID ── */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-          
+
           {/* ── FORM CONTAINER (8 COLS) ── */}
           <section className="lg:col-span-8 relative">
             {/* Decorative Corner Accents */}
@@ -177,7 +130,7 @@ export default function FeedbackBucketPage() {
               <VectorNodes />
 
               {/* Watermark / Background Texture */}
-              <div 
+              <div
                 className="absolute top-0 right-0 w-40 h-40 opacity-5 pointer-events-none"
                 style={{
                   backgroundImage: "radial-gradient(#7B2CBF 1.5px, transparent 1.5px)",
@@ -211,162 +164,20 @@ export default function FeedbackBucketPage() {
                   </button>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-8">
-                  <div className="border-b-[3px] border-[#0F0F0F] pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <div>
-                      <h2 className="font-display text-3xl md:text-4xl uppercase text-[#0F0F0F]">
-                        SUBMIT DISPATCH
-                      </h2>
-                      <p className="font-body text-xs font-bold text-zinc-500 uppercase tracking-wider">
-                        FAST & FRICTIONLESS // TWO FIELDS ONLY
-                      </p>
-                    </div>
-                    <span className="font-body text-xs font-bold bg-[#FFF4E0] border-2 border-[#0F0F0F] px-2 py-1 w-fit">
-                      ANONYMOUS BY DEFAULT
-                    </span>
-                  </div>
-
-                  {errorMsg && (
-                    <div className="bg-[#FF0055] text-white p-3 border-[2px] border-[#0F0F0F] font-body text-xs font-bold shadow-[4px_4px_0px_#0F0F0F]">
-                      [ERR] {errorMsg}
-                    </div>
-                  )}
-
-                  {/* ── SIMPLIFIED 2 FIELDS ── */}
-                  <div className="space-y-6">
-                    {/* FIELD 1: CATEGORY_ */}
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <label className="font-display text-xl uppercase tracking-wider text-[#0F0F0F] flex items-center gap-2">
-                          <span className="w-3 h-3 bg-[#7B2CBF] border border-[#0F0F0F] inline-block" />
-                          <span>1. CATEGORY_</span>
-                        </label>
-                        <span className="font-body text-xs font-bold text-zinc-500">REQUIRED</span>
-                      </div>
-                      <div className="relative">
-                        <select
-                          value={category}
-                          onChange={(e) => setCategory(e.target.value as Category)}
-                          className="w-full border-[3px] border-[#0F0F0F] bg-white p-4 font-body font-bold text-sm md:text-base text-[#0F0F0F] shadow-[4px_4px_0px_#0F0F0F] focus:outline-none focus:bg-[#FFF4E0] focus:border-[#7B2CBF] cursor-pointer appearance-none"
-                        >
-                          <option value="SUGGESTION">💡 SUGGESTION // FEATURE & IMPROVEMENT IDEA</option>
-                          <option value="BUG_REPORT">🐛 BUG_REPORT // PLATFORM GLITCH OR EDGE CASE</option>
-                          <option value="SHOUTOUT">💜 SHOUTOUT // KUDOS TO COMMUNITY / DEV SQUAD</option>
-                          <option value="OTHER_NULL">⚡ OTHER_NULL // GENERAL BYTES & RAMBLINGS</option>
-                        </select>
-                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none bg-[#FFD500] border-2 border-[#0F0F0F] px-2 py-0.5 font-display text-xs">
-                          SELECT ▼
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* FIELD 2: MESSAGE_CONTENT_ */}
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <label className="font-display text-xl uppercase tracking-wider text-[#0F0F0F] flex items-center gap-2">
-                          <span className="w-3 h-3 bg-[#00E5FF] border border-[#0F0F0F] inline-block" />
-                          <span>2. MESSAGE_CONTENT_</span>
-                        </label>
-                        <span className="font-body text-xs font-bold text-zinc-500">REQUIRED</span>
-                      </div>
-                      <textarea
-                        value={message}
-                        onChange={(e) => setMessage(e.target.value)}
-                        rows={6}
-                        required
-                        className="w-full border-[3px] border-[#0F0F0F] bg-white p-4 font-body text-sm md:text-base text-[#0F0F0F] shadow-[4px_4px_0px_#0F0F0F] focus:outline-none focus:bg-[#FFF4E0] focus:border-[#7B2CBF] resize-none"
-                        placeholder="TYPE_YOUR_THOUGHTS_HERE... (BE BRUTAL, BE CONSTRUCTIVE. FEEL FREE TO APPEND YOUR @HANDLE IF YOU'D LIKE CREDIT)"
-                      />
-                    </div>
-                  </div>
-
-                  {/* SUBMIT BUTTON */}
-                  <button
-                    type="submit"
-                    className="btn-solid w-full bg-[#7B2CBF] text-white border-[3px] border-[#0F0F0F] py-5 px-6 font-display text-2xl md:text-3xl uppercase tracking-wider shadow-[8px_8px_0px_#0F0F0F] hover:bg-[#FF0055] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all flex items-center justify-center gap-4 cursor-pointer"
-                  >
-                    <Send className="w-7 h-7" />
-                    <span>DUMP FEEDBACK</span>
-                  </button>
-                </form>
+                <FeedbackDispatchForm
+                  category={category}
+                  message={message}
+                  errorMsg={errorMsg}
+                  onCategoryChange={setCategory}
+                  onMessageChange={setMessage}
+                  onSubmit={handleSubmit}
+                />
               )}
             </div>
           </section>
 
           {/* ── RECENT DROPS SIDEBAR (4 COLS) ── */}
-          <aside className="lg:col-span-4 space-y-6">
-            <div className="bg-[#FFD500] border-[3px] border-[#0F0F0F] p-4 shadow-[6px_6px_0px_#0F0F0F] flex items-center justify-between">
-              <div>
-                <h2 className="font-display text-2xl md:text-3xl uppercase text-[#0F0F0F]">
-                  RECENT DROPS
-                </h2>
-                <p className="font-body text-xs font-bold text-[#0F0F0F]/70 uppercase">
-                  LIVE COMMUNITY TRANSMISSIONS
-                </p>
-              </div>
-              <span className="bg-[#0F0F0F] text-[#FFD500] font-body text-xs font-bold px-2 py-1">
-                {drops.length} BYTES
-              </span>
-            </div>
-
-            {/* Quick Filters */}
-            <div className="flex flex-wrap gap-2">
-              {["ALL", "BUG_REPORT", "SUGGESTION", "SHOUTOUT"].map((f) => (
-                <button
-                  key={f}
-                  onClick={() => setActiveFilter(f)}
-                  className={`font-body text-xs font-bold px-2.5 py-1 border-2 border-[#0F0F0F] transition-all cursor-pointer ${
-                    activeFilter === f
-                      ? "bg-[#7B2CBF] text-white shadow-[2px_2px_0px_#0F0F0F]"
-                      : "bg-white text-[#0F0F0F] hover:bg-[#FFF4E0]"
-                  }`}
-                >
-                  #{f}
-                </button>
-              ))}
-            </div>
-
-            {/* Drops List */}
-            <div className="space-y-4">
-              {filteredDrops.map((drop) => {
-                const style = CATEGORY_STYLES[drop.category]
-                const IconComponent = style?.icon || MessageSquare
-                return (
-                  <div
-                    key={drop.id}
-                    className={`bg-white border-[3px] border-[#0F0F0F] p-5 ${style.borderShadow} relative group hover:-rotate-1 transition-transform`}
-                  >
-                    <div className="flex justify-between items-start mb-3">
-                      <span className={`${style.badgeBg} ${style.badgeText} px-2 py-1 font-body text-xs font-bold border border-[#0F0F0F] flex items-center gap-1.5`}>
-                        <IconComponent className="w-3.5 h-3.5" />
-                        #{drop.category}
-                      </span>
-                      <span className="font-body text-xs text-zinc-500 font-bold">
-                        {drop.time}
-                      </span>
-                    </div>
-
-                    <p className="font-body text-sm leading-relaxed mb-4 text-[#0F0F0F]">
-                      &quot;{drop.message}&quot;
-                    </p>
-
-                    <div className="flex items-center gap-2 pt-2 border-t border-zinc-200">
-                      <div className={`w-5 h-5 rounded-full ${drop.avatarBg || style.avatarBg} border-2 border-[#0F0F0F] shrink-0`} />
-                      <span className="text-xs font-bold font-body text-[#0F0F0F]">
-                        {drop.handle}
-                      </span>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-
-            <div className="bg-[#FFF4E0] border-[2px] border-dashed border-[#0F0F0F] p-4 text-center">
-              <p className="font-body text-xs font-bold text-zinc-600 uppercase">
-                {"// AUTOMATED CLEANUP CYCLE RUNS EVERY 24H"}
-              </p>
-            </div>
-          </aside>
+          <RecentDropsSidebar drops={drops} />
         </div>
 
         {/* ── SYSTEM STATS / DECORATIVE SECTION ── */}
