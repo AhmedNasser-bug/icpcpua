@@ -4,7 +4,7 @@ import { test, expect } from "./fixtures"
 test.beforeEach(async ({ page }) => {
   // The calendar renders from fixed data, but pinning "today" keeps the spec
   // deterministic while leaving timers and animations running.
-  await page.clock.setFixedTime(new Date("2023-10-04T12:00:00Z"))
+  await page.clock.setFixedTime(new Date("2026-10-04T12:00:00Z"))
 })
 
 async function goToMonth(page: Page, label: "Previous month" | "Next month", times: number) {
@@ -17,18 +17,18 @@ test.describe("events calendar", () => {
   test("navigates months and hides events outside the shown month", async ({ page }) => {
     await page.goto("/events")
 
-    await expect(page.getByRole("heading", { name: "OCTOBER 2023" })).toBeVisible()
+    await expect(page.getByRole("heading", { name: "OCTOBER 2026" })).toBeVisible()
 
     await goToMonth(page, "Next month", 1)
-    await expect(page.getByRole("heading", { name: "NOVEMBER 2023" })).toBeVisible()
+    await expect(page.getByRole("heading", { name: "NOVEMBER 2026" })).toBeVisible()
     await expect(page.locator(".calendar-cell button")).toHaveCount(0)
 
     await goToMonth(page, "Previous month", 1)
-    await expect(page.getByRole("heading", { name: "OCTOBER 2023" })).toBeVisible()
+    await expect(page.getByRole("heading", { name: "OCTOBER 2026" })).toBeVisible()
     await expect(page.locator(".calendar-cell button")).toHaveCount(5)
 
     await goToMonth(page, "Previous month", 1)
-    await expect(page.getByRole("heading", { name: "SEPTEMBER 2023" })).toBeVisible()
+    await expect(page.getByRole("heading", { name: "SEPTEMBER 2026" })).toBeVisible()
   })
 
   test("places an event on the correct day", async ({ page }) => {
@@ -45,7 +45,7 @@ test.describe("events calendar", () => {
     await page.goto("/events")
 
     await goToMonth(page, "Previous month", 3)
-    await expect(page.getByRole("heading", { name: "JULY 2023" })).toBeVisible()
+    await expect(page.getByRole("heading", { name: "JULY 2026" })).toBeVisible()
     await expect(page.locator(".calendar-cell button")).toHaveCount(0)
   })
 

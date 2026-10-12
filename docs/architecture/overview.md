@@ -25,7 +25,8 @@ only server-side data access is three API route handlers.
 | `/events` | Training calendar with event detail modal (static data) |
 | `/leaderboard` | Live rankings with `all` / `level_1` / `level_2` filters |
 | `/join` | Cadet intake form; accepts `?ref=CODE` for referral credit |
-| `/hall-of-fame`, `/resources`, `/testimonials` | Community pages (static data; testimonials is a placeholder) |
+| `/hall-of-fame`, `/resources` | Community pages with static data |
+| `/testimonials` | Placeholder page, intentionally not linked from the site chrome yet |
 | `/faq` | Knowledge base rendered from `data/faq.ts` |
 | `/recruitment` | Committee landing page with five specialization cards |
 | `/referrals` | Scout enrollment, referral link and top-scout board |

@@ -27,9 +27,9 @@ describe("EventsPage", () => {
     const { container } = render(<EventsPage />)
 
     expect(screen.getByText("OCTOBER")).toBeTruthy()
-    expect(screen.getByText("2023")).toBeTruthy()
+    expect(screen.getByText("2026")).toBeTruthy()
     expect(getCells(container)).toHaveLength(42)
-    expect(screen.getByText("Codeforces Round #888 (Div. 2)")).toBeTruthy()
+    expect(screen.getByText("Codeforces Div. 2 Round")).toBeTruthy()
     expect(screen.getByText("ECPC Qualifications")).toBeTruthy()
   })
 
@@ -37,28 +37,32 @@ describe("EventsPage", () => {
     const { container } = render(<EventsPage />)
     const cells = getCells(container)
 
-    // October 2023 starts on Sunday, so day N renders at index N - 1.
-    expect(within(cells[3]).getByText(/.*Codeforces R/)).toBeTruthy()
-    expect(within(cells[4]).getByText(/Graph Theory/)).toBeTruthy()
-    expect(within(cells[5]).getByText(/Graph Theory/)).toBeTruthy()
-    expect(within(cells[12]).getByText(/ECPC Qualifi/)).toBeTruthy()
-    expect(within(cells[17]).getByText("Team Meetup")).toBeTruthy()
+    // October 2026 starts on Thursday, so day N renders at index N + 3.
+    expect(within(cells[7]).getByText(/.*Codeforces/)).toBeTruthy()
+    expect(within(cells[8]).getByText(/Graph Theory/)).toBeTruthy()
+    expect(within(cells[9]).getByText(/Graph Theory/)).toBeTruthy()
+    expect(within(cells[16]).getByText(/ECPC Qualifi/)).toBeTruthy()
+    expect(within(cells[21]).getByText("Team Meetup")).toBeTruthy()
   })
 
   it("derives the leading weekday offset for each displayed month", () => {
     const { container } = render(<EventsPage />)
 
-    // October 2023 starts on Sunday: the first cell is day 1.
-    expect(getDayLabel(getCells(container)[0])).toBe("1")
+    // October 2026 starts on Thursday: four empty leading cells, day 1 at index 4.
+    const octoberCells = getCells(container)
+    for (let i = 0; i < 4; i++) {
+      expect(getDayLabel(octoberCells[i]), `cell ${i}`).toBeUndefined()
+    }
+    expect(getDayLabel(octoberCells[4])).toBe("1")
 
     goToPreviousMonth()
 
-    // September 2023 starts on Friday: five empty leading cells.
+    // September 2026 starts on Tuesday: two empty leading cells.
     const septemberCells = getCells(container)
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 2; i++) {
       expect(getDayLabel(septemberCells[i]), `cell ${i}`).toBeUndefined()
     }
-    expect(getDayLabel(septemberCells[5])).toBe("1")
+    expect(getDayLabel(septemberCells[2])).toBe("1")
   })
 
   it("moves to the previous month", () => {
@@ -67,7 +71,7 @@ describe("EventsPage", () => {
     goToPreviousMonth()
 
     expect(screen.getByText("SEPTEMBER")).toBeTruthy()
-    expect(screen.getByText("2023")).toBeTruthy()
+    expect(screen.getByText("2026")).toBeTruthy()
     expect(screen.queryByText("OCTOBER")).toBeNull()
   })
 
@@ -76,24 +80,24 @@ describe("EventsPage", () => {
 
     goToNextMonth()
     expect(screen.getByText("NOVEMBER")).toBeTruthy()
-    expect(screen.getByText("2023")).toBeTruthy()
+    expect(screen.getByText("2026")).toBeTruthy()
 
     goToNextMonth()
     expect(screen.getByText("DECEMBER")).toBeTruthy()
 
     goToNextMonth()
     expect(screen.getByText("JANUARY")).toBeTruthy()
-    expect(screen.getByText("2024")).toBeTruthy()
+    expect(screen.getByText("2027")).toBeTruthy()
 
     goToPreviousMonth()
     expect(screen.getByText("DECEMBER")).toBeTruthy()
-    expect(screen.getByText("2023")).toBeTruthy()
+    expect(screen.getByText("2026")).toBeTruthy()
   })
 
-  it("shows empty months when navigating to months without events", () => {
+  it("shows empty months when navigating to months without events", async () => {
     const { container } = render(<EventsPage />)
 
-    goToNextMonth() // November 2023 has no events
+    goToNextMonth() // November 2026 has no events
 
     expect(screen.getByText("NOVEMBER")).toBeTruthy()
     expect(getGridEventButtons(container)).toHaveLength(0)
@@ -105,7 +109,7 @@ describe("EventsPage", () => {
 
     fireEvent.click(screen.getByText("BOOTCAMP"))
 
-    expect(screen.queryByText("Codeforces Round #888 (Div. 2)")).toBeNull()
+    expect(screen.queryByText("Codeforces Div. 2 Round")).toBeNull()
     expect(screen.getByText("Graph Theory Bootcamp - Day 1")).toBeTruthy()
     expect(screen.getByText("Graph Theory Bootcamp - Day 2")).toBeTruthy()
     expect(getGridEventButtons(container)).toHaveLength(2)

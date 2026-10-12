@@ -8,7 +8,6 @@ const SECONDARY_LINKS: Array<[string, string]> = [
   ["Hall of Fame", "/hall-of-fame"],
   ["Resources", "/resources"],
   ["FAQ", "/faq"],
-  ["Testimonials", "/testimonials"],
   ["Committee Roles", "/recruitment"],
   ["Referral Hub", "/referrals"],
   ["Feedback Bucket", "/feedback"],

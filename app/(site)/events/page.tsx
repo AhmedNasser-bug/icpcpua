@@ -13,11 +13,11 @@ import {
 import { EventDetailModal } from "@/components/events/event-detail-modal"
 
 const EVENTS: CalendarEvent[] = [
-  { date: "2023-10-04", title: "Codeforces Round #888 (Div. 2)", type: "Contest", time: "17:35 UTC+3", description: "Rated Codeforces round for all Div. 2 participants. Form a team or go solo.", registration: false },
-  { date: "2023-10-05", title: "Graph Theory Bootcamp - Day 1", type: "Bootcamp", location: "Lab 402, Building C", description: "BFS, DFS, and shortest path foundations. Bring your laptop.", registration: true },
-  { date: "2023-10-06", title: "Graph Theory Bootcamp - Day 2", type: "Bootcamp", location: "Lab 402, Building C", description: "Dijkstra, MST, and DSU heavy practice.", registration: true },
-  { date: "2023-10-13", title: "ECPC Qualifications", type: "Contest", description: "Egyptian Collegiate Programming Contest qualifications. Registration required.", registration: true },
-  { date: "2023-10-18", title: "Team Meetup", type: "Meetup", location: "Building C - Room 204", description: "Weekly team sync. Discuss contest strategies and problem sets.", registration: false },
+  { date: "2026-10-04", title: "Codeforces Div. 2 Round", type: "Contest", time: "17:35 UTC+3", description: "Rated Codeforces round for all Div. 2 participants. Form a team or go solo.", registration: false },
+  { date: "2026-10-05", title: "Graph Theory Bootcamp - Day 1", type: "Bootcamp", location: "Lab 402, Building C", description: "BFS, DFS, and shortest path foundations. Bring your laptop.", registration: true },
+  { date: "2026-10-06", title: "Graph Theory Bootcamp - Day 2", type: "Bootcamp", location: "Lab 402, Building C", description: "Dijkstra, MST, and DSU heavy practice.", registration: true },
+  { date: "2026-10-13", title: "ECPC Qualifications", type: "Contest", description: "Egyptian Collegiate Programming Contest qualifications. Registration required.", registration: true },
+  { date: "2026-10-18", title: "Team Meetup", type: "Meetup", location: "Building C - Room 204", description: "Weekly team sync. Discuss contest strategies and problem sets.", registration: false },
 ]
 
 const DAYS_OF_WEEK = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
@@ -31,7 +31,7 @@ const FILTER_COLORS: Record<EventType | "All", string> = {
 }
 
 // The Events & Training calendar opens on the season kickoff month.
-const INITIAL_MONTH = { year: 2023, month: 9 } // October 2023 (0-indexed month)
+const INITIAL_MONTH = { year: 2026, month: 9 } // October 2026 (0-indexed month)
 const TOTAL_CELLS = 42
 
 export default function EventsPage() {

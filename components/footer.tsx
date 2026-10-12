@@ -74,9 +74,6 @@ export function Footer() {
               <li>
                 <Link href="/faq" className="hover:text-[#00E5FF] transition-colors">Knowledge Base & FAQ</Link>
               </li>
-              <li>
-                <Link href="/testimonials" className="hover:text-[#00E5FF] transition-colors">Cadet Testimonials</Link>
-              </li>
             </ul>
           </div>
 
