@@ -1,100 +1,127 @@
-# icpcpua
+# PUA ICPC
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [v0](https://v0.app).
+Website for the ICPC training community at Pharos University in Alexandria: the
+training curriculum, events calendar, live cadet leaderboard, cadet
+registration, committee recruitment specs, referral bounties and a feedback
+bucket. Production runs at <https://icpcpua.vercel.app>.
 
-## Built with v0
+It is a public marketing and community site, not a contest judge. There is no
+authentication, no Codeforces sync job and the feedback bucket is local-only.
+Registration and points are backed by Cloud Firestore; referral bounties live in
+Supabase.
 
-This repository is linked to a [v0](https://v0.app) project. You can continue developing by visiting the link below -- start new chats to make changes, and v0 will push commits directly to this repo. Every merge to `main` will automatically deploy.
+## Quick start
 
-[Continue working on v0 →](https://v0.app/chat/projects/prj_qOV5juIZw5VroPia66WCyePYKGWU)
-
-## Getting Started
-
-This repo is pnpm-only (`packageManager` + `pnpm-lock.yaml`). Run the development server:
+Prerequisites: Node.js 22 and pnpm 10 (`corepack enable pnpm`).
 
 ```bash
 pnpm install
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open <http://localhost:3000>. No credentials are needed: when the environment
+variables are absent, the API routes serve simulated or seed data and the
+referral pages use a public Supabase project.
 
-You can start editing the home page by modifying `app/(site)/page.tsx`. The page auto-updates as you edit the file.
+## Try the API
+
+The leaderboard is the simplest real endpoint to exercise:
+
+```bash
+curl -s "http://localhost:3000/api/leaderboard?track=level_1"
+```
+
+Without Firebase credentials you get the local fallback:
+
+```json
+{
+  "success": true,
+  "source": "local_cache",
+  "count": 3,
+  "leaderboard": [
+    {
+      "rank": 3,
+      "handle": "dp_master",
+      "fullName": "Youssef Tarek",
+      "rating": 1795,
+      "solved": 412,
+      "pointsTotal": 960,
+      "track": "level_1",
+      "initials": "YT",
+      "color": "#FF0055"
+    }
+  ]
+}
+```
+
+`source` becomes `seed_defaults` when Firestore is reachable but empty, and
+`firestore` when real trainees exist. Use the `track` query parameter
+(`all`, `level_1`, `level_2`) and `limit` (default 50).
+
+## Configuration
+
+To use real backends, create a git-ignored `.env.local` with the Firebase
+service-account variables (`FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`,
+`FIREBASE_PRIVATE_KEY`) and optionally `NEXT_PUBLIC_SUPABASE_URL` /
+`NEXT_PUBLIC_SUPABASE_ANON_KEY`. Every variable, its default and the fallback
+contract is documented in [docs/configuration.md](docs/configuration.md).
 
 ## Commands
 
-```bash
-pnpm dev            # development server
-pnpm build          # production build
-pnpm start          # serve the production build
-pnpm lint           # eslint
-pnpm typecheck      # tsc --noEmit
-```
-
-## Project structure
-
-```text
-app/                 Next.js App Router (route groups, API routes)
-components/<feature>/ Feature-scoped UI (home, join, faq, …) + shared chrome
-data/                Static content registries (roles, FAQ)
-hooks/               Shared React hooks
-lib/                 Backend clients and helpers (firebase-admin, supabase, errors)
-tests/               Vitest unit/component tests (mirrors source folders)
-e2e/                 Playwright specs
-docs/                Architecture notes and cleanup reports
-public/              Static assets
-```
-
+| Command | What it does |
+|---|---|
+| `pnpm dev` | Development server on port 3000 |
+| `pnpm build` | Production build |
+| `pnpm start` | Serve the production build |
+| `pnpm lint` | ESLint (flat config) |
+| `pnpm typecheck` | `tsc --noEmit` |
+| `pnpm test` | Vitest suite, one run |
+| `pnpm test:watch` | Vitest in watch mode |
+| `pnpm test:coverage` | Vitest with the thresholds enforced by CI |
+| `pnpm test:e2e` | Playwright: builds, serves on port 3000, runs the browser suite |
+| `pnpm test:e2e:ui` | Playwright interactive UI mode |
 
 ## Testing
 
-The unit and component suite runs on [Vitest](https://vitest.dev) with React Testing Library and jsdom:
+Unit and component tests run on Vitest with React Testing Library and jsdom, and
+mock Supabase and Firebase Admin, so no credentials or databases are required.
+The threshold that CI enforces lives in `vitest.config.mts`.
 
-```bash
-pnpm test           # run the suite once (CI mode)
-pnpm test:coverage  # run the suite with coverage thresholds (CI mode)
-pnpm test:watch     # re-run on change
-```
+Playwright runs against a production build. Install the browser once with
+`pnpm exec playwright install chromium`, then run `pnpm test:e2e`; set
+`E2E_SKIP_BUILD=1` to reuse an existing build. The fixture in
+`e2e/fixtures.ts` blocks Firebase, Supabase and Google hosts and fails the test
+if any request is attempted.
 
-Tests mock Supabase and Firebase Admin, so no production credentials or live databases are required.
-Coverage thresholds are configured in `vitest.config.mts` and enforced by CI.
+Three.js code (`components/recruitment/Role3DCanvas.tsx`,
+`role-canvas-scene.ts` and `role-scenes.ts`) is excluded from Vitest coverage
+because jsdom cannot run WebGL; `e2e/recruitment.spec.ts` covers it instead.
+Details and PR expectations are in [CONTRIBUTING.md](CONTRIBUTING.md).
 
-The browser layer runs on [Playwright](https://playwright.dev) against a production build:
+## Deployment
 
-```bash
-pnpm exec playwright install chromium  # once per machine (downloads the browser)
-pnpm test:e2e                          # build, start on port 3000 and run headless
-pnpm test:e2e:ui                       # interactive UI mode
-```
+The repository is linked to a [v0](https://v0.app) project, which pushes commits
+directly to this repo; merges to `main` deploy the production build to Vercel.
+CI (`.github/workflows/ci.yml`) runs the coverage suite, lint, typecheck and
+build, plus the Playwright job, on every push and pull request.
 
-`pnpm test:e2e` builds the app and serves it on `http://localhost:3000` before
-the specs run; set `E2E_SKIP_BUILD=1` to reuse an existing build. The shared
-fixture blocks Firebase and Supabase traffic and fails the test if any is
-attempted, so no credentials are needed. A dedicated `e2e` job in
-`.github/workflows/ci.yml` runs the same suite.
+## Documentation
 
-### Testing boundaries
+- [docs/README.md](docs/README.md) — documentation index.
+- [docs/architecture/overview.md](docs/architecture/overview.md) — routes,
+  data flows and backend fallbacks.
+- [docs/configuration.md](docs/configuration.md) — environment variables.
+- [docs/data-model.md](docs/data-model.md) — Firestore and Supabase shapes.
+- [DESIGN.md](DESIGN.md) — design tokens and visual rules.
+- [AGENTS.md](AGENTS.md) — conventions and gotchas for coding agents.
 
-`components/recruitment/Role3DCanvas.tsx`, its `role-canvas-scene.ts` mount
-module and the procedural scenes in `components/recruitment/role-scenes.ts` are
-intentionally excluded from the Vitest suite and from coverage
-(`vitest.config.mts`). They require a real WebGL/Three.js rendering context that
-jsdom cannot provide, so unit tests would only exercise brittle mocks instead of
-observable 3D behavior. The E2E suite
-covers that boundary instead: `e2e/recruitment.spec.ts` asserts that each of
-the five recruitment cards mounts a visible canvas and obtains a live WebGL
-context with no context-loss errors. It does not compare pixels and is not a
-visual regression check.
+## Contributing and help
 
-The surrounding `RoleInspectorConsole` is unit-tested with `Role3DCanvas`
-mocked, so the console's selection, telemetry and dossier logic stays covered.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, verification commands and the
+commit/PR flow. Open an issue at
+<https://github.com/AhmedNasser-bug/icpcpua/issues>.
 
-## Learn More
+## License
 
-To learn more, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-- [v0 Documentation](https://v0.app/docs) - learn about v0 and how to use it.
-
-<a href="https://v0.app/chat/api/kiro/clone/AhmedNasser-bug/icpcpua" alt="Open in Kiro"><img src="https://pdgvvgmkdvyeydso.public.blob.vercel-storage.com/open%20in%20kiro.svg?sanitize=true" /></a>
+This repository has no license file. The site footer states all rights
+reserved, so reuse outside the PUA ICPC community is not granted.

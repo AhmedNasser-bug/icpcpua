@@ -1,7 +1,25 @@
 # Graphify Gate Report: Firebase Architecture & Event-Driven Leaderboard
 
 **Date:** 2026-10-06  
-**Status:** CLEARED  
+**Status:** CLEARED (design gate)  
+**Implementation status:** partially implemented. Checked against the code on
+2026-10-12.
+
+> This document is the original design for the Firestore backend, not a
+> description of the current system. The source of truth for what exists today
+> is `lib/firebase-schema.ts`, the three route handlers in `app/api/`, and
+> [overview.md](./overview.md).
+>
+> Implemented: the `trainees` and `point_events` collections, server-side admin
+> initialisation with a no-credentials fallback, `POST /api/trainees/register`,
+> `POST /api/points/event` and `GET /api/leaderboard`.
+>
+> Not in the codebase: the `applications`, `hr_records` and `leaderboard_cache`
+> collections, the `/scan?code=` QR route and the
+> `/api/cron/sync-codeforces` job. The leaderboard reads `trainees` directly.
+> Timestamps are stored as ISO-8601 strings, not `FirebaseFirestore.Timestamp`,
+> and `registration_welcome` is an additional point-event type.
+
 **Target Subsystems:**
 1. Trainee Registration Engine (`/join`, `JoinModal`, `/api/trainees/register`)
 2. Event-Driven Extensible Leaderboard (`/leaderboard`, `/api/leaderboard`, `/api/points/event`)

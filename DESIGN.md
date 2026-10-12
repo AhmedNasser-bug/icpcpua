@@ -11,7 +11,7 @@ colors:
   border: "#0F0F0F"
 typography:
   display:
-    fontFamily: "Fredoka One, sans-serif"
+    fontFamily: "Fredoka, sans-serif"
     fontWeight: "900"
     letterSpacing: "-0.04em"
     textTransform: uppercase
@@ -52,6 +52,9 @@ components:
     boxShadow: "0px 0px 0px 0px #0F0F0F"
 ---
 
+These tokens are implemented in `app/globals.css` (`:root` variables and the
+`.font-display`, `.shadow-solid`, `.vector-node` and related utilities).
+
 ## Brand & Style
 The design system embraces a high-contrast **Neo-Brutalist** aesthetic meant to reflect the raw, "no soft code allowed" culture of the ICPC PUA technical corps. It prioritizes bold structural lines, high-impact typography, and saturated brand colors that demand attention.
 
@@ -69,7 +72,7 @@ The color palette relies on a stark canvas interrupted by aggressive primary and
 ## Typography
 The system employs clashing but intentional typography to enforce hierarchy and identity.
 
-- **Headlines:** Uses **Fredoka One**, heavily weighted and uppercase, to yell at the user. Tracking is extremely tight (`tracking-tighter` or `-0.04em`) to forge block-like visual masses.
+- **Headlines:** Uses **Fredoka**, heavily weighted and uppercase, to yell at the user. Tracking is extremely tight (`tracking-tighter` or `-0.04em`) to forge block-like visual masses.
 - **Body & Data:** **Space Mono** echoes the terminal and command-line roots of programming, supplying a stark monospaced contrast ensuring precise legibility.
 - **Sub-headers & Labels:** **Space Grotesk** serves as the bridge between the headline and body, used heavily in italicized uppercase for metadata labels.
 

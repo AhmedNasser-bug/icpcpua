@@ -1,6 +1,7 @@
 # AGENTS.md — icpcpua
 
-Guidance for agents and contributors working in this repo.
+Guidance for coding agents working in this repo. Contributors should start with
+`CONTRIBUTING.md`; the doc index is `docs/README.md`.
 
 ## Commands
 
@@ -22,25 +23,12 @@ Run `pnpm lint`, `pnpm typecheck` and `pnpm test` after changes. Anything that
 touches `components/recruitment/*` or `app/(site)/recruitment/page.tsx` should
 also run `pnpm test:e2e` (Playwright browsers: `pnpm exec playwright install chromium`).
 
-## Structure
+## Where to look
 
-```text
-app/                      App Router
-  layout.tsx              fonts, metadata, skip link
-  (site)/                 shared chrome (navbar + marquee + footer) pages
-  specs/[role]/           spec sheet route
-  recruitment/specs/[role]/ alias of the spec sheet route
-  api/                    route handlers (leaderboard, points, registration)
-components/<feature>/     feature-scoped UI; shared chrome at components/*.tsx
-components/spec-sheet/    spec sheet sections
-data/                     static registries (recruitment roles, FAQ)
-hooks/                    shared hooks
-lib/                      firebase-admin, supabase, bounty, errors, schema
-tests/                    Vitest suites mirroring source folders
-e2e/                      Playwright specs + fixtures
-docs/architecture/        living diagrams (keep in sync with imports/routes)
-docs/cleanup/             cleanup plan and reports
-```
+Routes live in `app/`, feature UI in `components/<feature>/`, static content in
+`data/`, shared logic in `lib/` and `hooks/`. Unit tests mirror the source tree
+under `tests/`; browser specs live in `e2e/`. Start architecture work from
+`docs/architecture/overview.md` and `docs/data-model.md`.
 
 ## Conventions
 
@@ -59,6 +47,9 @@ docs/cleanup/             cleanup plan and reports
 
 - Tests mock Supabase and Firebase Admin; no credentials needed. E2E fixtures
   abort any request to Supabase/Firebase/Google hosts and fail the test.
+- API routes fall back to simulated or seed data when Firebase env vars are
+  absent (`lib/firebase-admin.ts`, `lib/supabase.ts`); do not "fix" the
+  fallbacks — tests assert on them.
 - `components/recruitment/Role3DCanvas.tsx`, `role-canvas-scene.ts` and
   `role-scenes.ts` are excluded from Vitest coverage because jsdom cannot run
   WebGL; `e2e/recruitment.spec.ts` covers them instead.
@@ -68,9 +59,7 @@ docs/cleanup/             cleanup plan and reports
   alias of `instructor` and must stay out of the card count
   (`data/recruitment/roles.ts`).
 - Coverage thresholds live in `vitest.config.mts`; CI runs `test:coverage`
-  (which runs the suite once), then lint, typecheck and build.
-- `lib/supabase.ts` falls back to a public anon key when env vars are absent;
-  `lib/firebase-admin.ts` degrades to `adminDb = null` and API routes return
-  seed/fallback data.
+  (which runs the suite once), then lint, typecheck and build, plus a separate
+  Playwright job.
 - `.next/`, `coverage/`, `playwright-report/` and `test-results/` are ignored
   build artifacts; never commit them.

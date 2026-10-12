@@ -4,7 +4,7 @@ The PUA ICPC site is a Next.js App Router application that serves the public
 marketing site, the cadet intake flow, the leaderboard, committee recruitment
 spec sheets and the referral program. It has no authentication and no
 server-rendered user sessions: interactive pages are client components, and the
-only server code is three API route handlers.
+only server-side data access is three API route handlers.
 
 ## Stack
 
@@ -40,8 +40,9 @@ Pages under `app/(site)/` share the navbar, marquee and footer defined in
 because `PuaSpecSheet` renders its own chrome.
 
 The spec-sheet routes are statically generated with `generateStaticParams` from
-`roleSpecParams()`; the home, events, leaderboard, join, referrals and feedback
-pages are client components because they hold form or fetch state.
+`roleSpecParams()`. Most pages under `app/(site)/` are client components because
+they hold form, filter or fetch state; the recruitment landing page is a server
+component.
 
 ## Data flows
 
