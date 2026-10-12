@@ -5,6 +5,7 @@ import Link from "next/link"
 import { PuaNavbar } from "@/components/pua-navbar"
 import { Footer } from "@/components/footer"
 import { Marquee } from "@/components/pua-marquee"
+import { VectorNodes } from "@/components/vector-nodes"
 import { RoleData } from "@/data/recruitment/roles"
 import {
   Shield,
@@ -125,10 +126,7 @@ export function PuaSpecSheet({ data }: { data: RoleData }) {
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-end bg-white border-[3px] border-[#0F0F0F] p-6 shadow-[8px_8px_0px_#0F0F0F] relative">
-              <span className="vector-node vector-node-tl" />
-              <span className="vector-node vector-node-tr" />
-              <span className="vector-node vector-node-bl" />
-              <span className="vector-node vector-node-br" />
+              <VectorNodes />
 
               <div className="md:col-span-8">
                 <span className="bg-[#FFD500] text-[#0F0F0F] px-2 py-0.5 font-body text-xs font-bold uppercase tracking-widest border border-[#0F0F0F] inline-block mb-3">
@@ -171,10 +169,7 @@ export function PuaSpecSheet({ data }: { data: RoleData }) {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Column 1: Problems Solved */}
             <div className="bg-white border-[3px] border-[#0F0F0F] p-6 md:p-8 shadow-[8px_8px_0px_#FF0055] relative flex flex-col justify-between">
-              <span className="vector-node vector-node-tl" />
-              <span className="vector-node vector-node-tr" />
-              <span className="vector-node vector-node-bl" />
-              <span className="vector-node vector-node-br" />
+              <VectorNodes />
 
               <div>
                 <div className="flex items-center gap-3 mb-6 pb-4 border-b-2 border-[#0F0F0F]">
@@ -218,10 +213,7 @@ export function PuaSpecSheet({ data }: { data: RoleData }) {
 
             {/* Column 2: Strategic Impact */}
             <div className="bg-[#0F0F0F] text-white border-[3px] border-[#0F0F0F] p-6 md:p-8 shadow-[8px_8px_0px_#00E5FF] relative flex flex-col justify-between">
-              <span className="vector-node vector-node-tl" />
-              <span className="vector-node vector-node-tr" />
-              <span className="vector-node vector-node-bl" />
-              <span className="vector-node vector-node-br" />
+              <VectorNodes />
 
               <div>
                 <div className="flex items-center gap-3 mb-6 pb-4 border-b-2 border-zinc-700">
@@ -290,10 +282,7 @@ export function PuaSpecSheet({ data }: { data: RoleData }) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 font-body">
             {/* Quadrant 1: Selling Points */}
             <div className="relative bg-white border-[3px] border-[#0F0F0F] p-6 md:p-8 shadow-[8px_8px_0px_#0F0F0F]">
-              <span className="vector-node vector-node-tl" />
-              <span className="vector-node vector-node-tr" />
-              <span className="vector-node vector-node-bl" />
-              <span className="vector-node vector-node-br" />
+              <VectorNodes />
 
               <h4 className="font-display text-2xl uppercase mb-6 border-b-[3px] border-[#0F0F0F] pb-2 flex items-center gap-3">
                 <Star className="w-6 h-6" style={{ color: data.themeColor }} />
@@ -316,10 +305,7 @@ export function PuaSpecSheet({ data }: { data: RoleData }) {
               className="relative border-[3px] border-[#0F0F0F] p-6 md:p-8 shadow-[8px_8px_0px_#0F0F0F]"
               style={{ backgroundColor: data.themeColor, color: data.themeText }}
             >
-              <span className="vector-node vector-node-tl" />
-              <span className="vector-node vector-node-tr" />
-              <span className="vector-node vector-node-bl" />
-              <span className="vector-node vector-node-br" />
+              <VectorNodes />
 
               <h4 className="font-display text-2xl uppercase mb-6 border-b-[3px] border-[#0F0F0F] pb-2 flex items-center gap-3">
                 <Shield className="w-6 h-6" />
@@ -336,10 +322,7 @@ export function PuaSpecSheet({ data }: { data: RoleData }) {
 
             {/* Quadrant 3: Metrics */}
             <div className="relative bg-[#FFF4E0] border-[3px] border-[#0F0F0F] p-6 md:p-8 shadow-[8px_8px_0px_#0F0F0F]">
-              <span className="vector-node vector-node-tl" />
-              <span className="vector-node vector-node-tr" />
-              <span className="vector-node vector-node-bl" />
-              <span className="vector-node vector-node-br" />
+              <VectorNodes />
 
               <h4 className="font-display text-2xl uppercase mb-6 border-b-[3px] border-[#0F0F0F] pb-2 flex items-center gap-3">
                 <Target className="w-6 h-6 text-[#7B2CBF]" />
@@ -364,10 +347,7 @@ export function PuaSpecSheet({ data }: { data: RoleData }) {
               className="relative border-[3px] border-[#0F0F0F] p-6 md:p-8 shadow-[8px_8px_0px_#0F0F0F]"
               style={{ backgroundColor: data.antiGoalColor || "#FF0055", color: "#FFFFFF" }}
             >
-              <span className="vector-node vector-node-tl" />
-              <span className="vector-node vector-node-tr" />
-              <span className="vector-node vector-node-bl" />
-              <span className="vector-node vector-node-br" />
+              <VectorNodes />
 
               <h4 className="font-display text-2xl uppercase mb-6 border-b-[3px] border-white pb-2 flex items-center gap-3">
                 <AlertTriangle className="w-6 h-6 text-white" />
@@ -552,10 +532,7 @@ export function PuaSpecSheet({ data }: { data: RoleData }) {
         {/* ── 5. INFORMATIONAL SPECIFICATION // ROLE BLUEPRINT ── */}
         <section id="blueprint" className="mb-20">
           <div className="bg-white border-[3px] border-[#0F0F0F] p-6 md:p-10 shadow-[10px_10px_0px_#0F0F0F] relative">
-            <span className="vector-node vector-node-tl" />
-            <span className="vector-node vector-node-tr" />
-            <span className="vector-node vector-node-bl" />
-            <span className="vector-node vector-node-br" />
+            <VectorNodes />
 
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 pb-6 border-b-2 border-[#0F0F0F]">
               <div>

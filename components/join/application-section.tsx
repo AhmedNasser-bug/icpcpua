@@ -5,6 +5,7 @@ import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { recordBountyReferral } from "@/lib/bounty"
 import { useTraineeRegistration } from "@/hooks/use-trainee-registration"
+import { VectorNodes } from "@/components/vector-nodes"
 import { Check, Sparkles, Loader2, AlertCircle, Trophy, UserCheck } from "lucide-react"
 
 /* ─── Inner Form Logic with URL Params ─── */
@@ -253,10 +254,7 @@ export function ApplicationSection() {
     <section className="bg-white border-b-[3px] border-[#0F0F0F] py-20 px-4">
       <div className="max-w-3xl mx-auto">
         <div className="bg-[#FFF4E0] border-[4px] border-[#0F0F0F] shadow-solid p-6 md:p-12 relative">
-          <span className="vector-node vector-node-tl" />
-          <span className="vector-node vector-node-tr" />
-          <span className="vector-node vector-node-bl" />
-          <span className="vector-node vector-node-br" />
+          <VectorNodes />
 
           <div className="mb-8 border-b-[3px] border-[#0F0F0F] pb-6">
             <span className="font-mono text-xs font-bold uppercase tracking-widest text-[#FF0055] block mb-2">

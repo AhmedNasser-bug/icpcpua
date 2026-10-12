@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useMemo } from "react"
+import { VectorNodes } from "@/components/vector-nodes"
 
 type EventType = "Bootcamp" | "Contest" | "Meetup"
 
@@ -39,10 +40,7 @@ function EventDetailModal({ event, onClose }: { event: CalendarEvent; onClose: (
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#0F0F0F]/70 p-4">
       <div className="relative bg-[#FFD500] border-[3px] border-[#0F0F0F] shadow-solid max-w-md w-full p-8 animate-slide-in">
-        <span className="vector-node vector-node-tl" />
-        <span className="vector-node vector-node-tr" />
-        <span className="vector-node vector-node-bl" />
-        <span className="vector-node vector-node-br" />
+        <VectorNodes />
         <div className="flex items-start justify-between mb-4">
           <div>
             <span className={`font-body text-xs font-bold uppercase px-3 py-1 border-[2px] border-[#0F0F0F] ${TYPE_COLORS[event.type]}`}>{event.type}</span>
@@ -148,10 +146,7 @@ export default function EventsPage() {
           {/* Calendar */}
           <div className="lg:w-[68%]">
             <div className="border-[3px] border-[#0F0F0F] shadow-solid relative">
-              <span className="vector-node vector-node-tl" />
-              <span className="vector-node vector-node-tr" />
-              <span className="vector-node vector-node-bl" />
-              <span className="vector-node vector-node-br" />
+              <VectorNodes />
 
               {/* Calendar header */}
               <div className="flex items-center justify-between px-6 py-4 border-b-[3px] border-[#0F0F0F] bg-[#FFF4E0]">

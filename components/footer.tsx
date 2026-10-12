@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { VectorNodes } from "@/components/vector-nodes"
 
 export function Footer() {
   return (
@@ -6,10 +7,7 @@ export function Footer() {
       <div className="max-w-[1440px] mx-auto flex flex-col gap-10 w-full">
         {/* ── FEEDBACK PERSUASION BUCKET BANNER ── */}
         <div className="relative bg-[#FFD500] border-[3px] border-[#0F0F0F] shadow-[8px_8px_0px_#00E5FF] p-6 md:p-8 flex flex-col lg:flex-row items-center justify-between gap-6 overflow-hidden">
-          <span className="vector-node vector-node-tl" />
-          <span className="vector-node vector-node-tr" />
-          <span className="vector-node vector-node-bl" />
-          <span className="vector-node vector-node-br" />
+          <VectorNodes />
 
           <div className="flex flex-col gap-2 text-center lg:text-left">
             <div className="flex items-center justify-center lg:justify-start gap-2">

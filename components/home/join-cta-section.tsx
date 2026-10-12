@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { VectorNodes } from "@/components/vector-nodes"
 
 interface JoinCtaSectionProps {
   onOpenModal: () => void
@@ -8,10 +9,7 @@ export function JoinCtaSection({ onOpenModal }: JoinCtaSectionProps) {
   return (
     <section className="w-full bg-[#7B2CBF] border-y-[3px] border-[#0F0F0F]" id="join">
       <div className="max-w-[1440px] mx-auto px-10 py-24 relative">
-        <span className="vector-node vector-node-tl" />
-        <span className="vector-node vector-node-tr" />
-        <span className="vector-node vector-node-bl" />
-        <span className="vector-node vector-node-br" />
+        <VectorNodes />
 
         {/* Decorative BG text */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden select-none">

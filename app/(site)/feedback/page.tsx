@@ -14,6 +14,7 @@ import {
   Layers,
   MessageSquare
 } from "lucide-react"
+import { VectorNodes } from "@/components/vector-nodes"
 
 type Category = "SUGGESTION" | "BUG_REPORT" | "SHOUTOUT" | "OTHER_NULL"
 
@@ -192,10 +193,7 @@ export default function FeedbackBucketPage() {
             </div>
 
             <div className="bg-white border-[3px] border-[#0F0F0F] p-6 md:p-10 shadow-[8px_8px_0px_#0F0F0F] relative overflow-hidden">
-              <span className="vector-node vector-node-tl" />
-              <span className="vector-node vector-node-tr" />
-              <span className="vector-node vector-node-bl" />
-              <span className="vector-node vector-node-br" />
+              <VectorNodes />
 
               {/* Watermark / Background Texture */}
               <div 

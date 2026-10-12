@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react"
 import Link from "next/link"
 import { Check, Sparkles, Loader2, AlertCircle } from "lucide-react"
 import { useTraineeRegistration } from "@/hooks/use-trainee-registration"
+import { VectorNodes } from "@/components/vector-nodes"
 
 export function JoinModal({ onClose }: { onClose: () => void }) {
   const {
@@ -43,10 +44,7 @@ export function JoinModal({ onClose }: { onClose: () => void }) {
         ref={modalRef}
         className="relative bg-[#FFF4E0] border-[4px] border-[#0F0F0F] shadow-[8px_8px_0px_#0F0F0F] max-w-lg w-full p-6 sm:p-8 my-8"
       >
-        <span className="vector-node vector-node-tl" aria-hidden="true" />
-        <span className="vector-node vector-node-tr" aria-hidden="true" />
-        <span className="vector-node vector-node-bl" aria-hidden="true" />
-        <span className="vector-node vector-node-br" aria-hidden="true" />
+        <VectorNodes />
 
         {!submitted ? (
           <>

@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react"
 import Link from "next/link"
+import { VectorNodes } from "@/components/vector-nodes"
 
 interface TeamMember {
   name: string
@@ -108,10 +109,7 @@ function TeamModal({ team, onClose }: { team: HallTeam; onClose: () => void }) {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#0F0F0F]/70 p-4">
       <div className="relative bg-[#FFF4E0] border-[3px] border-[#0F0F0F] shadow-solid max-w-lg w-full p-8 max-h-[90vh] overflow-y-auto animate-slide-in">
-        <span className="vector-node vector-node-tl" />
-        <span className="vector-node vector-node-tr" />
-        <span className="vector-node vector-node-bl" />
-        <span className="vector-node vector-node-br" />
+        <VectorNodes />
 
         <div className="flex items-start justify-between mb-6">
           <div>
@@ -221,10 +219,7 @@ export default function HallOfFamePage() {
                     {team.imgPlaceholder}
                   </span>
                   {/* Vector corner nodes */}
-                  <span className="vector-node vector-node-tl" />
-                  <span className="vector-node vector-node-tr" />
-                  <span className="vector-node vector-node-bl" />
-                  <span className="vector-node vector-node-br" />
+                  <VectorNodes />
                   {/* Year badge */}
                   <div className="absolute top-4 right-4 bg-[#FFD500] border-[3px] border-[#0F0F0F] px-3 py-1 font-display text-lg">
                     {team.year}
@@ -256,10 +251,7 @@ export default function HallOfFamePage() {
 
             {/* End of scroll CTA */}
             <div className="flex-shrink-0 w-[300px] h-[460px] border-[3px] border-[#0F0F0F] shadow-solid bg-[#FFD500] flex flex-col items-center justify-center gap-4 p-8 relative self-center">
-              <span className="vector-node vector-node-tl" />
-              <span className="vector-node vector-node-tr" />
-              <span className="vector-node vector-node-bl" />
-              <span className="vector-node vector-node-br" />
+              <VectorNodes />
               <p className="font-display text-3xl uppercase text-center text-[#0F0F0F]">
                 YOUR TEAM NEXT?
               </p>
