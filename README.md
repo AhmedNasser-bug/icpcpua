@@ -74,6 +74,9 @@ contract is documented in [docs/configuration.md](docs/configuration.md).
 | `pnpm build` | Production build |
 | `pnpm start` | Serve the production build |
 | `pnpm lint` | ESLint (flat config) |
+| `pnpm lint:md` | Markdownlint |
+| `pnpm check:docs` | Relative markdown link check |
+| `pnpm knip` | Dead code and unused dependency check |
 | `pnpm typecheck` | `tsc --noEmit` |
 | `pnpm test` | Vitest suite, one run |
 | `pnpm test:watch` | Vitest in watch mode |
@@ -113,6 +116,7 @@ plus the Playwright job, on every push and pull request.
   data flows and backend fallbacks.
 - [docs/configuration.md](docs/configuration.md) — environment variables.
 - [docs/data-model.md](docs/data-model.md) — Firestore and Supabase shapes.
+- [CHANGELOG.md](CHANGELOG.md) — notable changes.
 - [DESIGN.md](DESIGN.md) — design tokens and visual rules.
 - [AGENTS.md](AGENTS.md) — conventions and gotchas for coding agents.
 

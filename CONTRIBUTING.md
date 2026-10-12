@@ -30,6 +30,7 @@ Run these before opening a pull request:
 
 ```bash
 pnpm lint          # eslint (flat config)
+pnpm knip          # dead code and unused dependencies
 pnpm typecheck     # tsc --noEmit
 pnpm test          # Vitest, one run
 ```
