@@ -33,14 +33,16 @@ Immutable append-only ledger; the document id is auto-generated.
 | Field | Type | Notes |
 |---|---|---|
 | `traineeId`, `universityId` | string | Both set to the trainee's university id |
-| `type` | `registration_welcome` \| `qr_scan` \| `session_attendance` \| `cf_sync` \| `coach_bonus` \| `upsolve` \| `penalty` | The points route forwards any string as `type`; only `qr_scan` and `session_attendance` also update counters |
+| `type` | `registration_welcome` \| `qr_scan` \| `session_attendance` \| `cf_sync` \| `coach_bonus` \| `upsolve` \| `penalty` | Validated by the points route against `POINT_EVENT_TYPES`; only `qr_scan` and `session_attendance` also update counters |
 | `points` | number | May be negative |
 | `reason` | string | Human-readable audit text |
 | `metadata` | object, optional | Free-form; `qrCodeId` is used for duplicate-scan detection |
 | `createdAt` | string | ISO-8601 |
 
 Registration and point events are committed with a Firestore batch so the
-ledger entry and the aggregate counters on `trainees` stay in sync.
+ledger entry and the aggregate counters on `trainees` stay in sync. Without
+credentials the registration route writes nothing and marks its response
+`simulated: true`; the join form uses that flag to skip referral credit.
 
 ## Supabase (browser-side)
 
@@ -64,9 +66,11 @@ credited twice to the same scout.
 Per the comment in `lib/bounty.ts`, a Postgres trigger increments
 `bounty_scouts.recruits_count` when a referral row is inserted.
 
-TODO(maintainer): the Supabase table definitions, RLS policies and trigger are
-managed outside this repository. Add the SQL/migrations (or a link to the
-Supabase project) so a fresh environment can be provisioned from the repo.
+The reconstructed schema — tables, indexes, RLS policies and the
+`recruits_count` trigger — lives in
+[`supabase/migrations/20261012000000_bounty_schema.sql`](../supabase/migrations/20261012000000_bounty_schema.sql).
+It mirrors what the client code needs; review it against the production project
+before applying.
 
 ## Browser storage
 

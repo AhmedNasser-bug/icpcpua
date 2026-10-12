@@ -40,6 +40,12 @@ The fallback values are committed in `lib/supabase.ts` so the referral pages
 work without local configuration. Treat the anon key as public: it is only safe
 as long as Row Level Security restricts what it can read and write.
 
+## Points API
+
+| Variable | Required | Description |
+|---|---|---|
+| `POINTS_EVENT_SECRET` | No | When set, `POST /api/points/event` requires `Authorization: Bearer <value>` and answers `401` otherwise. Without it the endpoint accepts unauthenticated requests (development default). Use a long random value. |
+
 ## Test and CI variables
 
 | Variable | Default | Description |

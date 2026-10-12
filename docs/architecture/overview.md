@@ -84,11 +84,15 @@ duplicate `universityId` with `409`, then writes `trainees/{universityId}` and a
 [data-model.md](../data-model.md) for the document shapes.
 
 **Points.** `POST /api/points/event` accepts `universityId`, `type`, `points`,
-`reason` and optional `metadata`. It appends an immutable `point_events`
-document and increments `pointsTotal` (plus `qrScansCount` or
-`attendedSessionsCount`) atomically. When `type` is `qr_scan` and
-`metadata.qrCodeId` is present, a prior event with the same code is rejected
-with `409` so a QR code cannot be claimed twice.
+`reason` and optional `metadata`. `type` must be one of
+`POINT_EVENT_TYPES` and `points` must be an integer with
+`|points| <= 1000`, otherwise the request is rejected with `400`. The handler
+appends an immutable `point_events` document and increments `pointsTotal` (plus
+`qrScansCount` or `attendedSessionsCount`) atomically. When `type` is `qr_scan`
+and `metadata.qrCodeId` is present, a prior event with the same code is
+rejected with `409` so a QR code cannot be claimed twice. Set
+`POINTS_EVENT_SECRET` to require an `Authorization: Bearer <secret>` header;
+without it the endpoint is open (development default).
 
 **Leaderboard.** `/api/leaderboard` queries `trainees` where `status == "active"`,
 ordered by `pointsTotal` descending, and derives rank, initials and avatar
@@ -100,9 +104,12 @@ user clicks refresh; there is no polling or live subscription.
 `localStorage` under `pua_bounty_scout` and builds an invite link of the form
 `/join?ref=CODE`. When a cadet registers with a code, `recordBountyReferral`
 inserts into `bounty_referrals` and the scout's `recruits_count` is incremented
-by a Postgres trigger that lives outside this repository. The Supabase client is
-imported dynamically so `/join` does not pay for it unless a referral is
-credited.
+by the Postgres trigger in
+[`supabase/migrations/`](../../supabase/migrations/20261012000000_bounty_schema.sql).
+The credit is skipped when the registration API answered with
+`simulated: true`, so a failed dev-mode signup cannot earn referral points. The
+Supabase client is imported dynamically so `/join` does not pay for it unless a
+referral is credited.
 
 **Feedback.** `/feedback` is entirely client-side: categories and messages are
 React state and the list resets on reload. There is no feedback API or storage.
