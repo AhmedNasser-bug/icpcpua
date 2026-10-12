@@ -1,17 +1,82 @@
 import Link from 'next/link';
 import { RoleInspectorConsole } from '@/components/recruitment/RoleInspectorConsole';
-import { Role3DCanvas } from '@/components/recruitment/Role3DCanvas';
-import { rolesData, type RoleId } from '@/data/recruitment/roles';
+import { RoleCard, type RoleCardData } from '@/components/recruitment/role-card';
 
-function cardMeta(role: RoleId) {
-    return { role, badge: rolesData[role].levelBadge, href: `/specs/${role}` };
-}
-
-const INSTRUCTOR = cardMeta('instructor');
-const OPS_PR = cardMeta('ops-pr');
-const HR = cardMeta('hr');
-const DESIGN_DEV = cardMeta('design-dev');
-const MARKETING = cardMeta('marketing');
+const ROLE_CARDS: RoleCardData[] = [
+    {
+        role: 'instructor',
+        title: 'The Instructor',
+        linkLabel: 'View Instructor Spec Sheet & Guide',
+        nodeLabel: '// 3D NODE: ALGO_BINARY_TREE',
+        canvasHeight: '210px',
+        cardClassName: 'bg-[#FFD500]',
+        badgeClassName: 'bg-[#0F0F0F] text-white',
+        antiGoalBadgeClassName: 'bg-[#FF0055] text-white',
+        sellingPoints: 'Mastery over data structures. Ability to debug under pressure. Command presence.',
+        owns: ['Problem Set Architecture', 'Training Simulations'],
+        metric: '99% Runtime Optimization',
+        antiGoal: 'Manual Grading',
+    },
+    {
+        role: 'ops-pr',
+        title: 'Operations & PR',
+        linkLabel: 'View PR Spec Sheet & Guide',
+        nodeLabel: '// 3D NODE: RADAR_PHASED_ARRAY',
+        canvasHeight: '210px',
+        cardClassName: 'bg-[#00E5FF]',
+        badgeClassName: 'bg-[#0F0F0F] text-white',
+        antiGoalBadgeClassName: 'bg-[#FF0055] text-white',
+        sellingPoints: 'Brand domination. Logistics surgical precision. Social engineering.',
+        owns: ['External Comms Arrays', 'Event Staging'],
+        metric: 'Engagement Velocity',
+        antiGoal: 'Standard Templates',
+    },
+    {
+        role: 'hr',
+        title: 'HR / Monitoring',
+        linkLabel: 'View HR Spec Sheet & Guide',
+        nodeLabel: '// 3D NODE: GYROSCOPIC_EQUILIBRIUM',
+        canvasHeight: '210px',
+        cardClassName: 'bg-[#7B2CBF] text-white',
+        badgeClassName: 'bg-white text-[#0F0F0F]',
+        antiGoalBadgeClassName: 'bg-[#00E5FF] text-[#0F0F0F]',
+        inverted: true,
+        sellingPoints: 'Human behavioral analysis. Conflict resolution protocol. Performance auditing.',
+        owns: ['Member Integrity Audits', 'Onboarding Pipeline'],
+        metric: 'Retention Stability',
+        antiGoal: 'Paperwork Loops',
+    },
+    {
+        role: 'design-dev',
+        title: 'Design / Dev',
+        linkLabel: 'View Dev Spec Sheet & Guide',
+        nodeLabel: '// 3D NODE: 4D_TESSERACT_LATTICE',
+        canvasHeight: '210px',
+        cardClassName: 'bg-[#FF0055] text-white',
+        badgeClassName: 'bg-white text-[#0F0F0F]',
+        antiGoalBadgeClassName: 'bg-[#FFD500] text-[#0F0F0F]',
+        inverted: true,
+        sellingPoints: 'Visual violence. Pixel-perfect brutality. Frontend engineering at 200ms.',
+        owns: ['Design System Blueprint', 'Full-Stack Deployment'],
+        metric: 'System Aesthetic Score',
+        antiGoal: 'Soft Shadows',
+    },
+    {
+        role: 'marketing',
+        title: 'Specialised Marketing',
+        linkLabel: 'View Marketing Spec Sheet & Guide',
+        nodeLabel: '// 3D NODE: GROWTH_FUNNEL_VORTEX',
+        canvasHeight: '230px',
+        cardClassName: 'bg-[#FF6B00] text-white md:col-span-2',
+        badgeClassName: 'bg-[#0F0F0F] text-[#FFD500]',
+        antiGoalBadgeClassName: 'bg-[#7B2CBF] text-white',
+        inverted: true,
+        sellingPoints: 'Stop posting and praying. Omnipresent tech growth engine. Top 1% pipeline framing.',
+        owns: ['The Ground Game (Campus Recruitment)', 'The Broadcaster (Shorts & Clips)', 'The Hype Builder (Leaderboard Fame)'],
+        metric: '3.5X Registration Growth',
+        antiGoal: "Passive 'Post & Pray'",
+    },
+];
 
 export default function RecruitmentLandingPage() {
     return (
@@ -73,221 +138,9 @@ export default function RecruitmentLandingPage() {
 
                 {/* Roles Grid */}
                 <section id="roles" className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                    {/* Card 1: The Instructor */}
-                    <div className="group relative bg-[#FFD500] border-[3px] border-[#0F0F0F] p-8 shadow-[8px_8px_0px_0px_#0F0F0F] transition-all hover:-translate-y-2 hover:-translate-x-2 hover:shadow-[16px_16px_0px_0px_#0F0F0F]">
-                        <div className="absolute w-3 h-3 bg-white border-[3px] border-[#0F0F0F] z-10 -top-[6px] -left-[6px]"></div>
-                        <div className="absolute w-3 h-3 bg-white border-[3px] border-[#0F0F0F] z-10 -bottom-[6px] -right-[6px]"></div>
-                        <div className="flex justify-between items-start mb-4">
-                            <h2 className="font-display text-4xl font-black uppercase leading-none tracking-tight">The Instructor</h2>
-                            <span className="bg-[#0F0F0F] text-white px-3 py-1 text-sm font-black">{INSTRUCTOR.badge}</span>
-                        </div>
-                        {/* 3D Generative Tree Visual */}
-                        <div className="mb-6 border-[3px] border-[#0F0F0F] bg-[#050505] relative overflow-hidden shadow-[4px_4px_0px_#0F0F0F]">
-                            <div className="absolute top-2 left-2 z-10 font-mono text-[10px] text-white/80 uppercase tracking-widest bg-black/80 px-2 py-0.5 border border-white/20">
-                                {"// 3D NODE: ALGO_BINARY_TREE"}
-                            </div>
-                            <Role3DCanvas role={INSTRUCTOR.role} height="210px" interactive={true} autoRotate={true} />
-                        </div>
-                        <div className="font-grotesk space-y-6 mb-8">
-                            <div>
-                                <span className="block font-black text-sm uppercase bg-[#0F0F0F] text-white w-fit px-2 mb-2 italic tracking-widest">Selling Points</span>
-                                <p className="font-bold border-l-[3px] border-[#0F0F0F] pl-3 leading-tight">Mastery over data structures. Ability to debug under pressure. Command presence.</p>
-                            </div>
-                            <div>
-                                <span className="block font-black text-sm uppercase bg-[#0F0F0F] text-white w-fit px-2 mb-2 italic tracking-widest">Owns</span>
-                                <ul className="font-bold list-none space-y-1">
-                                    <li>&gt; Problem Set Architecture</li>
-                                    <li>&gt; Training Simulations</li>
-                                </ul>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <span className="block font-black text-sm uppercase bg-[#0F0F0F] text-white w-fit px-2 mb-2 italic tracking-widest">Metrics</span>
-                                    <p className="font-bold">99% Runtime Optimization</p>
-                                </div>
-                                <div>
-                                    <span className="block font-black text-sm uppercase bg-[#FF0055] text-white w-fit px-2 mb-2 italic tracking-widest">Anti-goals</span>
-                                    <p className="font-bold">Manual Grading</p>
-                                </div>
-                            </div>
-                        </div>
-                        <Link href={INSTRUCTOR.href} className="block text-center w-full bg-white text-[#0F0F0F] py-4 border-[3px] border-[#0F0F0F] font-black uppercase text-xl shadow-[8px_8px_0px_0px_#0F0F0F] active:shadow-none active:translate-x-2 active:translate-y-2 transition-all">
-                            View Instructor Spec Sheet &amp; Guide
-                        </Link>
-                    </div>
-
-                    {/* Card 2: Operations & PR */}
-                    <div className="group relative bg-[#00E5FF] border-[3px] border-[#0F0F0F] p-8 shadow-[8px_8px_0px_0px_#0F0F0F] transition-all hover:-translate-y-2 hover:-translate-x-2 hover:shadow-[16px_16px_0px_0px_#0F0F0F]">
-                        <div className="absolute w-3 h-3 bg-white border-[3px] border-[#0F0F0F] z-10 -top-[6px] -left-[6px]"></div>
-                        <div className="absolute w-3 h-3 bg-white border-[3px] border-[#0F0F0F] z-10 -bottom-[6px] -right-[6px]"></div>
-                        <div className="flex justify-between items-start mb-4">
-                            <h2 className="font-display text-4xl font-black uppercase leading-none tracking-tight">Operations &amp; PR</h2>
-                            <span className="bg-[#0F0F0F] text-white px-3 py-1 text-sm font-black">{OPS_PR.badge}</span>
-                        </div>
-                        {/* 3D Generative Radar Visual */}
-                        <div className="mb-6 border-[3px] border-[#0F0F0F] bg-[#050505] relative overflow-hidden shadow-[4px_4px_0px_#0F0F0F]">
-                            <div className="absolute top-2 left-2 z-10 font-mono text-[10px] text-white/80 uppercase tracking-widest bg-black/80 px-2 py-0.5 border border-white/20">
-                                {"// 3D NODE: RADAR_PHASED_ARRAY"}
-                            </div>
-                            <Role3DCanvas role={OPS_PR.role} height="210px" interactive={true} autoRotate={true} />
-                        </div>
-                        <div className="font-grotesk space-y-6 mb-8">
-                            <div>
-                                <span className="block font-black text-sm uppercase bg-[#0F0F0F] text-white w-fit px-2 mb-2 italic tracking-widest">Selling Points</span>
-                                <p className="font-bold border-l-[3px] border-[#0F0F0F] pl-3 leading-tight">Brand domination. Logistics surgical precision. Social engineering.</p>
-                            </div>
-                            <div>
-                                <span className="block font-black text-sm uppercase bg-[#0F0F0F] text-white w-fit px-2 mb-2 italic tracking-widest">Owns</span>
-                                <ul className="font-bold list-none space-y-1">
-                                    <li>&gt; External Comms Arrays</li>
-                                    <li>&gt; Event Staging</li>
-                                </ul>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <span className="block font-black text-sm uppercase bg-[#0F0F0F] text-white w-fit px-2 mb-2 italic tracking-widest">Metrics</span>
-                                    <p className="font-bold">Engagement Velocity</p>
-                                </div>
-                                <div>
-                                    <span className="block font-black text-sm uppercase bg-[#FF0055] text-white w-fit px-2 mb-2 italic tracking-widest">Anti-goals</span>
-                                    <p className="font-bold">Standard Templates</p>
-                                </div>
-                            </div>
-                        </div>
-                        <Link href={OPS_PR.href} className="block text-center w-full bg-white text-[#0F0F0F] py-4 border-[3px] border-[#0F0F0F] font-black uppercase text-xl shadow-[8px_8px_0px_0px_#0F0F0F] active:shadow-none active:translate-x-2 active:translate-y-2 transition-all">
-                            View PR Spec Sheet &amp; Guide
-                        </Link>
-                    </div>
-
-                    {/* Card 3: HR / Monitoring */}
-                    <div className="group relative bg-[#7B2CBF] border-[3px] border-[#0F0F0F] p-8 shadow-[8px_8px_0px_0px_#0F0F0F] transition-all hover:-translate-y-2 hover:-translate-x-2 hover:shadow-[16px_16px_0px_0px_#0F0F0F] text-white">
-                        <div className="absolute w-3 h-3 bg-white border-[3px] border-[#0F0F0F] z-10 -top-[6px] -left-[6px]"></div>
-                        <div className="absolute w-3 h-3 bg-white border-[3px] border-[#0F0F0F] z-10 -bottom-[6px] -right-[6px]"></div>
-                        <div className="flex justify-between items-start mb-4">
-                            <h2 className="font-display text-4xl font-black uppercase leading-none tracking-tight">HR / Monitoring</h2>
-                            <span className="bg-white text-[#0F0F0F] px-3 py-1 text-sm font-black">{HR.badge}</span>
-                        </div>
-                        {/* 3D Generative Gyroscope Visual */}
-                        <div className="mb-6 border-[3px] border-[#0F0F0F] bg-[#050505] relative overflow-hidden shadow-[4px_4px_0px_#0F0F0F]">
-                            <div className="absolute top-2 left-2 z-10 font-mono text-[10px] text-white/80 uppercase tracking-widest bg-black/80 px-2 py-0.5 border border-white/20">
-                                {"// 3D NODE: GYROSCOPIC_EQUILIBRIUM"}
-                            </div>
-                            <Role3DCanvas role={HR.role} height="210px" interactive={true} autoRotate={true} />
-                        </div>
-                        <div className="font-grotesk space-y-6 mb-8">
-                            <div>
-                                <span className="block font-black text-sm uppercase bg-white text-[#0F0F0F] w-fit px-2 mb-2 italic tracking-widest">Selling Points</span>
-                                <p className="font-bold border-l-[3px] border-white pl-3 leading-tight">Human behavioral analysis. Conflict resolution protocol. Performance auditing.</p>
-                            </div>
-                            <div>
-                                <span className="block font-black text-sm uppercase bg-white text-[#0F0F0F] w-fit px-2 mb-2 italic tracking-widest">Owns</span>
-                                <ul className="font-bold list-none space-y-1 text-white/90">
-                                    <li>&gt; Member Integrity Audits</li>
-                                    <li>&gt; Onboarding Pipeline</li>
-                                </ul>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <span className="block font-black text-sm uppercase bg-white text-[#0F0F0F] w-fit px-2 mb-2 italic tracking-widest">Metrics</span>
-                                    <p className="font-bold">Retention Stability</p>
-                                </div>
-                                <div>
-                                    <span className="block font-black text-sm uppercase bg-[#00E5FF] text-[#0F0F0F] w-fit px-2 mb-2 italic tracking-widest">Anti-goals</span>
-                                    <p className="font-bold">Paperwork Loops</p>
-                                </div>
-                            </div>
-                        </div>
-                        <Link href={HR.href} className="block text-center w-full bg-white text-[#0F0F0F] py-4 border-[3px] border-[#0F0F0F] font-black uppercase text-xl shadow-[8px_8px_0px_0px_#0F0F0F] active:shadow-none active:translate-x-2 active:translate-y-2 transition-all">
-                            View HR Spec Sheet &amp; Guide
-                        </Link>
-                    </div>
-
-                    {/* Card 4: Design / Dev */}
-                    <div className="group relative bg-[#FF0055] border-[3px] border-[#0F0F0F] p-8 shadow-[8px_8px_0px_0px_#0F0F0F] transition-all hover:-translate-y-2 hover:-translate-x-2 hover:shadow-[16px_16px_0px_0px_#0F0F0F] text-white">
-                        <div className="absolute w-3 h-3 bg-white border-[3px] border-[#0F0F0F] z-10 -top-[6px] -left-[6px]"></div>
-                        <div className="absolute w-3 h-3 bg-white border-[3px] border-[#0F0F0F] z-10 -bottom-[6px] -right-[6px]"></div>
-                        <div className="flex justify-between items-start mb-4">
-                            <h2 className="font-display text-4xl font-black uppercase leading-none tracking-tight">Design / Dev</h2>
-                            <span className="bg-white text-[#0F0F0F] px-3 py-1 text-sm font-black">{DESIGN_DEV.badge}</span>
-                        </div>
-                        {/* 3D Generative Tesseract Visual */}
-                        <div className="mb-6 border-[3px] border-[#0F0F0F] bg-[#050505] relative overflow-hidden shadow-[4px_4px_0px_#0F0F0F]">
-                            <div className="absolute top-2 left-2 z-10 font-mono text-[10px] text-white/80 uppercase tracking-widest bg-black/80 px-2 py-0.5 border border-white/20">
-                                {"// 3D NODE: 4D_TESSERACT_LATTICE"}
-                            </div>
-                            <Role3DCanvas role={DESIGN_DEV.role} height="210px" interactive={true} autoRotate={true} />
-                        </div>
-                        <div className="font-grotesk space-y-6 mb-8">
-                            <div>
-                                <span className="block font-black text-sm uppercase bg-white text-[#0F0F0F] w-fit px-2 mb-2 italic tracking-widest">Selling Points</span>
-                                <p className="font-bold border-l-[3px] border-white pl-3 leading-tight">Visual violence. Pixel-perfect brutality. Frontend engineering at 200ms.</p>
-                            </div>
-                            <div>
-                                <span className="block font-black text-sm uppercase bg-white text-[#0F0F0F] w-fit px-2 mb-2 italic tracking-widest">Owns</span>
-                                <ul className="font-bold list-none space-y-1 text-white/90">
-                                    <li>&gt; Design System Blueprint</li>
-                                    <li>&gt; Full-Stack Deployment</li>
-                                </ul>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <span className="block font-black text-sm uppercase bg-white text-[#0F0F0F] w-fit px-2 mb-2 italic tracking-widest">Metrics</span>
-                                    <p className="font-bold">System Aesthetic Score</p>
-                                </div>
-                                <div>
-                                    <span className="block font-black text-sm uppercase bg-[#FFD500] text-[#0F0F0F] w-fit px-2 mb-2 italic tracking-widest">Anti-goals</span>
-                                    <p className="font-bold">Soft Shadows</p>
-                                </div>
-                            </div>
-                        </div>
-                        <Link href={DESIGN_DEV.href} className="block text-center w-full bg-white text-[#0F0F0F] py-4 border-[3px] border-[#0F0F0F] font-black uppercase text-xl shadow-[8px_8px_0px_0px_#0F0F0F] active:shadow-none active:translate-x-2 active:translate-y-2 transition-all">
-                            View Dev Spec Sheet &amp; Guide
-                        </Link>
-                    </div>
-
-                    {/* Card 5: Specialised Marketing */}
-                    <div className="group relative bg-[#FF6B00] border-[3px] border-[#0F0F0F] p-8 shadow-[8px_8px_0px_0px_#0F0F0F] transition-all hover:-translate-y-2 hover:-translate-x-2 hover:shadow-[16px_16px_0px_0px_#0F0F0F] text-white md:col-span-2">
-                        <div className="absolute w-3 h-3 bg-white border-[3px] border-[#0F0F0F] z-10 -top-[6px] -left-[6px]"></div>
-                        <div className="absolute w-3 h-3 bg-white border-[3px] border-[#0F0F0F] z-10 -bottom-[6px] -right-[6px]"></div>
-                        <div className="flex justify-between items-start mb-4">
-                            <h2 className="font-display text-4xl font-black uppercase leading-none tracking-tight">Specialised Marketing</h2>
-                            <span className="bg-[#0F0F0F] text-[#FFD500] px-3 py-1 text-sm font-black">{MARKETING.badge}</span>
-                        </div>
-                        {/* 3D Generative Funnel Vortex Visual */}
-                        <div className="mb-6 border-[3px] border-[#0F0F0F] bg-[#050505] relative overflow-hidden shadow-[4px_4px_0px_#0F0F0F]">
-                            <div className="absolute top-2 left-2 z-10 font-mono text-[10px] text-white/80 uppercase tracking-widest bg-black/80 px-2 py-0.5 border border-white/20">
-                                {"// 3D NODE: GROWTH_FUNNEL_VORTEX"}
-                            </div>
-                            <Role3DCanvas role={MARKETING.role} height="230px" interactive={true} autoRotate={true} />
-                        </div>
-                        <div className="font-grotesk space-y-6 mb-8">
-                            <div>
-                                <span className="block font-black text-sm uppercase bg-[#0F0F0F] text-white w-fit px-2 mb-2 italic tracking-widest">Selling Points</span>
-                                <p className="font-bold border-l-[3px] border-white pl-3 leading-tight">Stop posting and praying. Omnipresent tech growth engine. Top 1% pipeline framing.</p>
-                            </div>
-                            <div>
-                                <span className="block font-black text-sm uppercase bg-[#0F0F0F] text-white w-fit px-2 mb-2 italic tracking-widest">Owns</span>
-                                <ul className="font-bold list-none space-y-1 text-white/90">
-                                    <li>&gt; The Ground Game (Campus Recruitment)</li>
-                                    <li>&gt; The Broadcaster (Shorts &amp; Clips)</li>
-                                    <li>&gt; The Hype Builder (Leaderboard Fame)</li>
-                                </ul>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <span className="block font-black text-sm uppercase bg-[#0F0F0F] text-white w-fit px-2 mb-2 italic tracking-widest">Metrics</span>
-                                    <p className="font-bold">3.5X Registration Growth</p>
-                                </div>
-                                <div>
-                                    <span className="block font-black text-sm uppercase bg-[#7B2CBF] text-white w-fit px-2 mb-2 italic tracking-widest">Anti-goals</span>
-                                    <p className="font-bold">Passive &apos;Post &amp; Pray&apos;</p>
-                                </div>
-                            </div>
-                        </div>
-                        <Link href={MARKETING.href} className="block text-center w-full bg-white text-[#0F0F0F] py-4 border-[3px] border-[#0F0F0F] font-black uppercase text-xl shadow-[8px_8px_0px_0px_#0F0F0F] active:shadow-none active:translate-x-2 active:translate-y-2 transition-all">
-                            View Marketing Spec Sheet &amp; Guide
-                        </Link>
-                    </div>
+                    {ROLE_CARDS.map((card) => (
+                        <RoleCard key={card.role} card={card} />
+                    ))}
                 </section>
 
             </main>
