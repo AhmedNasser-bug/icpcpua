@@ -5,7 +5,7 @@ Plan and evidence: `docs/cleanup/PLAN.md`.
 
 ## Summary
 
-Behavior-preserving cleanup in 16 commits. Every commit passed
+Behavior-preserving cleanup in 17 commits. Every commit passed
 `pnpm lint`, `pnpm typecheck` and `pnpm test`; the final tree also passed
 `pnpm test:coverage`, a clean install + build from scratch, a startup smoke
 test and the full Playwright suite (14/14, including a strengthened
