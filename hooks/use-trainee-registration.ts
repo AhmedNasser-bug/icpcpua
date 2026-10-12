@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { getErrorMessage } from "@/lib/errors"
 
-export interface TraineeRegistrationForm {
+interface TraineeRegistrationForm {
   fullName: string
   universityId: string
   email: string
