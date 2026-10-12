@@ -100,10 +100,11 @@ Details and PR expectations are in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Deployment
 
-The repository is linked to a [v0](https://v0.app) project, which pushes commits
-directly to this repo; merges to `main` deploy the production build to Vercel.
-CI (`.github/workflows/ci.yml`) runs the coverage suite, lint, typecheck and
-build, plus the Playwright job, on every push and pull request.
+Production is hosted on Vercel at <https://icpcpua.vercel.app> and is linked to
+a [v0](https://v0.app) project, which pushes commits directly to this repo;
+merges to `main` deploy through that project. CI
+(`.github/workflows/ci.yml`) runs the coverage suite, lint, typecheck and build,
+plus the Playwright job, on every push and pull request.
 
 ## Documentation
 
@@ -123,5 +124,6 @@ commit/PR flow. Open an issue at
 
 ## License
 
-This repository has no license file. The site footer states all rights
-reserved, so reuse outside the PUA ICPC community is not granted.
+Proprietary, all rights reserved. See [LICENSE](LICENSE); reuse outside the
+PUA ICPC community is not granted. Third-party dependencies keep their own
+licenses.
