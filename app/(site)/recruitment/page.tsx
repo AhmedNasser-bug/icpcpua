@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { EcosystemGraph } from '@/components/EcosystemGraph';
+import { RoleInspectorConsole } from '@/components/recruitment/RoleInspectorConsole';
 import { Role3DCanvas } from '@/components/recruitment/Role3DCanvas';
 
 export default function RecruitmentLandingPage() {
@@ -55,9 +55,9 @@ export default function RecruitmentLandingPage() {
                     </div>
                 </section>
 
-                {/* Ecosystem Graph Section */}
+                {/* Interactive 3D Role Console */}
                 <div className="mb-24">
-                  <EcosystemGraph />
+                  <RoleInspectorConsole />
                 </div>
 
                 {/* Roles Grid */}
