@@ -29,11 +29,13 @@ You can start editing the home page by modifying `app/(site)/page.tsx`. The page
 The unit and component suite runs on [Vitest](https://vitest.dev) with React Testing Library and jsdom:
 
 ```bash
-pnpm test        # run the suite once (CI mode)
-pnpm test:watch  # re-run on change
+pnpm test           # run the suite once (CI mode)
+pnpm test:coverage  # run the suite with coverage thresholds (CI mode)
+pnpm test:watch     # re-run on change
 ```
 
 Tests mock Supabase and Firebase Admin, so no production credentials or live databases are required.
+Coverage thresholds are configured in `vitest.config.mts` and enforced by CI.
 
 ### Testing boundaries
 
