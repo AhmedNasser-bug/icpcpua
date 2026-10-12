@@ -35,6 +35,18 @@ pnpm test:watch  # re-run on change
 
 Tests mock Supabase and Firebase Admin, so no production credentials or live databases are required.
 
+### Testing boundaries
+
+`components/recruitment/Role3DCanvas.tsx` and the procedural scenes in
+`components/recruitment/role-scenes.ts` are intentionally excluded from the
+Vitest suite and from coverage (`vitest.config.mts`). They require a real
+WebGL/Three.js rendering context that jsdom cannot provide, so unit tests would
+only exercise brittle mocks instead of observable 3D behavior. These components
+are deferred to end-to-end testing; no E2E suite exists in this repository yet.
+
+The surrounding `RoleInspectorConsole` is unit-tested with `Role3DCanvas`
+mocked, so the console's selection, telemetry and dossier logic stays covered.
+
 ## Learn More
 
 To learn more, take a look at the following resources:
