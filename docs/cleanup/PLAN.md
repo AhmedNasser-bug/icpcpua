@@ -44,7 +44,7 @@ Behavior-preserving cleanup of the PUA ICPC Next.js site. Baseline was taken on
 | 1.1 | `RoleScene` exported but only used inside `role-scenes.ts` | knip 5.88.1 + ts-prune both flag it; `git grep RoleScene` shows only the declaring file | none |
 | 1.2 | `ScoutLeaderboardEntry` exported but only used inside `scout-leaderboard.tsx` | same two tools; grep shows only declaring file | none |
 | 1.3 | `TraineeRegistrationForm` exported but only used inside `use-trainee-registration.ts` | same two tools; grep shows only declaring file | none |
-| 1.4 | `@testing-library/dom` is a direct devDependency but never imported | `git grep @testing-library/dom` only matches `package.json`; depcheck lists it as unused; it arrives transitively via `@testing-library/react` | none if tests still pass |
+| 1.4 | ~~`@testing-library/dom` unused devDependency~~ **false positive, kept** | depcheck flags it, but `@testing-library/react` declares it as a **peer** (`peerDependencies["@testing-library/dom"] = ^10.0.0`), so the explicit declaration is correct; knip does not flag it | skip |
 | 1.5 | README documents `npm run dev` / `yarn dev` although the repo is pnpm-only (`pnpm-lock.yaml`, `packageManager`) | `README.md:15-21` vs `package.json:5` | none |
 | 1.6 | `docs/architecture/dependency-graph.md` is accurate on spot-check; one edge is missing (`components/home/join-modal.tsx` also consumes `hooks/use-trainee-registration.ts`) | `JoinModal` imports the hook; the doc only draws `JOIN_SECTIONS --> REG_HOOK` | none (docs) |
 | 1.7 | `.Jules/palette.md` is a dated AI-agent note (2026-04-27) referenced nowhere | `git grep Jules` → only the file itself | low — list as proposal |

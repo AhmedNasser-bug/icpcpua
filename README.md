@@ -10,19 +10,41 @@ This repository is linked to a [v0](https://v0.app) project. You can continue de
 
 ## Getting Started
 
-First, run the development server:
+This repo is pnpm-only (`packageManager` + `pnpm-lock.yaml`). Run the development server:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 You can start editing the home page by modifying `app/(site)/page.tsx`. The page auto-updates as you edit the file.
+
+## Commands
+
+```bash
+pnpm dev            # development server
+pnpm build          # production build
+pnpm start          # serve the production build
+pnpm lint           # eslint
+pnpm typecheck      # tsc --noEmit
+```
+
+## Project structure
+
+```text
+app/                 Next.js App Router (route groups, API routes)
+components/<feature>/ Feature-scoped UI (home, join, faq, …) + shared chrome
+data/                Static content registries (roles, FAQ)
+hooks/               Shared React hooks
+lib/                 Backend clients and helpers (firebase-admin, supabase, errors)
+tests/               Vitest unit/component tests (mirrors source folders)
+e2e/                 Playwright specs
+docs/                Architecture notes and cleanup reports
+public/              Static assets
+```
+
 
 ## Testing
 
