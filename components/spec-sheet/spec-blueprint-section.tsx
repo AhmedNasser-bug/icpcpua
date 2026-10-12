@@ -13,7 +13,15 @@ const COMMITTEE_NAV_OVERRIDES: Record<string, { title: string; ar: string; color
   "design-dev": { title: "Design & Dev", ar: "التصميم والويب", color: "#FF0055" },
 }
 
-export function SpecBlueprintSection({ data, lang }: { data: RoleData; lang: SpecLanguage }) {
+export function SpecBlueprintSection({
+  data,
+  lang,
+  roleKey,
+}: {
+  data: RoleData
+  lang: SpecLanguage
+  roleKey: string
+}) {
   return (
     <section id="blueprint" className="mb-20">
       <div className="bg-white border-[3px] border-[#0F0F0F] p-6 md:p-10 shadow-[10px_10px_0px_#0F0F0F] relative">
@@ -67,7 +75,7 @@ export function SpecBlueprintSection({ data, lang }: { data: RoleData; lang: Spe
                   key={c.id}
                   href={`/specs/${c.id}`}
                   className={`p-3 border-2 border-[#0F0F0F] font-body text-xs font-bold uppercase flex flex-col justify-between shadow-[3px_3px_0px_#0F0F0F] transition-transform hover:-translate-y-0.5 ${
-                    c.id === data.roleId.toLowerCase() || data.roleTitle.toLowerCase().includes(c.id)
+                    c.id === roleKey
                       ? "ring-2 ring-[#7B2CBF] bg-[#FFF4E0]"
                       : "bg-white hover:bg-[#FFF4E0]"
                   }`}

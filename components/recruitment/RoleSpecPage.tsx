@@ -20,5 +20,5 @@ export async function RoleSpecPage({ role }: { role: string }) {
         notFound();
     }
 
-    return <PuaSpecSheet data={data} />;
+    return <PuaSpecSheet data={data} roleKey={role} />;
 }

@@ -14,7 +14,7 @@ import { SpecFaqSection } from "@/components/spec-sheet/spec-faq-section"
 import { SpecBlueprintSection } from "@/components/spec-sheet/spec-blueprint-section"
 import type { SpecLanguage } from "@/components/spec-sheet/types"
 
-export function PuaSpecSheet({ data }: { data: RoleData }) {
+export function PuaSpecSheet({ data, roleKey }: { data: RoleData; roleKey: string }) {
   const [lang, setLang] = useState<SpecLanguage>("en")
 
   return (
@@ -42,7 +42,7 @@ export function PuaSpecSheet({ data }: { data: RoleData }) {
         <SpecContractSection data={data} lang={lang} />
         <SpecHandbookSection data={data} lang={lang} />
         <SpecFaqSection data={data} lang={lang} />
-        <SpecBlueprintSection data={data} lang={lang} />
+        <SpecBlueprintSection data={data} lang={lang} roleKey={roleKey} />
       </main>
 
       <Marquee />

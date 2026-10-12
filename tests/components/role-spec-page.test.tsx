@@ -37,6 +37,7 @@ describe("RoleSpecPage", () => {
 
       expect(element.type).toBe(PuaSpecSheet)
       expect(element.props.data).toBe(rolesData[role])
+      expect(element.props.roleKey).toBe(role)
     }
   )
 
