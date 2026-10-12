@@ -29,6 +29,7 @@ graph TD
   SPEC["components/pua-spec-sheet.tsx"]
   ROLE_PAGE["components/recruitment/RoleSpecPage.tsx"]
   CONSOLE["components/recruitment/RoleInspectorConsole.tsx"]
+  CARD["components/recruitment/role-card.tsx"]
   CANVAS["components/recruitment/Role3DCanvas.tsx"]
 
   HOME_SECTIONS["components/home/*"]
@@ -76,8 +77,9 @@ graph TD
   FAQ_SECTIONS --> FAQ_DATA
   CONSOLE --> ROLE_DATA
   PAGE_RECRUIT --> CONSOLE
-  PAGE_RECRUIT --> CANVAS
-  PAGE_RECRUIT --> ROLE_DATA
+  PAGE_RECRUIT --> CARD
+  CARD --> CANVAS
+  CARD --> ROLE_DATA
   CONSOLE --> CANVAS
   PAGE_REFERRALS --> REFERRAL_SECTIONS
   PAGE_REFERRALS --> BOUNTY
