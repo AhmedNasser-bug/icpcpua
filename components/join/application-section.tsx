@@ -3,7 +3,6 @@
 import { useState, Suspense } from "react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
-import { recordBountyReferral } from "@/lib/bounty"
 import { useTraineeRegistration } from "@/hooks/use-trainee-registration"
 import { VectorNodes } from "@/components/vector-nodes"
 import { Check, Sparkles, Loader2, AlertCircle, Trophy, UserCheck } from "lucide-react"
@@ -22,6 +21,8 @@ function ApplicationFormContent() {
         if (!submittedForm.referralCode.trim()) return
 
         try {
+          // Supabase is only needed when a referral is actually credited.
+          const { recordBountyReferral } = await import("@/lib/bounty")
           const bountyRes = await recordBountyReferral(
             submittedForm.referralCode.trim(),
             submittedForm.fullName.trim(),
