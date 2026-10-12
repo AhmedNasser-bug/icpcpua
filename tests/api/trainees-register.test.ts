@@ -82,6 +82,7 @@ describe("POST /api/trainees/register", () => {
 
     expect(response.status).toBe(200)
     expect(body.success).toBe(true)
+    expect(body.simulated).toBe(true)
     expect(body.message).toBe("Registration received (development fallback mode).")
     expect(body.trainee).toEqual({
       id: "sim_202300481",
@@ -106,6 +107,7 @@ describe("POST /api/trainees/register", () => {
 
     expect(response.status).toBe(200)
     expect(body.success).toBe(true)
+    expect(body.simulated).toBe(false)
     expect(body.trainee).toMatchObject({
       id: "202300481",
       fullName: "Ahmed Nasser",

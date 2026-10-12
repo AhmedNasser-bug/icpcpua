@@ -77,7 +77,27 @@ describe("useTraineeRegistration", () => {
     expect(result.current.loading).toBe(false)
     expect(result.current.errorMsg).toBeNull()
     expect(result.current.awardedPoints).toBe(42)
-    expect(onRegistered).toHaveBeenCalledWith(expect.objectContaining({ fullName: "Ahmed Nasser" }))
+    expect(onRegistered).toHaveBeenCalledWith(expect.objectContaining({ fullName: "Ahmed Nasser" }), {
+      simulated: false,
+    })
+  })
+
+  it("tells onRegistered when the API answered in simulated fallback mode", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        jsonResponse({ success: true, simulated: true, trainee: { pointsTotal: 10 } })
+      )
+    )
+    const onRegistered = vi.fn()
+
+    const { result } = renderHook(() => useTraineeRegistration({ onRegistered }))
+
+    await act(async () => {
+      await result.current.handleSubmit(submitEvent())
+    })
+
+    expect(onRegistered).toHaveBeenCalledWith(expect.anything(), { simulated: true })
   })
 
   it("keeps the default welcome points when the API omits pointsTotal", async () => {

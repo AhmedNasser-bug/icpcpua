@@ -17,8 +17,8 @@ function ApplicationFormContent() {
   const { form, setForm, submitted, loading, errorMsg, awardedPoints, handleSubmit } =
     useTraineeRegistration({
       initialReferralCode: refCodeParam,
-      onRegistered: async (submittedForm) => {
-        if (!submittedForm.referralCode.trim()) return
+      onRegistered: async (submittedForm, { simulated }) => {
+        if (simulated || !submittedForm.referralCode.trim()) return
 
         try {
           // Supabase is only needed when a referral is actually credited.

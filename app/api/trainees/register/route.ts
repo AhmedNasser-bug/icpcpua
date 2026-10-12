@@ -27,6 +27,7 @@ export async function POST(req: Request) {
       console.warn("Firebase Admin DB is not configured (missing environment variables). Returning simulated success.")
       return NextResponse.json({
         success: true,
+        simulated: true,
         message: "Registration received (development fallback mode).",
         trainee: {
           id: `sim_${cleanUniId}`,
@@ -99,6 +100,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       success: true,
+      simulated: false,
       message: "Trainee registered successfully! +10 welcome points added to your leaderboard standing.",
       trainee: newTrainee,
     })

@@ -27,8 +27,15 @@ const INITIAL_FORM: TraineeRegistrationForm = {
 
 interface UseTraineeRegistrationOptions {
   initialReferralCode?: string
-  /** Runs after a successful registration, before the submitted state flips. */
-  onRegistered?: (form: TraineeRegistrationForm) => Promise<void> | void
+  /**
+   * Runs after a successful registration, before the submitted state flips.
+   * `simulated` is true when the API fell back to development mode and no
+   * trainee document was written.
+   */
+  onRegistered?: (
+    form: TraineeRegistrationForm,
+    result: { simulated: boolean }
+  ) => Promise<void> | void
 }
 
 /**
@@ -85,7 +92,7 @@ export function useTraineeRegistration({
       }
 
       setAwardedPoints(data.trainee?.pointsTotal || 10)
-      await onRegistered?.(form)
+      await onRegistered?.(form, { simulated: data.simulated === true })
       setSubmitted(true)
     } catch (err) {
       setErrorMsg(getErrorMessage(err, "An unexpected error occurred during submission."))

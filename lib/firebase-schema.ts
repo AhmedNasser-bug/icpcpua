@@ -21,14 +21,17 @@ export interface TraineeDocument {
   updatedAt: string
 }
 
-export type PointEventType =
-  | "registration_welcome"
-  | "qr_scan"
-  | "session_attendance"
-  | "cf_sync"
-  | "coach_bonus"
-  | "upsolve"
-  | "penalty"
+export const POINT_EVENT_TYPES = [
+  "registration_welcome",
+  "qr_scan",
+  "session_attendance",
+  "cf_sync",
+  "coach_bonus",
+  "upsolve",
+  "penalty",
+] as const
+
+export type PointEventType = (typeof POINT_EVENT_TYPES)[number]
 
 export interface PointEventDocument {
   id: string

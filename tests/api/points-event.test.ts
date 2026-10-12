@@ -63,6 +63,7 @@ function post(body: unknown) {
 
 beforeEach(() => {
   adminDbRef.current = null
+  delete process.env.POINTS_EVENT_SECRET
   vi.clearAllMocks()
 })
 
@@ -84,6 +85,43 @@ describe("POST /api/points/event", () => {
 
     expect(response.status).toBe(400)
     expect(body.success).toBe(false)
+  })
+
+  it("rejects an unknown point event type", async () => {
+    const response = await POST(post({ ...VALID_BODY, type: "free_money" }))
+    const body = await response.json()
+
+    expect(response.status).toBe(400)
+    expect(body).toEqual({ success: false, error: "Unknown point event type: free_money" })
+  })
+
+  it("rejects points that are not positive-range integers", async () => {
+    for (const points of [25.5, 1001, -1001]) {
+      const response = await POST(post({ ...VALID_BODY, points }))
+      const body = await response.json()
+
+      expect(response.status).toBe(400)
+      expect(body.success).toBe(false)
+    }
+  })
+
+  it("requires the bearer secret when POINTS_EVENT_SECRET is configured", async () => {
+    process.env.POINTS_EVENT_SECRET = "s3cret"
+
+    const unauthorized = await POST(post(VALID_BODY))
+    expect(unauthorized.status).toBe(401)
+
+    const authorized = await POST(
+      new Request("http://localhost/api/points/event", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer s3cret",
+        },
+        body: JSON.stringify(VALID_BODY),
+      })
+    )
+    expect(authorized.status).toBe(200)
   })
 
   it("simulates success when Firebase is not configured", async () => {

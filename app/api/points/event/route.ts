@@ -1,17 +1,55 @@
 import { NextResponse } from "next/server"
 import type { UpdateData } from "firebase-admin/firestore"
 import { adminDb, FieldValue } from "@/lib/firebase-admin"
-import { PointEventType, PointEventDocument, TraineeDocument } from "@/lib/firebase-schema"
+import {
+  POINT_EVENT_TYPES,
+  PointEventType,
+  PointEventDocument,
+  TraineeDocument,
+} from "@/lib/firebase-schema"
 import { getErrorMessage } from "@/lib/errors"
+
+const MAX_POINTS_PER_EVENT = 1000
+
+function isPointEventType(value: unknown): value is PointEventType {
+  return typeof value === "string" && (POINT_EVENT_TYPES as readonly string[]).includes(value)
+}
+
+function isAuthorized(req: Request) {
+  const secret = process.env.POINTS_EVENT_SECRET
+  if (!secret) return true
+  return req.headers.get("authorization") === `Bearer ${secret}`
+}
 
 export async function POST(req: Request) {
   try {
+    if (!isAuthorized(req)) {
+      return NextResponse.json({ success: false, error: "Unauthorized." }, { status: 401 })
+    }
+
     const body = await req.json()
     const { universityId, type, points, reason, metadata } = body
 
     if (!universityId || !type || typeof points !== "number" || !reason) {
       return NextResponse.json(
         { success: false, error: "Missing required parameters: universityId, type, points, reason" },
+        { status: 400 }
+      )
+    }
+
+    if (!isPointEventType(type)) {
+      return NextResponse.json(
+        { success: false, error: `Unknown point event type: ${String(type)}` },
+        { status: 400 }
+      )
+    }
+
+    if (!Number.isInteger(points) || Math.abs(points) > MAX_POINTS_PER_EVENT) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Points must be an integer between -${MAX_POINTS_PER_EVENT} and ${MAX_POINTS_PER_EVENT}.`,
+        },
         { status: 400 }
       )
     }
@@ -61,7 +99,7 @@ export async function POST(req: Request) {
       id: eventRef.id,
       traineeId: cleanUniId,
       universityId: cleanUniId,
-      type: type as PointEventType,
+      type,
       points,
       reason,
       metadata: metadata || {},

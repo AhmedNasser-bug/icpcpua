@@ -65,17 +65,33 @@ const FALLBACK_LEADERBOARD = [
 // Rotating avatar colors, assigned by rank position.
 const RANK_COLORS = ["#FFD500", "#E0E0E0", "#FF0055", "#00E5FF", "#7B2CBF"]
 
+const DEFAULT_LIMIT = 50
+const MAX_LIMIT = 100
+
+function parseLimit(raw: string | null) {
+  const parsed = Number.parseInt(raw ?? "", 10)
+  if (!Number.isFinite(parsed) || parsed <= 0) return DEFAULT_LIMIT
+  return Math.min(parsed, MAX_LIMIT)
+}
+
 function getFallbackLeaderboard(track: string | null) {
-  return track && track !== "all"
-    ? FALLBACK_LEADERBOARD.filter((u) => u.track === track)
-    : FALLBACK_LEADERBOARD
+  const filtered =
+    track && track !== "all"
+      ? FALLBACK_LEADERBOARD.filter((u) => u.track === track)
+      : FALLBACK_LEADERBOARD
+
+  return filtered.map((entry, index) => ({
+    ...entry,
+    rank: index + 1,
+    color: RANK_COLORS[index % RANK_COLORS.length],
+  }))
 }
 
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url)
     const track = searchParams.get("track") // "all" | "level_1" | "level_2"
-    const limitCount = parseInt(searchParams.get("limit") || "50", 10)
+    const limitCount = parseLimit(searchParams.get("limit"))
 
     if (!adminDb) {
       // Return filtered fallback data

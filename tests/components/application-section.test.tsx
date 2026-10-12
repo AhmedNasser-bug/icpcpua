@@ -71,6 +71,24 @@ describe("ApplicationSection", () => {
     expect(bountyMock).toHaveBeenCalledWith("SCOUT-01", "Ahmed Khalid", "202300481")
   })
 
+  it("does not credit the scout when the API ran in simulated fallback mode", async () => {
+    searchParamsGet.mockReturnValue("scout-01")
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        jsonResponse({ success: true, simulated: true, trainee: { pointsTotal: 10 } })
+      )
+    )
+    render(<ApplicationSection />)
+
+    fillRequiredFields()
+    submitForm()
+
+    await screen.findByText("YOU'RE IN THE SQUAD!")
+    expect(bountyMock).not.toHaveBeenCalled()
+    expect(screen.queryByText(/SCOUT CREDIT DISPATCHED/)).toBeNull()
+  })
+
   it("registers without touching the bounty pipeline when no referral is attached", async () => {
     vi.stubGlobal(
       "fetch",

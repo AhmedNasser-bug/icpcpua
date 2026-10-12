@@ -64,13 +64,15 @@ describe("GET /api/leaderboard", () => {
     })
   })
 
-  it("filters the fallback leaderboard by track", async () => {
+  it("filters the fallback leaderboard by track and re-ranks the result", async () => {
     const response = await GET(new Request("http://localhost/api/leaderboard?track=level_1"))
     const body = await response.json()
 
     expect(body.source).toBe("local_cache")
     expect(body.count).toBe(3)
     expect(body.leaderboard.every((entry: { track: string }) => entry.track === "level_1")).toBe(true)
+    expect(body.leaderboard.map((entry: { rank: number }) => entry.rank)).toEqual([1, 2, 3])
+    expect(body.leaderboard[0]).toMatchObject({ handle: "dp_master", color: "#FFD500" })
   })
 
   it("returns every fallback entry for the 'all' track filter", async () => {
@@ -207,6 +209,20 @@ describe("GET /api/leaderboard", () => {
 
     expect(firestore.where).toHaveBeenCalledTimes(1)
     expect(firestore.limit).toHaveBeenCalledWith(50)
+  })
+
+  it("falls back to the default limit for invalid values and clamps large ones", async () => {
+    const firestore = createFirestoreMock({ docs: [{ fullName: "A" }] })
+    adminDbRef.current = firestore
+
+    await GET(new Request("http://localhost/api/leaderboard?limit=abc"))
+    expect(firestore.limit).toHaveBeenLastCalledWith(50)
+
+    await GET(new Request("http://localhost/api/leaderboard?limit=0"))
+    expect(firestore.limit).toHaveBeenLastCalledWith(50)
+
+    await GET(new Request("http://localhost/api/leaderboard?limit=500"))
+    expect(firestore.limit).toHaveBeenLastCalledWith(100)
   })
 
   it("returns a 500 response when the Firestore query fails", async () => {
