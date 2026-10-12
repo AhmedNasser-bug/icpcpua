@@ -155,6 +155,6 @@ interface HRRecordDocument {
    - `POST /api/points/event`: Scalable event-driven point router (supports QR scans, session attendance, manual coach increments).
    - `GET /api/leaderboard`: High performance cached leaderboard endpoint serving real trainee ranks.
 3. **Frontend UI Transformation:**
-   - Update `JoinModal` & `app/join/components/application-section.tsx` with the lean fields (Full Name, Uni ID, Email, Phone/WhatsApp, Academic Year, Track, CF Handle).
-   - Wire registration form to `/api/trainees/register` with instant reactive feedback and error states.
-   - Upgrade `app/leaderboard/page.tsx` to consume the real Firebase leaderboard endpoint with live filter by track (All, Level 1, Level 2) and fallback gracefully if offline.
+   - Update `JoinModal` & `components/join/application-section.tsx` with the lean fields (Full Name, Uni ID, Email, Phone/WhatsApp, Academic Year, Track, CF Handle).
+   - Wire registration form to `/api/trainees/register` with instant reactive feedback and error states. Shared form state lives in `hooks/use-trainee-registration.ts`.
+   - Upgrade `app/(site)/leaderboard/page.tsx` to consume the real Firebase leaderboard endpoint with live filter by track (All, Level 1, Level 2) and fallback gracefully if offline.
