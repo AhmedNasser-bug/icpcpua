@@ -20,6 +20,7 @@ export default defineConfig({
       exclude: [
         "**/*.d.ts",
         "components/recruitment/Role3DCanvas.tsx",
+        "components/recruitment/role-canvas-scene.ts",
         "components/recruitment/role-scenes.ts",
       ],
       thresholds: {
