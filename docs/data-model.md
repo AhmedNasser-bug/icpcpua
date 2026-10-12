@@ -33,7 +33,7 @@ Immutable append-only ledger; the document id is auto-generated.
 | Field | Type | Notes |
 |---|---|---|
 | `traineeId`, `universityId` | string | Both set to the trainee's university id |
-| `type` | `registration_welcome` \| `qr_scan` \| `session_attendance` \| `cf_sync` \| `coach_bonus` \| `upsolve` \| `penalty` | Only `registration_welcome`, `qr_scan` and `session_attendance` are written by current code |
+| `type` | `registration_welcome` \| `qr_scan` \| `session_attendance` \| `cf_sync` \| `coach_bonus` \| `upsolve` \| `penalty` | The points route forwards any string as `type`; only `qr_scan` and `session_attendance` also update counters |
 | `points` | number | May be negative |
 | `reason` | string | Human-readable audit text |
 | `metadata` | object, optional | Free-form; `qrCodeId` is used for duplicate-scan detection |
@@ -52,14 +52,15 @@ example `getTopScouts` returns `[]`).
 
 Matches the `ScoutProfile` interface: `id`, `full_name`, `uni_id`,
 `referral_code`, `recruits_count`, `claimed_tiers`, `created_at`, `updated_at`.
-Referral codes are generated as `FIRSTNAME-<last 4 of uni id>` and a numeric
-suffix is appended on collision.
+Referral codes are generated as `FIRSTNAME-<last 4 of uni id>` (first name
+truncated to 8 characters) and a numeric suffix is appended on collision.
 
 ### `bounty_referrals`
 
 Written on successful registration with a referral code: `scout_id`,
-`referred_name` and `referred_uni_id`. A `(scout_id, referred_uni_id)` pair is
-checked first, so the same cadet is not credited twice to the same scout.
+`referred_name` and `referred_uni_id`. When a university id is provided, a
+`(scout_id, referred_uni_id)` pair is checked first, so the same cadet is not
+credited twice to the same scout.
 Per the comment in `lib/bounty.ts`, a Postgres trigger increments
 `bounty_scouts.recruits_count` when a referral row is inserted.
 

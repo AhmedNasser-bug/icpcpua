@@ -3,6 +3,11 @@
 Date: 2026-10-12 · Branch: `chore/cleanup-2026-10-12` (base `main` @ `ac310c1`)
 Plan and evidence: `docs/cleanup/PLAN.md`.
 
+> Historical record. The work described here was merged into `main` with
+> rewritten commit SHAs, so the SHAs quoted below are the original branch's
+> commits and are not reachable from `main`. Revert the equivalent `main`
+> commits when following the rollback notes.
+
 ## Summary
 
 Behavior-preserving cleanup across a series of one-concern commits. Every commit passed

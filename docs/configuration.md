@@ -36,9 +36,9 @@ Baked into the client bundle at build time, so rebuild after changing them.
 | `NEXT_PUBLIC_SUPABASE_URL` | No | Supabase project URL. Falls back to the community project configured in `lib/supabase.ts`. |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | No | Supabase anon (publishable) key. Falls back to the same project's key. |
 
-The fallback pair is committed to the repository on purpose so referral pages
-work in local development. Treat the anon key as public: it is only safe as long
-as Row Level Security restricts what it can read and write.
+The fallback values are committed in `lib/supabase.ts` so the referral pages
+work without local configuration. Treat the anon key as public: it is only safe
+as long as Row Level Security restricts what it can read and write.
 
 ## Test and CI variables
 

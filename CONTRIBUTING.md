@@ -6,9 +6,9 @@ welcome as pull requests against `main`; CI must pass before merge.
 ## Prerequisites
 
 - Node.js 22 (what CI uses).
-- pnpm 10 via [Corepack](https://pnpm.io/installation#using-corepack):
-  `corepack enable pnpm`. The repo is pnpm-only (`packageManager` field and
-  `pnpm-lock.yaml`); do not use npm or yarn.
+- pnpm 10 via [Corepack](https://pnpm.io/installation): `corepack enable pnpm`.
+  The repo is pnpm-only (`packageManager` field and `pnpm-lock.yaml`); do not
+  use npm or yarn.
 
 ## Setup
 
@@ -64,7 +64,7 @@ request:
 
 ## Commits and branches
 
-- Branch from `main`; do not commit directly to it.
+- Branch from `main` and open a pull request; CI must pass before merge.
 - Keep one concern per commit. Prefix messages with the type used in this
   repo's history: `feat:`, `fix:`, `docs:`, `refactor:`, `perf:`, `test:`,
   `chore:` or `ci:`.
