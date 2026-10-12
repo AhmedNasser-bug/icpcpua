@@ -12,8 +12,8 @@
   --color-accent-cyan: #00E5FF;
   --color-accent-pink: #FF0055;
   --color-muted: #E0E0E0;
-  --font-heading: 'Fredoka One', cursive;
-  --font-body: 'Space Mono', monospace;
+  --font-heading: var(--font-fredoka);
+  --font-body: var(--font-space-mono);
   --border-color: #0F0F0F;
   --shadow-offset: 8px 8px 0px #0F0F0F;
 
@@ -40,8 +40,8 @@
 }
 
 @theme inline {
-  --font-sans: 'Space Mono', monospace;
-  --font-mono: 'Space Mono', monospace;
+  --font-sans: var(--font-space-mono);
+  --font-mono: var(--font-space-mono);
 }
 
 @layer base {
@@ -63,7 +63,7 @@
   body {
     background-color: #FFF4E0;
     color: #0F0F0F;
-    font-family: 'Space Mono', monospace;
+    font-family: var(--font-space-mono);
     background-image: radial-gradient(#E0E0E0 1px, transparent 1px);
     background-size: 20px 20px;
     min-height: 100vh;
@@ -106,7 +106,7 @@
   z-index: 1000;
   background: #7B2CBF;
   color: #FFFFFF;
-  font-family: 'Space Mono', monospace;
+  font-family: var(--font-space-mono);
   font-weight: 700;
   font-size: 14px;
   text-transform: uppercase;
@@ -122,11 +122,19 @@
 
 /* ---- Typography helpers ---- */
 .font-display {
-  font-family: 'Fredoka One', cursive;
+  font-family: var(--font-fredoka);
 }
 
 .font-body {
-  font-family: 'Space Mono', monospace;
+  font-family: var(--font-space-mono);
+}
+
+.font-grotesk {
+  font-family: var(--font-space-grotesk);
+}
+
+.font-cairo {
+  font-family: var(--font-cairo);
 }
 
 /* ---- Text shadows ---- */
@@ -258,7 +266,7 @@
 /* ---- Filter pills ---- */
 .filter-pill {
   transition: all 0.1s ease-in-out;
-  font-family: 'Space Mono', monospace;
+  font-family: var(--font-space-mono);
   font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;

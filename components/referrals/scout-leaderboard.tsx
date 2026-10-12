@@ -21,8 +21,7 @@ export function ScoutLeaderboard({ entries }: { entries: ScoutLeaderboardEntry[]
           <div className="flex items-center gap-3">
             <Trophy className="w-6 h-6 text-[#FFD500]" />
             <h3
-              className="text-2xl md:text-3xl font-black uppercase text-white tracking-tight"
-              style={{ fontFamily: "Fredoka One, sans-serif" }}
+              className="font-display text-2xl md:text-3xl font-black uppercase text-white tracking-tight"
             >
               POINTS LEADERBOARD
             </h3>
@@ -57,8 +56,7 @@ export function ScoutLeaderboard({ entries }: { entries: ScoutLeaderboardEntry[]
         </div>
 
         <h4
-          className="text-xl font-black uppercase text-[#0F0F0F]"
-          style={{ fontFamily: "Fredoka One, sans-serif" }}
+          className="font-display text-xl font-black uppercase text-[#0F0F0F]"
         >
           VERIFICATION RULES
         </h4>

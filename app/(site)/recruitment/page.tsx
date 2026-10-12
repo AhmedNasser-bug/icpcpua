@@ -30,11 +30,11 @@ export default function RecruitmentLandingPage() {
                         <div className="inline-block bg-[#0F0F0F] text-[#FFF4E0] px-3 py-1 font-mono text-xs uppercase mb-6 tracking-widest border border-[#0F0F0F]">
                             {"// SYSTEM ALERT: INTAKE ACTIVE"}
                         </div>
-                        <h1 className="text-6xl md:text-8xl lg:text-9xl font-black uppercase leading-[0.85] tracking-tighter mb-8" style={{fontFamily: 'Fredoka One, sans-serif'}}>
+                        <h1 className="font-display text-6xl md:text-8xl lg:text-9xl font-black uppercase leading-[0.85] tracking-tighter mb-8">
                             SELECT YOUR <br />
                             <span className="text-[#FF0055] underline decoration-[#00E5FF] decoration-[8px]">SPECIALIZATION.</span>
                         </h1>
-                        <p className="text-xl md:text-2xl font-bold max-w-xl border-l-[4px] border-[#0F0F0F] pl-4 mb-8 leading-tight" style={{fontFamily: 'Space Grotesk, sans-serif'}}>
+                        <p className="font-grotesk text-xl md:text-2xl font-bold max-w-xl border-l-[4px] border-[#0F0F0F] pl-4 mb-8 leading-tight">
                             We do not offer standard student leadership roles. Every position is an isolated component with strict parameters, absolute ownership, and brutalist performance metrics.
                         </p>
                     </div>
@@ -67,7 +67,7 @@ export default function RecruitmentLandingPage() {
                         <div className="absolute w-3 h-3 bg-white border-[3px] border-[#0F0F0F] z-10 -top-[6px] -left-[6px]"></div>
                         <div className="absolute w-3 h-3 bg-white border-[3px] border-[#0F0F0F] z-10 -bottom-[6px] -right-[6px]"></div>
                         <div className="flex justify-between items-start mb-4">
-                            <h2 className="text-4xl font-black uppercase leading-none tracking-tight" style={{fontFamily: 'Fredoka One, sans-serif'}}>The Instructor</h2>
+                            <h2 className="font-display text-4xl font-black uppercase leading-none tracking-tight">The Instructor</h2>
                             <span className="bg-[#0F0F0F] text-white px-3 py-1 text-sm font-black">LVL_01</span>
                         </div>
                         {/* 3D Generative Tree Visual */}
@@ -77,7 +77,7 @@ export default function RecruitmentLandingPage() {
                             </div>
                             <Role3DCanvas role="instructor" height="210px" interactive={true} autoRotate={true} />
                         </div>
-                        <div className="space-y-6 mb-8" style={{fontFamily: 'Space Grotesk, sans-serif'}}>
+                        <div className="font-grotesk space-y-6 mb-8">
                             <div>
                                 <span className="block font-black text-sm uppercase bg-[#0F0F0F] text-white w-fit px-2 mb-2 italic tracking-widest">Selling Points</span>
                                 <p className="font-bold border-l-[3px] border-[#0F0F0F] pl-3 leading-tight">Mastery over data structures. Ability to debug under pressure. Command presence.</p>
@@ -110,7 +110,7 @@ export default function RecruitmentLandingPage() {
                         <div className="absolute w-3 h-3 bg-white border-[3px] border-[#0F0F0F] z-10 -top-[6px] -left-[6px]"></div>
                         <div className="absolute w-3 h-3 bg-white border-[3px] border-[#0F0F0F] z-10 -bottom-[6px] -right-[6px]"></div>
                         <div className="flex justify-between items-start mb-4">
-                            <h2 className="text-4xl font-black uppercase leading-none tracking-tight" style={{fontFamily: 'Fredoka One, sans-serif'}}>Operations &amp; PR</h2>
+                            <h2 className="font-display text-4xl font-black uppercase leading-none tracking-tight">Operations &amp; PR</h2>
                             <span className="bg-[#0F0F0F] text-white px-3 py-1 text-sm font-black">LVL_02</span>
                         </div>
                         {/* 3D Generative Radar Visual */}
@@ -120,7 +120,7 @@ export default function RecruitmentLandingPage() {
                             </div>
                             <Role3DCanvas role="ops-pr" height="210px" interactive={true} autoRotate={true} />
                         </div>
-                        <div className="space-y-6 mb-8" style={{fontFamily: 'Space Grotesk, sans-serif'}}>
+                        <div className="font-grotesk space-y-6 mb-8">
                             <div>
                                 <span className="block font-black text-sm uppercase bg-[#0F0F0F] text-white w-fit px-2 mb-2 italic tracking-widest">Selling Points</span>
                                 <p className="font-bold border-l-[3px] border-[#0F0F0F] pl-3 leading-tight">Brand domination. Logistics surgical precision. Social engineering.</p>
@@ -153,7 +153,7 @@ export default function RecruitmentLandingPage() {
                         <div className="absolute w-3 h-3 bg-white border-[3px] border-[#0F0F0F] z-10 -top-[6px] -left-[6px]"></div>
                         <div className="absolute w-3 h-3 bg-white border-[3px] border-[#0F0F0F] z-10 -bottom-[6px] -right-[6px]"></div>
                         <div className="flex justify-between items-start mb-4">
-                            <h2 className="text-4xl font-black uppercase leading-none tracking-tight" style={{fontFamily: 'Fredoka One, sans-serif'}}>HR / Monitoring</h2>
+                            <h2 className="font-display text-4xl font-black uppercase leading-none tracking-tight">HR / Monitoring</h2>
                             <span className="bg-white text-[#0F0F0F] px-3 py-1 text-sm font-black">LVL_03</span>
                         </div>
                         {/* 3D Generative Gyroscope Visual */}
@@ -163,7 +163,7 @@ export default function RecruitmentLandingPage() {
                             </div>
                             <Role3DCanvas role="hr" height="210px" interactive={true} autoRotate={true} />
                         </div>
-                        <div className="space-y-6 mb-8" style={{fontFamily: 'Space Grotesk, sans-serif'}}>
+                        <div className="font-grotesk space-y-6 mb-8">
                             <div>
                                 <span className="block font-black text-sm uppercase bg-white text-[#0F0F0F] w-fit px-2 mb-2 italic tracking-widest">Selling Points</span>
                                 <p className="font-bold border-l-[3px] border-white pl-3 leading-tight">Human behavioral analysis. Conflict resolution protocol. Performance auditing.</p>
@@ -196,7 +196,7 @@ export default function RecruitmentLandingPage() {
                         <div className="absolute w-3 h-3 bg-white border-[3px] border-[#0F0F0F] z-10 -top-[6px] -left-[6px]"></div>
                         <div className="absolute w-3 h-3 bg-white border-[3px] border-[#0F0F0F] z-10 -bottom-[6px] -right-[6px]"></div>
                         <div className="flex justify-between items-start mb-4">
-                            <h2 className="text-4xl font-black uppercase leading-none tracking-tight" style={{fontFamily: 'Fredoka One, sans-serif'}}>Design / Dev</h2>
+                            <h2 className="font-display text-4xl font-black uppercase leading-none tracking-tight">Design / Dev</h2>
                             <span className="bg-white text-[#0F0F0F] px-3 py-1 text-sm font-black">LVL_04</span>
                         </div>
                         {/* 3D Generative Tesseract Visual */}
@@ -206,7 +206,7 @@ export default function RecruitmentLandingPage() {
                             </div>
                             <Role3DCanvas role="design-dev" height="210px" interactive={true} autoRotate={true} />
                         </div>
-                        <div className="space-y-6 mb-8" style={{fontFamily: 'Space Grotesk, sans-serif'}}>
+                        <div className="font-grotesk space-y-6 mb-8">
                             <div>
                                 <span className="block font-black text-sm uppercase bg-white text-[#0F0F0F] w-fit px-2 mb-2 italic tracking-widest">Selling Points</span>
                                 <p className="font-bold border-l-[3px] border-white pl-3 leading-tight">Visual violence. Pixel-perfect brutality. Frontend engineering at 200ms.</p>
@@ -239,7 +239,7 @@ export default function RecruitmentLandingPage() {
                         <div className="absolute w-3 h-3 bg-white border-[3px] border-[#0F0F0F] z-10 -top-[6px] -left-[6px]"></div>
                         <div className="absolute w-3 h-3 bg-white border-[3px] border-[#0F0F0F] z-10 -bottom-[6px] -right-[6px]"></div>
                         <div className="flex justify-between items-start mb-4">
-                            <h2 className="text-4xl font-black uppercase leading-none tracking-tight" style={{fontFamily: 'Fredoka One, sans-serif'}}>Specialised Marketing</h2>
+                            <h2 className="font-display text-4xl font-black uppercase leading-none tracking-tight">Specialised Marketing</h2>
                             <span className="bg-[#0F0F0F] text-[#FFD500] px-3 py-1 text-sm font-black">LVL_05</span>
                         </div>
                         {/* 3D Generative Funnel Vortex Visual */}
@@ -249,7 +249,7 @@ export default function RecruitmentLandingPage() {
                             </div>
                             <Role3DCanvas role="marketing" height="230px" interactive={true} autoRotate={true} />
                         </div>
-                        <div className="space-y-6 mb-8" style={{fontFamily: 'Space Grotesk, sans-serif'}}>
+                        <div className="font-grotesk space-y-6 mb-8">
                             <div>
                                 <span className="block font-black text-sm uppercase bg-[#0F0F0F] text-white w-fit px-2 mb-2 italic tracking-widest">Selling Points</span>
                                 <p className="font-bold border-l-[3px] border-white pl-3 leading-tight">Stop posting and praying. Omnipresent tech growth engine. Top 1% pipeline framing.</p>

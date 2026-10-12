@@ -143,8 +143,7 @@ export default function ReferralRewardPage() {
           </div>
 
           <h1
-            className="text-5xl md:text-7xl lg:text-8xl font-black uppercase tracking-tight leading-[0.9] mb-4 text-[#0F0F0F]"
-            style={{ fontFamily: "Fredoka One, sans-serif" }}
+            className="font-display text-5xl md:text-7xl lg:text-8xl font-black uppercase tracking-tight leading-[0.9] mb-4 text-[#0F0F0F]"
           >
             INVITE PEERS. <br />
             <span className="text-[#FF0055] underline decoration-[#00E5FF] decoration-[8px]">
@@ -153,8 +152,7 @@ export default function ReferralRewardPage() {
           </h1>
 
           <p
-            className="text-lg md:text-xl font-bold text-gray-800 max-w-2xl border-l-[4px] border-[#0F0F0F] pl-4 leading-snug"
-            style={{ fontFamily: "Space Grotesk, sans-serif" }}
+            className="font-grotesk text-lg md:text-xl font-bold text-gray-800 max-w-2xl border-l-[4px] border-[#0F0F0F] pl-4 leading-snug"
           >
             Simple, transparent referral system. Generate your personal invite link, share it with fellow university students, and collect points on the community leaderboard whenever they register.
           </p>

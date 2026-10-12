@@ -39,8 +39,7 @@ export function ScoutDashboard({
             <span className="font-bold text-gray-600">ID: {scout.uni_id}</span>
           </div>
           <h2
-            className="text-3xl md:text-4xl font-black uppercase text-[#0F0F0F] mt-1"
-            style={{ fontFamily: "Fredoka One, sans-serif" }}
+            className="font-display text-3xl md:text-4xl font-black uppercase text-[#0F0F0F] mt-1"
           >
             {scout.full_name}
           </h2>
@@ -76,8 +75,7 @@ export function ScoutDashboard({
             </div>
             <div className="flex items-baseline gap-3 my-4">
               <span
-                className="text-7xl md:text-8xl font-black text-[#0F0F0F] leading-none"
-                style={{ fontFamily: "Fredoka One, sans-serif" }}
+                className="font-display text-7xl md:text-8xl font-black text-[#0F0F0F] leading-none"
               >
                 {scout.recruits_count}
               </span>

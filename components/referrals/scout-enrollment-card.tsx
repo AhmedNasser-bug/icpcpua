@@ -27,13 +27,12 @@ export function ScoutEnrollmentCard({
         </div>
 
         <h2
-          className="text-3xl md:text-4xl font-black uppercase text-[#0F0F0F] leading-tight"
-          style={{ fontFamily: "Fredoka One, sans-serif" }}
+          className="font-display text-3xl md:text-4xl font-black uppercase text-[#0F0F0F] leading-tight"
         >
           GET YOUR REFERRAL LINK
         </h2>
 
-        <p className="font-bold text-sm text-gray-700 leading-normal" style={{ fontFamily: "Space Grotesk, sans-serif" }}>
+        <p className="font-grotesk font-bold text-sm text-gray-700 leading-normal">
           Enter your <strong>Full Name</strong> and <strong>University ID</strong>. If you previously enrolled, your profile and points will be loaded immediately.
         </p>
 

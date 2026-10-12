@@ -14,8 +14,7 @@ export function ContestLogisticsSection() {
             {"// ADVANCED COMPETITIVE RULES"}
           </span>
           <h2
-            className="text-2xl md:text-3xl font-black uppercase tracking-tight"
-            style={{ fontFamily: "Fredoka One, sans-serif" }}
+            className="font-display text-2xl md:text-3xl font-black uppercase tracking-tight"
           >
             ECPC Qualification &amp; Official Contest Logistics
           </h2>

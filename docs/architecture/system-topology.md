@@ -47,7 +47,7 @@ graph TD
 
   subgraph DesignTokens ["Design System & Tokens (DESIGN.md / globals.css)"]
     PALETTE["Neo-Brutalist Palette: #7B2CBF, #FFD500, #00E5FF, #FF0055, #FFF4E0, #0F0F0F"]
-    TYPO["Display: Fredoka One | Body/Code: Space Mono"]
+    TYPO["Self-hosted via next/font: Display Fredoka | Body/Code Space Mono | Labels Space Grotesk | Arabic Cairo"]
     ELEVATION["Mechanical Drop Shadows: 4px / 6px / 8px / 10px solid #0F0F0F"]
     VECTORS["Vector Nodes: Corner [ ] Anchor Brackets"]
   end

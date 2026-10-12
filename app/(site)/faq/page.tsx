@@ -79,8 +79,7 @@ export default function FAQPage() {
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-8">
             <div className="max-w-3xl">
               <h1
-                className="text-5xl md:text-7xl lg:text-8xl font-black uppercase leading-[0.88] tracking-tighter mb-6 text-[#0F0F0F]"
-                style={{ fontFamily: "Fredoka One, sans-serif" }}
+                className="font-display text-5xl md:text-7xl lg:text-8xl font-black uppercase leading-[0.88] tracking-tighter mb-6 text-[#0F0F0F]"
               >
                 FREQUENTLY <br />
                 <span className="text-[#FF0055] underline decoration-[#00E5FF] decoration-[8px]">
@@ -89,14 +88,12 @@ export default function FAQPage() {
               </h1>
               <p
                 dir="rtl"
-                className="text-lg md:text-2xl font-bold text-gray-900 border-r-[4px] border-[#0F0F0F] pr-4 leading-relaxed mb-3"
-                style={{ fontFamily: "Cairo, sans-serif" }}
+                className="font-cairo text-lg md:text-2xl font-bold text-gray-900 border-r-[4px] border-[#0F0F0F] pr-4 leading-relaxed mb-3"
               >
                 جمعنالكم إجابات شاملة ومباشرة لكل الأسئلة اللي بتدور في بالكم بخصوص المجتمع، التدريب، والاستفادة العملية.
               </p>
               <p
-                className="text-sm md:text-base font-bold text-gray-600 border-l-[3px] border-[#0F0F0F] pl-3"
-                style={{ fontFamily: "Space Grotesk, sans-serif" }}
+                className="font-grotesk text-sm md:text-base font-bold text-gray-600 border-l-[3px] border-[#0F0F0F] pl-3"
               >
                 Comprehensive and direct answers regarding eligibility, zero-prerequisite onboarding, GUC curriculum, career ROI, and official competition logistics.
               </p>

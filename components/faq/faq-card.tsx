@@ -47,8 +47,7 @@ export function FaqCard({
             {showAr && (
               <h3
                 dir="rtl"
-                className="text-xl md:text-2xl font-black text-[#0F0F0F] tracking-tight leading-snug"
-                style={{ fontFamily: "Cairo, sans-serif" }}
+                className="font-cairo text-xl md:text-2xl font-black text-[#0F0F0F] tracking-tight leading-snug"
               >
                 {item.question.ar}
               </h3>
@@ -56,9 +55,8 @@ export function FaqCard({
             {showEn && (
               <h3
                 className={`text-lg md:text-xl font-black uppercase text-[#0F0F0F] tracking-tight leading-snug ${
-                  showAr ? "text-gray-700 text-base md:text-lg font-mono pt-1" : ""
+                  showAr ? "text-gray-700 text-base md:text-lg font-mono pt-1 font-grotesk" : "font-display"
                 }`}
-                style={{ fontFamily: showAr ? "Space Grotesk, sans-serif" : "Fredoka One, sans-serif" }}
               >
                 {item.question.en}
               </h3>
@@ -122,7 +120,7 @@ export function FaqCard({
                 <span className="w-2 h-2 bg-[#FF0055] inline-block" />
                 <span>Official English Response</span>
               </div>
-              <p className="text-base md:text-lg font-bold text-[#0F0F0F] leading-relaxed" style={{ fontFamily: "Space Grotesk, sans-serif" }}>
+              <p className="font-grotesk text-base md:text-lg font-bold text-[#0F0F0F] leading-relaxed">
                 {item.answer.en.intro}
               </p>
 
@@ -136,7 +134,7 @@ export function FaqCard({
                       <span className="block font-black text-[#7B2CBF] text-xs font-mono uppercase tracking-wide mb-1">
                         ▫️ {pt.label}:
                       </span>
-                      <p className="text-sm font-bold text-gray-800 leading-normal" style={{ fontFamily: "Space Grotesk, sans-serif" }}>
+                      <p className="font-grotesk text-sm font-bold text-gray-800 leading-normal">
                         {pt.text}
                       </p>
                     </div>

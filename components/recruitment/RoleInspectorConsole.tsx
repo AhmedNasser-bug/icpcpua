@@ -199,14 +199,13 @@ export function RoleInspectorConsole() {
                 </span>
               </div>
               <h3
-                className="text-3xl font-black uppercase tracking-tight text-[#0F0F0F]"
-                style={{ fontFamily: "Fredoka One, sans-serif" }}
+                className="font-display text-3xl font-black uppercase tracking-tight text-[#0F0F0F]"
               >
                 {activeMeta.title}
               </h3>
             </div>
 
-            <p className="text-sm font-bold text-gray-800 leading-snug border-l-[3px] border-[#0F0F0F] pl-3" style={{ fontFamily: "Space Grotesk, sans-serif" }}>
+            <p className="font-grotesk text-sm font-bold text-gray-800 leading-snug border-l-[3px] border-[#0F0F0F] pl-3">
               {activeMeta.desc}
             </p>
 

@@ -16,15 +16,13 @@ export function FaqSupportBanner() {
         <div className="space-y-3">
           <h2
             dir="rtl"
-            className="text-2xl md:text-3xl font-black text-[#0F0F0F] leading-snug"
-            style={{ fontFamily: "Cairo, sans-serif" }}
+            className="font-cairo text-2xl md:text-3xl font-black text-[#0F0F0F] leading-snug"
           >
             لسه عندك أي سؤال تاني في بالك؟ متترددش تبعتلنا على جروب الواتساب أو ديسكورد وإحنا معاك خطوة بخطوة!
           </h2>
 
           <p
-            className="text-base md:text-lg font-bold text-gray-600"
-            style={{ fontFamily: "Space Grotesk, sans-serif" }}
+            className="font-grotesk text-base md:text-lg font-bold text-gray-600"
           >
             Still have questions? Feel free to reach out anytime on our WhatsApp group or Discord server—we&apos;re here to help you every step of the way!
           </p>
