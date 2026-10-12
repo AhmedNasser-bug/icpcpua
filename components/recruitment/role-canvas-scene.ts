@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { createRoleScene, type Role3DType, type SceneDisposable } from "./role-scenes";
 
-export interface MountRoleSceneOptions {
+interface MountRoleSceneOptions {
   role: Role3DType | string;
   wireframeOnly: boolean;
   autoRotate: boolean;
