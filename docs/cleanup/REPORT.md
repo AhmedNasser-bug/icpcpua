@@ -101,12 +101,14 @@ route, measured against the same 12 routes before and after.
 
 ## Skipped items and needs decision
 
-- **`public/` assets (72 files, 30 MB, two zips 15.7 MB)**: zero references in
-  any tracked file. They are publicly served URLs, so deleting them needs
-  approval. Removing just the two zips would cut the deployed asset payload by
-  ~15.7 MB.
-- **`.Jules/palette.md`**: dated (2026-04-27) agent note, referenced nowhere.
-  Left in place; delete on request.
+- **`public/` assets**: the two unreferenced zips (15.7 MB) were removed in a
+  follow-up cleanup. The remaining 70 unreferenced images are kept because they
+  are publicly served URLs that may be linked externally (marketing/social).
+- **`.Jules/palette.md` and `docs/design/*.html`**: removed in the same
+  follow-up cleanup (dated agent note and superseded mockups, referenced
+  nowhere).
+- **`components.json`**: unreferenced and its `@/lib/utils` alias is broken, but
+  the v0 integration may read it when generating components, so it was kept.
 - **Duplication between `join-modal.tsx` and `application-section.tsx`**
   (jscpd: 118 duplicated lines): intentionally not merged because the two forms
   differ in labels, aria attributes and Tailwind classes; merging risks

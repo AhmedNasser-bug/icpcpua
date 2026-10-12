@@ -47,8 +47,8 @@ Behavior-preserving cleanup of the PUA ICPC Next.js site. Baseline was taken on
 | 1.4 | ~~`@testing-library/dom` unused devDependency~~ **false positive, kept** | depcheck flags it, but `@testing-library/react` declares it as a **peer** (`peerDependencies["@testing-library/dom"] = ^10.0.0`), so the explicit declaration is correct; knip does not flag it | skip |
 | 1.5 | README documents `npm run dev` / `yarn dev` although the repo is pnpm-only (`pnpm-lock.yaml`, `packageManager`) | `README.md:15-21` vs `package.json:5` | none |
 | 1.6 | `docs/architecture/dependency-graph.md` is accurate on spot-check; one edge is missing (`components/home/join-modal.tsx` also consumes `hooks/use-trainee-registration.ts`) | `JoinModal` imports the hook; the doc only draws `JOIN_SECTIONS --> REG_HOOK` | none (docs) |
-| 1.7 | `.Jules/palette.md` is a dated AI-agent note (2026-04-27) referenced nowhere | `git grep Jules` → only the file itself | low — list as proposal |
-| 1.8 | 72 files / 30 MB under `public/` are unreferenced anywhere in the repo (incl. two zips, 15.7 MB) | loop over `git ls-files public` with `git grep --fixed-strings` → 0 matches each | **medium** — public URLs; see Needs decision |
+| 1.7 | `.Jules/palette.md` is a dated AI-agent note (2026-04-27) referenced nowhere | `git grep Jules` → only the file itself | removed in follow-up cleanup |
+| 1.8 | 72 files / 30 MB under `public/` are unreferenced anywhere in the repo (incl. two zips, 15.7 MB) | loop over `git ls-files public` with `git grep --fixed-strings` → 0 matches each | **medium** — public URLs; zips removed in follow-up, remainder kept |
 
 ### Tier 2 — structure
 
@@ -96,10 +96,11 @@ proposed except the Tier 4 extraction of the 3D scene module (own commit).
 
 ## Needs decision (not executed)
 
-- Delete unreferenced `public/` assets (30 MB; two zips 15.7 MB). They are not
-  referenced by any tracked file, but they are publicly served URLs and may be
-  linked externally (marketing/social). Evidence in Tier 1.8.
-- Remove `.Jules/palette.md` (dated AI-agent note).
+- ~~Delete unreferenced `public/` assets~~: the two zips (15.7 MB) were removed
+  in a follow-up cleanup; the remaining unreferenced images are kept because
+  they are publicly served URLs that may be linked externally.
+- ~~Remove `.Jules/palette.md`~~: removed in a follow-up cleanup, together with
+  the unreferenced `docs/design/*.html` mockups.
 - Add a dead-code/unused-dependency gate (knip) to CI: adds a devDependency and
   ~50 transitive packages, so it needs approval.
 - Postgres/Firestore index proposals: none identified this pass.
