@@ -9,7 +9,6 @@ export interface CommitteeHandbook {
     prefer: { en: string; ar: string }[];
   };
   faq: { q: { en: string; ar: string }; a: { en: string; ar: string } }[];
-  subRoles: string[];
 }
 
 export interface RoleData {
@@ -28,7 +27,6 @@ export interface RoleData {
   antiGoalColor?: string;
   themeColor: string;
   themeText: string;
-  applyUrl: string;
   problemsSolved: {
     title: { en: string; ar: string };
     desc: { en: string; ar: string };
@@ -39,44 +37,6 @@ export interface RoleData {
   }[];
   handbook: CommitteeHandbook;
 }
-
-export const universalRules = [
-  {
-    id: "ego",
-    titleEn: "Ego is the Enemy",
-    titleAr: "العقلية الخالية من الغرور",
-    ruleEn: "Detach your emotions during debates to maximize critical thinking. Criticize ideas, not people.",
-    ruleAr: "فصل المشاعر أثناء النقاشات لتعزيز التفكير النقدي. انقد الأفكار لا الأشخاص."
-  },
-  {
-    id: "meetings",
-    titleEn: "The Golden Rule of Meetings",
-    titleAr: "قاعدة الاجتماعات الذهبية",
-    ruleEn: "Never leave a meeting without a clear understanding of what each member is supposed to do next with documented tasks.",
-    ruleAr: "عدم مغادرة أي اجتماع دون فهم واضح ومحدد لما يجب على كل عضو تنفيذه تالياً وبمهام موثقة."
-  },
-  {
-    id: "conflict",
-    titleEn: "Conflict Resolution & 24h Cool-Down",
-    titleAr: "حل النزاعات وفترة التهدئة",
-    ruleEn: "Address problems immediately and constructively. If you have an issue with a person, tell them directly, not everyone else. Follow the 24-hour cool-down protocol and strike system.",
-    ruleAr: "مواجهة المشكلات فوراً وبشكل بنّاء. واجه الشخص المعني مباشرة وليس الآخرين. تفعيل بروتوكول التهدئة (24 ساعة) ونظام الإنذارات."
-  },
-  {
-    id: "accountability",
-    titleEn: "Accountability & Reliability",
-    titleAr: "المسؤولية والالتزام بالوقت",
-    ruleEn: "Do your share of the work and produce it by the agreed-upon time. If you cannot fulfill your role, communicate it immediately via 48-hour delay notices.",
-    ruleAr: "أداء المهام وتسليمها في الوقت المتفق عليه. في حال تعذر ذلك، يجب إخطار الفريق فوراً (إشعار 48 ساعة)."
-  },
-  {
-    id: "division-of-labor",
-    titleEn: "Zero Martyrdom & Strict Division of Labor",
-    titleAr: "عدم التضحية بالنفس وتقسيم العمل الصارم",
-    ruleEn: "You have a specific lane. Do not burn yourself out doing other people's jobs. Stick to the absolute, non-negotiable division of labor.",
-    ruleAr: "لكل عضو مساره الخاص. تجنب الاحتراق الوظيفي بأداء مهام الآخرين. الالتزام الصارم بتقسيم العمل دون مساومة."
-  }
-];
 
 export const rolesData: Record<string, RoleData> = {
   "instructor": {
@@ -112,7 +72,6 @@ export const rolesData: Record<string, RoleData> = {
     themeColor: "#FFD500", // Yellow
     themeText: "#0F0F0F",
     antiGoalColor: "#FF0055", // Pink
-    applyUrl: "#register",
         problemsSolved: [
       {
         title: {
@@ -271,11 +230,6 @@ handbook: {
             ar: "وجه الطالب إلى الموجه (Coach) للحصول على دعم فردي وجلسات Upsolve حتى يتمكن المدرب الرئيسي من الحفاظ على وتيرة الجلسة."
           }
         }
-      ],
-      subRoles: [
-        "Level 1 Foundations Instructor",
-        "Level 2 Advanced Instructor (DP / Graphs)",
-        "Competitive Programming Coach (Upsolving & Mentorship)"
       ]
     }
   },
@@ -314,7 +268,6 @@ handbook: {
     themeColor: "#FFD500",
     themeText: "#0F0F0F",
     antiGoalColor: "#FF0055",
-    applyUrl: "#register",
         problemsSolved: [
       {
         title: {
@@ -473,11 +426,6 @@ handbook: {
             ar: "وجه الطالب إلى الموجه (Coach) للحصول على دعم فردي وجلسات Upsolve حتى يتمكن المدرب الرئيسي من الحفاظ على وتيرة الجلسة."
           }
         }
-      ],
-      subRoles: [
-        "Level 1 Foundations Instructor",
-        "Level 2 Advanced Instructor (DP / Graphs)",
-        "Competitive Programming Coach (Upsolving & Mentorship)"
       ]
     }
   },
@@ -515,7 +463,6 @@ handbook: {
     themeColor: "#00E5FF", // Cyan
     themeText: "#0F0F0F",
     antiGoalColor: "#7B2CBF", // Purple
-    applyUrl: "#register",
         problemsSolved: [
       {
         title: {
@@ -674,11 +621,6 @@ handbook: {
             ar: "لا. يجب أن تمر جميع الرسائل العامة عبر لجنة العمليات/العلاقات العامة لمراقبة الجودة وتنسيقها بما يطابق هويتنا الاحترافية."
           }
         }
-      ],
-      subRoles: [
-        "Social Media & Content Officer",
-        "Logistics & OC Officer (Paperwork & Room Lock)",
-        "External Relations & Alumni Liaison"
       ]
     }
   },
@@ -716,7 +658,6 @@ handbook: {
     themeColor: "#7B2CBF", // Purple
     themeText: "#FFFFFF",
     antiGoalColor: "#FFD500", // Yellow
-    applyUrl: "#register",
         problemsSolved: [
       {
         title: {
@@ -868,12 +809,6 @@ handbook: {
             ar: "لا. التزم بتقسيم العمل الصارم. دور الموارد البشرية هو حماية النظام ومراقبته، وليس تنفيذ المهام اللوجستية."
           }
         }
-      ],
-      subRoles: [
-        "Dedicated Technical HR Officer",
-        "Operations & PR HR Monitor",
-        "Design & Dev HR Monitor",
-        "Culture & Onboarding Gatekeeper"
       ]
     }
   },
@@ -911,7 +846,6 @@ handbook: {
     themeColor: "#FF6B00", // Orange
     themeText: "#FFFFFF",
     antiGoalColor: "#7B2CBF", // Purple
-    applyUrl: "#register",
         problemsSolved: [
       {
         title: {
@@ -1070,11 +1004,6 @@ handbook: {
             ar: "استخدم الإطار الإيجابي. بدلاً من 'تعال لتعلم البرمجة'، استخدم رسائل مثل 'تعال لحجز مكانك في لوحة الصدارة' وركز على مكانة وهيبة أن تصبح مهندساً من صفوة الـ 1%."
           }
         }
-      ],
-      subRoles: [
-        "The Ground Game (On-Campus Recruitment Lead)",
-        "The Broadcaster (Digital Content & Shorts Director)",
-        "The Hype Builder (Student Belonging & Gamification)"
       ]
     }
   },
@@ -1112,7 +1041,6 @@ handbook: {
     themeColor: "#FF0055", // Pink
     themeText: "#FFFFFF",
     antiGoalColor: "#00E5FF", // Cyan
-    applyUrl: "#register",
         problemsSolved: [
       {
         title: {
@@ -1264,11 +1192,6 @@ handbook: {
             ar: "ارفض الطلب ووجهه لقواعد مسار العمل. يجب الانتهاء من جميع الأصول الفنية خلال الفحص الأسبوعي للجاهزية. محاولات اللحظة الأخيرة تخرق مبدأ تقسيم العمل."
           }
         }
-      ],
-      subRoles: [
-        "Creative Maximalist UI/UX Designer",
-        "Frontend Software Engineer (Next.js/Tailwind)",
-        "Discord Bot & Infrastructure Automator"
       ]
     }
   }
