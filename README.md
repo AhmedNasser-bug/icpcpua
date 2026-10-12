@@ -86,20 +86,11 @@ contract is documented in [docs/configuration.md](docs/configuration.md).
 
 ## Testing
 
-Unit and component tests run on Vitest with React Testing Library and jsdom, and
-mock Supabase and Firebase Admin, so no credentials or databases are required.
-The threshold that CI enforces lives in `vitest.config.mts`.
-
-Playwright runs against a production build. Install the browser once with
-`pnpm exec playwright install chromium`, then run `pnpm test:e2e`; set
-`E2E_SKIP_BUILD=1` to reuse an existing build. The fixture in
-`e2e/fixtures.ts` blocks Firebase, Supabase and Google hosts and fails the test
-if any request is attempted.
-
-Three.js code (`components/recruitment/Role3DCanvas.tsx`,
-`role-canvas-scene.ts` and `role-scenes.ts`) is excluded from Vitest coverage
-because jsdom cannot run WebGL; `e2e/recruitment.spec.ts` covers it instead.
-Details and PR expectations are in [CONTRIBUTING.md](CONTRIBUTING.md).
+Unit and component tests run on Vitest with React Testing Library and jsdom;
+Supabase and Firebase Admin are mocked, so no credentials are needed. The
+browser layer runs on Playwright against a production build and blocks traffic
+to Firebase, Supabase and Google hosts. See [CONTRIBUTING.md](CONTRIBUTING.md)
+for commands, coverage thresholds and the WebGL testing boundary.
 
 ## Deployment
 
@@ -111,13 +102,10 @@ plus the Playwright job, on every push and pull request.
 
 ## Documentation
 
-- [docs/README.md](docs/README.md) — documentation index.
-- [docs/architecture/overview.md](docs/architecture/overview.md) — routes,
-  data flows and backend fallbacks.
-- [docs/configuration.md](docs/configuration.md) — environment variables.
-- [docs/data-model.md](docs/data-model.md) — Firestore and Supabase shapes.
-- [CHANGELOG.md](CHANGELOG.md) — notable changes.
+- [docs/README.md](docs/README.md) — documentation index: guides, architecture,
+  decisions and project history.
 - [DESIGN.md](DESIGN.md) — design tokens and visual rules.
+- [CHANGELOG.md](CHANGELOG.md) — notable changes.
 - [AGENTS.md](AGENTS.md) — conventions and gotchas for coding agents.
 
 ## Contributing and help

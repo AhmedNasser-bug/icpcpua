@@ -17,7 +17,7 @@ use this index to go deeper.
 |---|---|
 | [architecture/overview.md](./architecture/overview.md) | System shape, route map, runtime data flows and backend fallbacks |
 | [architecture/dependency-graph.md](./architecture/dependency-graph.md) | Component import tree and shared hubs |
-| [architecture/firebase-backend-plan.md](./architecture/firebase-backend-plan.md) | Original Firestore/leaderboard design; partially implemented, see its status banner |
+| [architecture/firebase-backend-plan.md](./architecture/firebase-backend-plan.md) | Historical Firestore/leaderboard design record (superseded by ADR 0001 for status) |
 
 Design tokens, typography and visual rules live in [../DESIGN.md](../DESIGN.md).
 
@@ -28,15 +28,6 @@ Design tokens, typography and visual rules live in [../DESIGN.md](../DESIGN.md).
 
 ## Project history
 
-These files record an earlier cleanup pass. They are kept for context and are
-not current operating instructions:
-
-- [cleanup/PLAN.md](./cleanup/PLAN.md) — findings and execution plan.
-- [cleanup/REPORT.md](./cleanup/REPORT.md) — results, measurements and rollback
-  notes.
-
-## Conventions
-
-- One fact lives in one place; link to it instead of restating it.
-- Commands and paths in these docs are verified against the code and CI.
-- Keep the architecture docs in sync with the routes and imports they describe.
+- [cleanup/REPORT.md](./cleanup/REPORT.md) — one-off cleanup pass: results,
+  measurements and rollback notes. Kept for context, not current operating
+  instructions.

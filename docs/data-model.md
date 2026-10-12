@@ -40,15 +40,11 @@ Immutable append-only ledger; the document id is auto-generated.
 | `createdAt` | string | ISO-8601 |
 
 Registration and point events are committed with a Firestore batch so the
-ledger entry and the aggregate counters on `trainees` stay in sync. Without
-credentials the registration route writes nothing and marks its response
-`simulated: true`; the join form uses that flag to skip referral credit.
+ledger entry and the aggregate counters on `trainees` stay in sync.
 
 ## Supabase (browser-side)
 
-`lib/bounty.ts` talks to the `public` schema directly from the browser. The
-referral features degrade to empty results if Supabase is unreachable (for
-example `getTopScouts` returns `[]`).
+`lib/bounty.ts` talks to the `public` schema directly from the browser.
 
 ### `bounty_scouts`
 
@@ -77,6 +73,3 @@ before applying.
 | Key | Written by | Contents |
 |---|---|---|
 | `pua_bounty_scout` | `lib/bounty-storage.ts` | JSON `ScoutProfile` for the signed-in scout; cleared on logout or corrupt JSON |
-
-The feedback bucket and the leaderboard/events/FAQ pages keep state in React
-only; nothing else is persisted in the browser.

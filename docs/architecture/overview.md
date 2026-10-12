@@ -117,22 +117,8 @@ React state and the list resets on reload. There is no feedback API or storage.
 
 ## Backend fallbacks
 
-The app is designed to run without credentials:
-
-- If `firebase-admin` cannot initialise (`adminDb === null`), registration and
-  point events return simulated successes and the leaderboard serves five
-  hardcoded entries with `source: "local_cache"`.
-- If Firestore is reachable but `trainees` is empty, the leaderboard serves the
-  same entries with `source: "seed_defaults"`.
-- `lib/supabase.ts` falls back to a public Supabase project when the
-  `NEXT_PUBLIC_SUPABASE_*` variables are absent.
-
-Environment variables, defaults and the fallback contract are documented in
+The app runs without credentials: when `adminDb` is `null`, registration and
+point events are simulated and the leaderboard serves hardcoded entries; when
+Firestore is reachable but empty it serves the same seed entries; and
+`lib/supabase.ts` falls back to a public project. The full contract is in
 [configuration.md](../configuration.md).
-
-## Related docs
-
-- [dependency-graph.md](./dependency-graph.md) — component import tree.
-- [firebase-backend-plan.md](./firebase-backend-plan.md) — original design for
-  the Firestore backend; check its status banner before relying on it.
-- [data-model.md](../data-model.md) — stores and document shapes.
