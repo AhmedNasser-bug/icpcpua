@@ -24,6 +24,17 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the home page by modifying `app/(site)/page.tsx`. The page auto-updates as you edit the file.
 
+## Testing
+
+The unit and component suite runs on [Vitest](https://vitest.dev) with React Testing Library and jsdom:
+
+```bash
+pnpm test        # run the suite once (CI mode)
+pnpm test:watch  # re-run on change
+```
+
+Tests mock Supabase and Firebase Admin, so no production credentials or live databases are required.
+
 ## Learn More
 
 To learn more, take a look at the following resources:

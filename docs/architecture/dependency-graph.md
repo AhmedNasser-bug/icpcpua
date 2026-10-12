@@ -33,8 +33,15 @@ graph TD
 
   HOME_SECTIONS["components/home/*"]
   JOIN_SECTIONS["components/join/*"]
+  SPEC_SECTIONS["components/spec-sheet/*"]
+  FAQ_SECTIONS["components/faq/*"]
+  REFERRAL_SECTIONS["components/referrals/*"]
+  FEEDBACK_SECTIONS["components/feedback/*"]
+  LEADER_SECTIONS["components/leaderboard/*"]
+  EVENT_SECTIONS["components/events/*"]
   REG_HOOK["hooks/use-trainee-registration.ts"]
   BOUNTY["lib/bounty.ts"]
+  BOUNTY_STORAGE["lib/bounty-storage.ts"]
   SUPABASE["lib/supabase.ts"]
   FAQ_DATA["data/faq.ts"]
   ROLE_DATA["data/recruitment/roles.ts"]
@@ -61,17 +68,28 @@ graph TD
 
   PAGE_HOME --> HOME_SECTIONS
   PAGE_JOIN --> JOIN_SECTIONS
+  PAGE_EVENTS --> EVENT_SECTIONS
+  PAGE_FEEDBACK --> FEEDBACK_SECTIONS
+  PAGE_LEADER --> LEADER_SECTIONS
+  PAGE_FAQ --> FAQ_SECTIONS
+  PAGE_FAQ --> FAQ_DATA
+  FAQ_SECTIONS --> FAQ_DATA
+  CONSOLE --> ROLE_DATA
   PAGE_RECRUIT --> CONSOLE
   PAGE_RECRUIT --> CANVAS
   CONSOLE --> CANVAS
-  PAGE_FAQ --> FAQ_DATA
+  PAGE_REFERRALS --> REFERRAL_SECTIONS
   PAGE_REFERRALS --> BOUNTY
+  PAGE_REFERRALS --> BOUNTY_STORAGE
+  BOUNTY_STORAGE -.->|"ScoutProfile type"| BOUNTY
   BOUNTY --> SUPABASE
   PAGE_LEADER --> API_LEADER["/api/leaderboard"]
 
   PAGE_SPECS --> ROLE_PAGE
   ROLE_PAGE --> SPEC
   ROLE_PAGE --> ROLE_DATA
+  SPEC --> SPEC_SECTIONS
+  SPEC_SECTIONS --> ROLE_DATA
   SPEC --> NAV
   SPEC --> FOOTER
   SPEC --> MARQUEE
@@ -91,6 +109,7 @@ graph TD
 ## Analysis Notes
 
 - **Hub nodes:** `app/(site)/layout.tsx` composes the shared chrome (`PuaNavbar`, `Marquee`, `Footer`) for every standard page; `PuaSpecSheet` composes the same chrome for the spec routes.
+- **Feature sections:** Larger pages compose section components from their feature folder (`components/spec-sheet`, `faq`, `referrals`, `feedback`, `leaderboard`, `events`), matching the existing `components/home` and `components/join` convention.
 - **Shared logic:** `useTraineeRegistration` is consumed by both the home `JoinModal` and the `ApplicationSection` on `/join`.
-- **Backends:** API routes depend on `lib/firebase-admin` and `lib/firebase-schema`; referral flows depend on `lib/bounty` -> `lib/supabase`.
+- **Backends:** API routes depend on `lib/firebase-admin` and `lib/firebase-schema`; referral flows depend on `lib/bounty` and `lib/bounty-storage` -> `lib/supabase`.
 - **Circular dependencies:** None. Route links are clean string hrefs.
