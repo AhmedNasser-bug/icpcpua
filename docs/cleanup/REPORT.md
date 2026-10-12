@@ -67,7 +67,7 @@ lucide-react 1.x, `@types/node` 26.
 
 | Metric | Baseline (main) | Final | Notes |
 |---|---|---|---|
-| Tracked files | 203 | 207 | +AGENTS.md, +PLAN.md, +REPORT.md, +role-canvas-scene.ts |
+| Tracked files | 203 | 207 | +AGENTS.md, +cleanup docs, +role-canvas-scene.ts |
 | Source LOC (excl. lockfile/public) | 14,538 | 14,808 | +270: new module + docs |
 | Runtime / dev deps | 8 / 17 | 8 / 17 | versions updated, count unchanged |
 | Clean `node_modules` size | 682 MB | 729 MB | +47 MB from security updates |

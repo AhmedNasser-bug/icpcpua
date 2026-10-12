@@ -13,7 +13,6 @@ draft until the first tagged release.
 
 - Supabase migration for the referral schema (`bounty_scouts`,
   `bounty_referrals`, RLS policies and the `recruits_count` trigger).
-- Optional `POINTS_EVENT_SECRET` bearer check for `POST /api/points/event`.
 - `SECURITY.md` with the private vulnerability reporting path.
 - Documentation: docs index, architecture overview, configuration reference,
   data model, contributing guide and a Firestore backend ADR.
