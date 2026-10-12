@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { Trophy } from "lucide-react"
 
-export interface ScoutLeaderboardEntry {
+interface ScoutLeaderboardEntry {
   rank: number
   name: string
   points: number

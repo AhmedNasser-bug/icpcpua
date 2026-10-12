@@ -4,7 +4,7 @@ export type Role3DType = "instructor" | "ops-pr" | "hr" | "design-dev" | "market
 
 export type SceneDisposable = THREE.BufferGeometry | THREE.Material | THREE.Texture;
 
-export interface RoleScene {
+interface RoleScene {
   group: THREE.Group;
   tick: (time: number, delta: number) => void;
 }
