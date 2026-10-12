@@ -21,6 +21,11 @@ use this index to go deeper.
 
 Design tokens, typography and visual rules live in [../DESIGN.md](../DESIGN.md).
 
+## Decisions
+
+- [decisions/0001-firestore-event-backend.md](./decisions/0001-firestore-event-backend.md)
+  — why cadet data uses Firestore with an immutable point ledger.
+
 ## Project history
 
 These files record an earlier cleanup pass. They are kept for context and are

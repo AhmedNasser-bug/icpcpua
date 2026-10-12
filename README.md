@@ -40,7 +40,7 @@ Without Firebase credentials you get the local fallback:
   "count": 3,
   "leaderboard": [
     {
-      "rank": 3,
+      "rank": 1,
       "handle": "dp_master",
       "fullName": "Youssef Tarek",
       "rating": 1795,
@@ -48,7 +48,7 @@ Without Firebase credentials you get the local fallback:
       "pointsTotal": 960,
       "track": "level_1",
       "initials": "YT",
-      "color": "#FF0055"
+      "color": "#FFD500"
     }
   ]
 }

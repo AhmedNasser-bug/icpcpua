@@ -1,0 +1,24 @@
+# PUA ICPC
+
+> Community website for the ICPC training program at Pharos University in
+> Alexandria: training plan, events calendar, cadet leaderboard, registration,
+> committee recruitment specs, referral bounties and a feedback bucket.
+> Built with Next.js 16, React 19, Tailwind CSS v4, Cloud Firestore and
+> Supabase.
+
+## Docs
+
+- [README](https://raw.githubusercontent.com/AhmedNasser-bug/icpcpua/main/README.md): what the project is, quick start, commands and testing
+- [CONTRIBUTING](https://raw.githubusercontent.com/AhmedNasser-bug/icpcpua/main/CONTRIBUTING.md): setup, verification commands and the PR flow
+- [Architecture overview](https://raw.githubusercontent.com/AhmedNasser-bug/icpcpua/main/docs/architecture/overview.md): routes, data flows and backend fallbacks
+- [Configuration](https://raw.githubusercontent.com/AhmedNasser-bug/icpcpua/main/docs/configuration.md): environment variables, defaults and fallbacks
+- [Data model](https://raw.githubusercontent.com/AhmedNasser-bug/icpcpua/main/docs/data-model.md): Firestore collections, Supabase tables and browser storage
+- [Dependency graph](https://raw.githubusercontent.com/AhmedNasser-bug/icpcpua/main/docs/architecture/dependency-graph.md): component import tree
+- [Design system](https://raw.githubusercontent.com/AhmedNasser-bug/icpcpua/main/DESIGN.md): tokens, typography and visual rules
+- [Security policy](https://raw.githubusercontent.com/AhmedNasser-bug/icpcpua/main/SECURITY.md): how to report vulnerabilities
+- [Changelog](https://raw.githubusercontent.com/AhmedNasser-bug/icpcpua/main/CHANGELOG.md): notable changes
+
+## Optional
+
+- [Firestore backend plan](https://raw.githubusercontent.com/AhmedNasser-bug/icpcpua/main/docs/architecture/firebase-backend-plan.md): original design record, partially implemented
+- [ADR 0001](https://raw.githubusercontent.com/AhmedNasser-bug/icpcpua/main/docs/decisions/0001-firestore-event-backend.md): Firestore backend decision and consequences
