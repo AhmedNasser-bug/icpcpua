@@ -34,16 +34,20 @@ export function Role3DCanvas({
     let cancelled = false;
 
     // Three.js (~550 KB) is only fetched once a canvas actually mounts.
-    import("./role-canvas-scene").then(({ mountRoleScene }) => {
-      if (cancelled) return;
-      cleanup = mountRoleScene(container, {
-        role,
-        wireframeOnly,
-        autoRotate,
-        interactive,
-        onDraggingChange: setIsDragging,
+    import("./role-canvas-scene")
+      .then(({ mountRoleScene }) => {
+        if (cancelled) return;
+        cleanup = mountRoleScene(container, {
+          role,
+          wireframeOnly,
+          autoRotate,
+          interactive,
+          onDraggingChange: setIsDragging,
+        });
+      })
+      .catch((error) => {
+        console.error("Failed to load the 3D scene module:", error);
       });
-    });
 
     return () => {
       cancelled = true;
