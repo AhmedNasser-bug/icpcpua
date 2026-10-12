@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { Role3DType } from "./role-scenes";
-import { mountRoleScene } from "./role-canvas-scene";
 
 export type { Role3DType } from "./role-scenes";
 
@@ -31,13 +30,25 @@ export function Role3DCanvas({
     const container = containerRef.current;
     if (!container) return;
 
-    return mountRoleScene(container, {
-      role,
-      wireframeOnly,
-      autoRotate,
-      interactive,
-      onDraggingChange: setIsDragging,
+    let cleanup: (() => void) | undefined;
+    let cancelled = false;
+
+    // Three.js (~550 KB) is only fetched once a canvas actually mounts.
+    import("./role-canvas-scene").then(({ mountRoleScene }) => {
+      if (cancelled) return;
+      cleanup = mountRoleScene(container, {
+        role,
+        wireframeOnly,
+        autoRotate,
+        interactive,
+        onDraggingChange: setIsDragging,
+      });
     });
+
+    return () => {
+      cancelled = true;
+      cleanup?.();
+    };
   }, [role, wireframeOnly, autoRotate, interactive]);
 
   return (
