@@ -1,7 +1,7 @@
 # Contributing
 
-This is the website for the PUA ICPC training community. Contributions are
-welcome as pull requests against `main`; CI must pass before merge.
+This is the website for the PUA ICPC training community. Changes go through
+pull requests against `main`; CI must pass before merge.
 
 ## Prerequisites
 

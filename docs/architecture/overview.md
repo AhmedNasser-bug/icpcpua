@@ -30,7 +30,7 @@ only server-side data access is three API route handlers.
 | `/recruitment` | Committee landing page with five specialization cards |
 | `/referrals` | Scout enrollment, referral link and top-scout board |
 | `/feedback` | Client-only feedback bucket |
-| `/specs/[role]` and `/recruitment/specs/[role]` | Role spec sheets; one route alias serves each role key in `data/recruitment/roles.ts` |
+| `/specs/[role]` and `/recruitment/specs/[role]` | Two aliases of the same role spec sheets, one page per key in `data/recruitment/roles.ts` |
 | `POST /api/trainees/register` | Cadet registration |
 | `POST /api/points/event` | Append a point event and update the trainee total |
 | `GET /api/leaderboard` | Ranked active trainees, filterable by track |
@@ -49,7 +49,8 @@ component.
 ```mermaid
 flowchart LR
   subgraph Browser
-    JOIN["/join form + home JoinModal"]
+    JOIN["/join form"]
+    MODAL["home JoinModal"]
     REF["/referrals"]
     LEADER["/leaderboard"]
     FB["/feedback (React state only)"]
@@ -65,6 +66,7 @@ flowchart LR
   SUPA[(Supabase)]
 
   JOIN -->|useTraineeRegistration| REG
+  MODAL -->|useTraineeRegistration| REG
   REG -->|trainees + point_events batch| FIRE
   JOIN -->|recordBountyReferral on ?ref=| SUPA
   REF -->|bounty_scouts| SUPA
