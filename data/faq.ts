@@ -16,12 +16,10 @@ export interface FaqItemData {
     en: {
       intro: string;
       points?: FaqPoint[];
-      summary?: string;
     };
     ar: {
       intro: string;
       points?: FaqPoint[];
-      summary?: string;
     };
   };
   links?: {
