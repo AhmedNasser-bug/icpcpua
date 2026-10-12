@@ -10,5 +10,4 @@ export interface LeaderboardUser {
   color: string
   attendedSessionsCount?: number
   qrScansCount?: number
-  submissions?: Array<{ name: string; result: "AC" | "WA"; difficulty: string }>
 }
