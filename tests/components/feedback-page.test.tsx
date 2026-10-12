@@ -42,6 +42,24 @@ describe("FeedbackBucketPage", () => {
     expect(screen.getByText("COMMUNITY_CODER")).toBeTruthy()
   })
 
+  it("prepends each new drop ahead of the previous ones", () => {
+    render(<FeedbackBucketPage />)
+
+    fireEvent.change(screen.getByPlaceholderText(MESSAGE_PLACEHOLDER), {
+      target: { value: "First new drop." },
+    })
+    submitFeedback()
+    fireEvent.click(screen.getByRole("button", { name: /DUMP ANOTHER BYTE/ }))
+    fireEvent.change(screen.getByPlaceholderText(MESSAGE_PLACEHOLDER), {
+      target: { value: "Second new drop." },
+    })
+    submitFeedback()
+
+    const messages = screen.getAllByText(/new drop\./).map((el) => el.textContent)
+    expect(messages).toEqual(['"Second new drop."', '"First new drop."'])
+    expect(screen.getByText("5 BYTES")).toBeTruthy()
+  })
+
   it("resets the form for the next drop", () => {
     render(<FeedbackBucketPage />)
 
