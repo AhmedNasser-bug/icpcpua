@@ -75,11 +75,12 @@ attempted, so no credentials are needed. A dedicated `e2e` job in
 
 ### Testing boundaries
 
-`components/recruitment/Role3DCanvas.tsx` and the procedural scenes in
-`components/recruitment/role-scenes.ts` are intentionally excluded from the
-Vitest suite and from coverage (`vitest.config.mts`). They require a real
-WebGL/Three.js rendering context that jsdom cannot provide, so unit tests would
-only exercise brittle mocks instead of observable 3D behavior. The E2E suite
+`components/recruitment/Role3DCanvas.tsx`, its `role-canvas-scene.ts` mount
+module and the procedural scenes in `components/recruitment/role-scenes.ts` are
+intentionally excluded from the Vitest suite and from coverage
+(`vitest.config.mts`). They require a real WebGL/Three.js rendering context that
+jsdom cannot provide, so unit tests would only exercise brittle mocks instead of
+observable 3D behavior. The E2E suite
 covers that boundary instead: `e2e/recruitment.spec.ts` asserts that each of
 the five recruitment cards mounts a visible canvas and obtains a live WebGL
 context with no context-loss errors. It does not compare pixels and is not a
