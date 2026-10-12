@@ -38,6 +38,18 @@ export interface RoleData {
   handbook: CommitteeHandbook;
 }
 
+/**
+ * Role registry for the recruitment grid.
+ *
+ * The grid renders exactly five specialization cards ("05 SPECIALIZATIONS"):
+ * instructor, ops-pr, hr, design-dev and marketing. `technical` is a URL alias
+ * route of the instructor specialization: it shares the instructor identity,
+ * badge and handbook while keeping its own problems/impact copy. It is
+ * intentionally not counted as a sixth card, so the number stays five.
+ *
+ * Do not merge the two role identities and do not add a sixth technology card
+ * without an explicit product-owner request.
+ */
 export const rolesData: Record<string, RoleData> = {
   "instructor": {
     roleId: "OPS/SPEC-01",
