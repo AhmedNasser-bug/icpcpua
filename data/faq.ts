@@ -1,4 +1,4 @@
-export interface FaqPoint {
+interface FaqPoint {
   label: string;
   text: string;
 }

@@ -11,7 +11,7 @@ export interface FeedbackDrop {
   avatarBg?: string
 }
 
-export const CATEGORY_STYLES: Record<
+const CATEGORY_STYLES: Record<
   FeedbackCategory,
   { badgeBg: string; badgeText: string; avatarBg: string; borderShadow: string; icon: typeof Bug }
 > = {

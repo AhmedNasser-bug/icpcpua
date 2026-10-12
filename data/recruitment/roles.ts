@@ -1,6 +1,6 @@
 export type RoleId = "instructor" | "technical" | "ops-pr" | "hr" | "marketing" | "design-dev";
 
-export interface CommitteeHandbook {
+interface CommitteeHandbook {
   vision: { en: string; ar: string };
   rolesDistribution: { title: { en: string; ar: string }; desc: { en: string; ar: string } }[];
   responsibilities: { title: { en: string; ar: string }; desc: { en: string; ar: string } }[];

@@ -1,6 +1,6 @@
-export type AcademicYear = "Year 1" | "Year 2" | "Year 3" | "Year 4"
-export type TraineeTrack = "level_1" | "level_2"
-export type TraineeStatus = "active" | "probation" | "graduated" | "inactive"
+type AcademicYear = "Year 1" | "Year 2" | "Year 3" | "Year 4"
+type TraineeTrack = "level_1" | "level_2"
+type TraineeStatus = "active" | "probation" | "graduated" | "inactive"
 
 export interface TraineeDocument {
   id: string
@@ -44,41 +44,5 @@ export interface PointEventDocument {
     cfContestId?: number
     [key: string]: unknown
   }
-  createdAt: string
-}
-
-export type CommitteeType =
-  | "executive"
-  | "instructing"
-  | "hr_monitoring"
-  | "ops_pr"
-  | "marketing"
-  | "design_dev"
-
-export interface CommitteeApplicationDocument {
-  id: string
-  traineeId?: string
-  fullName: string
-  universityId: string
-  email: string
-  phone: string
-  committee: CommitteeType
-  roleApplied: string
-  cvOrPortfolioUrl?: string
-  answers: Record<string, string>
-  status: "applied" | "screening" | "interviewed" | "accepted" | "rejected" | "pool"
-  createdAt: string
-  updatedAt: string
-}
-
-export interface HRRecordDocument {
-  id: string
-  targetMemberId: string
-  committee: string
-  recordType: "strike" | "delay_notice" | "cooldown_24h" | "burnout_check" | "commendation"
-  details: string
-  issuedByHrId: string
-  status: "active" | "resolved" | "appealed"
-  validUntil?: string
   createdAt: string
 }
