@@ -21,10 +21,18 @@ import {
 import { PuaLogo } from "./pua-logo"
 
 export function PuaNavbar() {
+  const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [moreDropdownOpen, setMoreDropdownOpen] = useState(false)
+  const [lastPathname, setLastPathname] = useState(pathname)
   const dropdownRef = useRef<HTMLDivElement>(null)
-  const pathname = usePathname()
+
+  // Close dropdown and mobile menu when the route changes
+  if (lastPathname !== pathname) {
+    setLastPathname(pathname)
+    setMobileOpen(false)
+    setMoreDropdownOpen(false)
+  }
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -36,12 +44,6 @@ export function PuaNavbar() {
     document.addEventListener("mousedown", handleClickOutside)
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
-
-  // Close dropdown and mobile menu on route change
-  useEffect(() => {
-    setMobileOpen(false)
-    setMoreDropdownOpen(false)
-  }, [pathname])
 
   const secondaryLinks = [
     { href: "/hall-of-fame", label: "Hall of Fame", desc: "Top alumni & regional champions", icon: Award },

@@ -149,7 +149,7 @@ export default function FeedbackBucketPage() {
         <header className="mb-14 relative">
           <div className="absolute -top-10 -left-6 opacity-10 select-none pointer-events-none">
             <span className="font-display text-[140px] md:text-[180px] leading-none text-[#7B2CBF]">
-              //
+              {"//"}
             </span>
           </div>
 
@@ -173,7 +173,7 @@ export default function FeedbackBucketPage() {
           <div className="bg-[#00E5FF] border-[3px] border-[#0F0F0F] p-4 inline-block shadow-[6px_6px_0px_#0F0F0F] max-w-3xl">
             <p className="font-body font-bold text-sm md:text-base text-[#0F0F0F] flex items-center gap-2">
               <Terminal className="w-5 h-5 shrink-0" />
-              <span>// SYSTEM_MESSAGE: DROP YOUR BRAIN BYTES HERE. HELP US OPTIMIZE THE HUB.</span>
+              <span>{"// SYSTEM_MESSAGE: DROP YOUR BRAIN BYTES HERE. HELP US OPTIMIZE THE HUB."}</span>
             </p>
           </div>
         </header>
@@ -383,7 +383,7 @@ export default function FeedbackBucketPage() {
 
             <div className="bg-[#FFF4E0] border-[2px] border-dashed border-[#0F0F0F] p-4 text-center">
               <p className="font-body text-xs font-bold text-zinc-600 uppercase">
-                // AUTOMATED CLEANUP CYCLE RUNS EVERY 24H
+                {"// AUTOMATED CLEANUP CYCLE RUNS EVERY 24H"}
               </p>
             </div>
           </aside>

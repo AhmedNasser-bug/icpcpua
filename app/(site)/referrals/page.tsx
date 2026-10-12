@@ -43,7 +43,21 @@ export default function ReferralRewardPage() {
   const [origin, setOrigin] = useState("https://icpcpua.vercel.app");
   const [topScoutsList, setTopScoutsList] = useState<{ rank: number; name: string; points: number }[]>(FALLBACK_LEADERBOARD);
 
-  // 1. Load active scout from localStorage on mount & detect origin & load leaderboard
+  // Sync latest scout recruits count from database
+  const refreshScoutData = async (uniId: string) => {
+    setSyncLoading(true);
+    const res = await getScoutByUniId(uniId);
+    if (res.scout) {
+      setScout(res.scout);
+      localStorage.setItem("pua_bounty_scout", JSON.stringify(res.scout));
+    }
+    setSyncLoading(false);
+  };
+
+  // 1. Load active scout from localStorage on mount & detect origin & load leaderboard.
+  // These updates bootstrap browser-only state once after hydration; there is no
+  // external store to subscribe to, so the effect is the intended tool here.
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (typeof window !== "undefined") {
       setOrigin(window.location.origin);
@@ -72,17 +86,7 @@ export default function ReferralRewardPage() {
       });
     }
   }, []);
-
-  // Sync latest scout recruits count from database
-  const refreshScoutData = async (uniId: string) => {
-    setSyncLoading(true);
-    const res = await getScoutByUniId(uniId);
-    if (res.scout) {
-      setScout(res.scout);
-      localStorage.setItem("pua_bounty_scout", JSON.stringify(res.scout));
-    }
-    setSyncLoading(false);
-  };
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   // Handle Scout Registration or Retrieval
   const handleEnrollScout = async (e: React.FormEvent) => {
@@ -149,7 +153,7 @@ export default function ReferralRewardPage() {
         <header className="mb-12">
           <div className="flex flex-wrap items-center gap-2 mb-4">
             <span className="bg-[#0F0F0F] text-[#FFF4E0] px-3 py-1 font-mono text-xs font-bold uppercase tracking-widest border border-[#0F0F0F]">
-              // REFERRAL PROTOCOL 2026
+              {"// REFERRAL PROTOCOL 2026"}
             </span>
             <span className="bg-[#00E5FF] text-[#0F0F0F] px-3 py-1 font-mono text-xs font-black uppercase tracking-wider border-2 border-[#0F0F0F]">
               1 RECRUIT = 1 POINT

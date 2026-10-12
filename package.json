@@ -14,7 +14,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.2",
@@ -33,6 +34,8 @@
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
     "@types/three": "^0.184.0",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "16.1.6",
     "postcss": "^8.5",
     "tailwindcss": "^4.2.0",
     "tw-animate-css": "1.3.3",

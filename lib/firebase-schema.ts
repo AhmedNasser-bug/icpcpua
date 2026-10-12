@@ -42,7 +42,7 @@ export interface PointEventDocument {
     sessionId?: string
     coachId?: string
     cfContestId?: number
-    [key: string]: any
+    [key: string]: unknown
   }
   createdAt: string
 }

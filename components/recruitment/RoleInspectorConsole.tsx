@@ -107,7 +107,7 @@ export function RoleInspectorConsole() {
             className="px-2 py-0.5 font-bold uppercase border border-black shadow-[2px_2px_0px_#FFF4E0]"
             style={{ backgroundColor: activeMeta.color, color: activeMeta.textColor }}
           >
-            {activeMeta.lvl} // {activeMeta.title}
+            {activeMeta.lvl} {"//"} {activeMeta.title}
           </span>
         </div>
       </div>

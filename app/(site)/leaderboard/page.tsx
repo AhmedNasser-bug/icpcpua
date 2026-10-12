@@ -36,25 +36,37 @@ export default function LeaderboardPage() {
   const [expandedRow, setExpandedRow] = useState<number | null>(null)
   const [lastRefreshed, setLastRefreshed] = useState<string>("")
 
-  const fetchLeaderboard = async (track: "all" | "level_1" | "level_2") => {
-    setLoading(true)
-    try {
-      const res = await fetch(`/api/leaderboard?track=${track}&limit=50`)
-      const data = await res.json()
-      if (data.success && Array.isArray(data.leaderboard)) {
-        setCoders(data.leaderboard)
-      }
-    } catch (err) {
-      console.error("Failed to load leaderboard data:", err)
-    } finally {
-      setLoading(false)
-      setLastRefreshed(new Date().toLocaleTimeString())
-    }
+  const fetchLeaderboard = (track: "all" | "level_1" | "level_2") => {
+    fetch(`/api/leaderboard?track=${track}&limit=50`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && Array.isArray(data.leaderboard)) {
+          setCoders(data.leaderboard)
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to load leaderboard data:", err)
+      })
+      .finally(() => {
+        setLoading(false)
+        setLastRefreshed(new Date().toLocaleTimeString())
+      })
   }
 
   useEffect(() => {
     fetchLeaderboard(selectedTrack)
   }, [selectedTrack])
+
+  const handleSelectTrack = (track: "all" | "level_1" | "level_2") => {
+    if (track === selectedTrack) return
+    setLoading(true)
+    setSelectedTrack(track)
+  }
+
+  const handleRefresh = () => {
+    setLoading(true)
+    fetchLeaderboard(selectedTrack)
+  }
 
   const top3 = coders.slice(0, 3)
   const rest = coders.slice(3)
@@ -86,7 +98,7 @@ export default function LeaderboardPage() {
             <span className="font-mono text-xs font-bold uppercase text-[#0F0F0F]">Track Filter:</span>
             <div className="flex gap-1.5">
               <button
-                onClick={() => setSelectedTrack("all")}
+                onClick={() => handleSelectTrack("all")}
                 className={`px-3 py-1.5 border-[2px] border-[#0F0F0F] font-mono text-xs font-bold uppercase transition-all ${
                   selectedTrack === "all"
                     ? "bg-[#7B2CBF] text-white shadow-[2px_2px_0px_#0F0F0F]"
@@ -96,7 +108,7 @@ export default function LeaderboardPage() {
                 All Cadets
               </button>
               <button
-                onClick={() => setSelectedTrack("level_1")}
+                onClick={() => handleSelectTrack("level_1")}
                 className={`px-3 py-1.5 border-[2px] border-[#0F0F0F] font-mono text-xs font-bold uppercase transition-all ${
                   selectedTrack === "level_1"
                     ? "bg-[#00E5FF] text-[#0F0F0F] shadow-[2px_2px_0px_#0F0F0F]"
@@ -106,7 +118,7 @@ export default function LeaderboardPage() {
                 Level 1 (Fundamentals)
               </button>
               <button
-                onClick={() => setSelectedTrack("level_2")}
+                onClick={() => handleSelectTrack("level_2")}
                 className={`px-3 py-1.5 border-[2px] border-[#0F0F0F] font-mono text-xs font-bold uppercase transition-all ${
                   selectedTrack === "level_2"
                     ? "bg-[#FF0055] text-white shadow-[2px_2px_0px_#0F0F0F]"
@@ -125,7 +137,7 @@ export default function LeaderboardPage() {
               </span>
             )}
             <button
-              onClick={() => fetchLeaderboard(selectedTrack)}
+              onClick={handleRefresh}
               disabled={loading}
               className="flex items-center gap-1.5 px-3 py-1.5 bg-white border-[2px] border-[#0F0F0F] font-mono text-xs font-bold uppercase hover:bg-neutral-100 shadow-[2px_2px_0px_#0F0F0F] active:translate-x-0.5 active:translate-y-0.5"
             >
@@ -180,7 +192,7 @@ export default function LeaderboardPage() {
                 >
                   <span className="font-display text-4xl sm:text-5xl text-[#0F0F0F]">1</span>
                   <span className="font-body text-sm font-bold">{top3[0].pointsTotal} PTS</span>
-                  <span className="font-mono text-[10px] text-neutral-800 font-bold">R: {top3[0].rating} // S: {top3[0].solved}</span>
+                  <span className="font-mono text-[10px] text-neutral-800 font-bold">R: {top3[0].rating} {"// S: "}{top3[0].solved}</span>
                 </div>
               </div>
             )}

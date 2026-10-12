@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server"
+import type { UpdateData } from "firebase-admin/firestore"
 import { adminDb, FieldValue } from "@/lib/firebase-admin"
-import { PointEventType, PointEventDocument } from "@/lib/firebase-schema"
+import { PointEventType, PointEventDocument, TraineeDocument } from "@/lib/firebase-schema"
+import { getErrorMessage } from "@/lib/errors"
 
 export async function POST(req: Request) {
   try {
@@ -70,7 +72,7 @@ export async function POST(req: Request) {
     const batch = adminDb.batch()
     batch.set(eventRef, eventData)
 
-    const updatePayload: Record<string, any> = {
+    const updatePayload: UpdateData<TraineeDocument> = {
       pointsTotal: FieldValue.increment(points),
       updatedAt: now,
     }
@@ -89,10 +91,10 @@ export async function POST(req: Request) {
       message: `Successfully processed ${points} points event for ${cleanUniId}!`,
       event: eventData,
     })
-  } catch (error: any) {
+  } catch (error) {
     console.error("Point event processing error:", error)
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to log point event." },
+      { success: false, error: getErrorMessage(error, "Failed to log point event.") },
       { status: 500 }
     )
   }

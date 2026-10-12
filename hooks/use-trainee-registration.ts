@@ -1,6 +1,7 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
+import { getErrorMessage } from "@/lib/errors"
 
 export interface TraineeRegistrationForm {
   fullName: string
@@ -47,12 +48,15 @@ export function useTraineeRegistration({
   const [loading, setLoading] = useState(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [awardedPoints, setAwardedPoints] = useState(10)
+  const [lastReferralCode, setLastReferralCode] = useState(initialReferralCode)
 
-  useEffect(() => {
+  // Keep the referral code in sync when the URL parameter changes.
+  if (lastReferralCode !== initialReferralCode) {
+    setLastReferralCode(initialReferralCode)
     if (initialReferralCode) {
       setForm((prev) => ({ ...prev, referralCode: initialReferralCode.toUpperCase() }))
     }
-  }, [initialReferralCode])
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -83,8 +87,8 @@ export function useTraineeRegistration({
       setAwardedPoints(data.trainee?.pointsTotal || 10)
       await onRegistered?.(form)
       setSubmitted(true)
-    } catch (err: any) {
-      setErrorMsg(err.message || "An unexpected error occurred during submission.")
+    } catch (err) {
+      setErrorMsg(getErrorMessage(err, "An unexpected error occurred during submission."))
     } finally {
       setLoading(false)
     }

@@ -483,7 +483,7 @@ export function Role3DCanvas({
 
         // Project 4D to 3D with perspective
         for (let i = 0; i < base4DVertices.length; i++) {
-          let [x, y, z, w] = base4DVertices[i];
+          const [x, y, z, w] = base4DVertices[i];
 
           // Rotate in XW plane
           const xRot = x * cosXW - w * sinXW;

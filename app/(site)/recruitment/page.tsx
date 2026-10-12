@@ -28,7 +28,7 @@ export default function RecruitmentLandingPage() {
                 <section className="mb-24 flex flex-col md:flex-row gap-12 items-start justify-between">
                     <div className="max-w-3xl">
                         <div className="inline-block bg-[#0F0F0F] text-[#FFF4E0] px-3 py-1 font-mono text-xs uppercase mb-6 tracking-widest border border-[#0F0F0F]">
-                            // SYSTEM ALERT: INTAKE ACTIVE
+                            {"// SYSTEM ALERT: INTAKE ACTIVE"}
                         </div>
                         <h1 className="text-6xl md:text-8xl lg:text-9xl font-black uppercase leading-[0.85] tracking-tighter mb-8" style={{fontFamily: 'Fredoka One, sans-serif'}}>
                             SELECT YOUR <br />
@@ -73,7 +73,7 @@ export default function RecruitmentLandingPage() {
                         {/* 3D Generative Tree Visual */}
                         <div className="mb-6 border-[3px] border-[#0F0F0F] bg-[#050505] relative overflow-hidden shadow-[4px_4px_0px_#0F0F0F]">
                             <div className="absolute top-2 left-2 z-10 font-mono text-[10px] text-white/80 uppercase tracking-widest bg-black/80 px-2 py-0.5 border border-white/20">
-                                // 3D NODE: ALGO_BINARY_TREE
+                                {"// 3D NODE: ALGO_BINARY_TREE"}
                             </div>
                             <Role3DCanvas role="instructor" height="210px" interactive={true} autoRotate={true} />
                         </div>
@@ -116,7 +116,7 @@ export default function RecruitmentLandingPage() {
                         {/* 3D Generative Radar Visual */}
                         <div className="mb-6 border-[3px] border-[#0F0F0F] bg-[#050505] relative overflow-hidden shadow-[4px_4px_0px_#0F0F0F]">
                             <div className="absolute top-2 left-2 z-10 font-mono text-[10px] text-white/80 uppercase tracking-widest bg-black/80 px-2 py-0.5 border border-white/20">
-                                // 3D NODE: RADAR_PHASED_ARRAY
+                                {"// 3D NODE: RADAR_PHASED_ARRAY"}
                             </div>
                             <Role3DCanvas role="ops-pr" height="210px" interactive={true} autoRotate={true} />
                         </div>
@@ -159,7 +159,7 @@ export default function RecruitmentLandingPage() {
                         {/* 3D Generative Gyroscope Visual */}
                         <div className="mb-6 border-[3px] border-[#0F0F0F] bg-[#050505] relative overflow-hidden shadow-[4px_4px_0px_#0F0F0F]">
                             <div className="absolute top-2 left-2 z-10 font-mono text-[10px] text-white/80 uppercase tracking-widest bg-black/80 px-2 py-0.5 border border-white/20">
-                                // 3D NODE: GYROSCOPIC_EQUILIBRIUM
+                                {"// 3D NODE: GYROSCOPIC_EQUILIBRIUM"}
                             </div>
                             <Role3DCanvas role="hr" height="210px" interactive={true} autoRotate={true} />
                         </div>
@@ -202,7 +202,7 @@ export default function RecruitmentLandingPage() {
                         {/* 3D Generative Tesseract Visual */}
                         <div className="mb-6 border-[3px] border-[#0F0F0F] bg-[#050505] relative overflow-hidden shadow-[4px_4px_0px_#0F0F0F]">
                             <div className="absolute top-2 left-2 z-10 font-mono text-[10px] text-white/80 uppercase tracking-widest bg-black/80 px-2 py-0.5 border border-white/20">
-                                // 3D NODE: 4D_TESSERACT_LATTICE
+                                {"// 3D NODE: 4D_TESSERACT_LATTICE"}
                             </div>
                             <Role3DCanvas role="design-dev" height="210px" interactive={true} autoRotate={true} />
                         </div>
@@ -245,7 +245,7 @@ export default function RecruitmentLandingPage() {
                         {/* 3D Generative Funnel Vortex Visual */}
                         <div className="mb-6 border-[3px] border-[#0F0F0F] bg-[#050505] relative overflow-hidden shadow-[4px_4px_0px_#0F0F0F]">
                             <div className="absolute top-2 left-2 z-10 font-mono text-[10px] text-white/80 uppercase tracking-widest bg-black/80 px-2 py-0.5 border border-white/20">
-                                // 3D NODE: GROWTH_FUNNEL_VORTEX
+                                {"// 3D NODE: GROWTH_FUNNEL_VORTEX"}
                             </div>
                             <Role3DCanvas role="marketing" height="230px" interactive={true} autoRotate={true} />
                         </div>
@@ -269,7 +269,7 @@ export default function RecruitmentLandingPage() {
                                 </div>
                                 <div>
                                     <span className="block font-black text-sm uppercase bg-[#7B2CBF] text-white w-fit px-2 mb-2 italic tracking-widest">Anti-goals</span>
-                                    <p className="font-bold">Passive 'Post &amp; Pray'</p>
+                                    <p className="font-bold">Passive &apos;Post &amp; Pray&apos;</p>
                                 </div>
                             </div>
                         </div>

@@ -245,7 +245,7 @@ export default function FAQPage() {
         {/* ── HERO BANNER ─── */}
         <section className="mb-14">
           <div className="inline-block bg-[#0F0F0F] text-[#FFF4E0] px-3 py-1 font-mono text-xs uppercase mb-6 tracking-widest border border-[#0F0F0F]">
-            // SYSTEM FAQ // COMMUNITY GUIDELINES
+            {"// SYSTEM FAQ // COMMUNITY GUIDELINES"}
           </div>
 
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-8">
@@ -447,7 +447,7 @@ export default function FAQPage() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b-2 border-white/20 pb-4 mb-6">
             <div>
               <span className="text-xs font-mono font-black uppercase text-[#00E5FF] tracking-widest block mb-1">
-                // ADVANCED COMPETITIVE RULES
+                {"// ADVANCED COMPETITIVE RULES"}
               </span>
               <h2
                 className="text-2xl md:text-3xl font-black uppercase tracking-tight"

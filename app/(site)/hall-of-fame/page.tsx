@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useRef } from "react"
+import Link from "next/link"
 
 interface TeamMember {
   name: string
@@ -265,12 +266,12 @@ export default function HallOfFamePage() {
               <p className="font-body text-sm text-center text-[#0F0F0F]">
                 Join PUA ICPC and write your own legend.
               </p>
-              <a
+              <Link
                 href="/"
                 className="btn-solid bg-[#7B2CBF] text-white font-display text-lg uppercase tracking-wider border-[3px] border-[#0F0F0F] shadow-solid px-6 py-3"
               >
                 JOIN NOW
-              </a>
+              </Link>
             </div>
           </div>
         </div>

@@ -14,7 +14,7 @@ export function Footer() {
           <div className="flex flex-col gap-2 text-center lg:text-left">
             <div className="flex items-center justify-center lg:justify-start gap-2">
               <span className="bg-[#7B2CBF] text-white px-2 py-0.5 font-body text-xs font-bold uppercase tracking-wider border-2 border-[#0F0F0F]">
-                // OPEN_SIGNAL
+                {"// OPEN_SIGNAL"}
               </span>
               <span className="font-body text-xs font-bold text-[#0F0F0F] uppercase tracking-widest">
                 COMMUNITY DIRECTIVE
@@ -164,7 +164,7 @@ export function Footer() {
             &copy; 2026 PUA ICPC COMMUNITY. NO SOFT CODE ALLOWED. ALL RIGHTS RESERVED.
           </p>
           <div className="flex items-center gap-4 text-zinc-400">
-            <span className="text-[#00E5FF]">// PHAROS UNIVERSITY IN ALEXANDRIA</span>
+            <span className="text-[#00E5FF]">{"// PHAROS UNIVERSITY IN ALEXANDRIA"}</span>
             <a href="#" className="hover:text-white transition-colors underline decoration-2">
               BACK TO TOP ↑
             </a>

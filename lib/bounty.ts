@@ -1,4 +1,5 @@
 import { supabase } from "./supabase"
+import { getErrorMessage } from "./errors"
 
 export interface ScoutProfile {
   id: string
@@ -115,9 +116,9 @@ export async function registerOrGetScout(
     }
 
     return { scout: newScout as ScoutProfile, error: null, isNew: true }
-  } catch (err: any) {
+  } catch (err) {
     console.error("Unexpected error in registerOrGetScout:", err)
-    return { scout: null, error: err?.message || "Failed to register scout profile.", isNew: false }
+    return { scout: null, error: getErrorMessage(err, "Failed to register scout profile."), isNew: false }
   }
 }
 
@@ -139,8 +140,8 @@ export async function getScoutByUniId(
     }
 
     return { scout: data as ScoutProfile, error: null }
-  } catch (err: any) {
-    return { scout: null, error: err?.message || "Failed to lookup scout profile." }
+  } catch (err) {
+    return { scout: null, error: getErrorMessage(err, "Failed to lookup scout profile.") }
   }
 }
 
@@ -194,8 +195,8 @@ export async function recordBountyReferral(
     }
 
     return { success: true, error: null }
-  } catch (err: any) {
-    return { success: false, error: err?.message || "Failed to record referral." }
+  } catch (err) {
+    return { success: false, error: getErrorMessage(err, "Failed to record referral.") }
   }
 }
 
@@ -241,8 +242,8 @@ export async function claimBountyReward(
     }
 
     return { success: true, error: null }
-  } catch (err: any) {
-    return { success: false, error: err?.message || "Failed to submit claim." }
+  } catch (err) {
+    return { success: false, error: getErrorMessage(err, "Failed to submit claim.") }
   }
 }
 

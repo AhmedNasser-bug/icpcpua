@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { adminDb } from "@/lib/firebase-admin"
 import { TraineeDocument } from "@/lib/firebase-schema"
+import { getErrorMessage } from "@/lib/errors"
 
 // Mock seed trainees if DB is empty or during local prototyping
 const FALLBACK_LEADERBOARD = [
@@ -141,10 +142,10 @@ export async function GET(req: Request) {
       count: leaderboard.length,
       leaderboard,
     })
-  } catch (error: any) {
+  } catch (error) {
     console.error("Leaderboard fetch error:", error)
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to load leaderboard." },
+      { success: false, error: getErrorMessage(error, "Failed to load leaderboard.") },
       { status: 500 }
     )
   }

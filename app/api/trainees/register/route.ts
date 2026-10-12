@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { adminDb } from "@/lib/firebase-admin"
 import { TraineeDocument, PointEventDocument } from "@/lib/firebase-schema"
+import { getErrorMessage } from "@/lib/errors"
 
 export async function POST(req: Request) {
   try {
@@ -101,10 +102,10 @@ export async function POST(req: Request) {
       message: "Trainee registered successfully! +10 welcome points added to your leaderboard standing.",
       trainee: newTrainee,
     })
-  } catch (error: any) {
+  } catch (error) {
     console.error("Trainee registration error:", error)
     return NextResponse.json(
-      { success: false, error: error.message || "Internal server error occurred." },
+      { success: false, error: getErrorMessage(error, "Internal server error occurred.") },
       { status: 500 }
     )
   }
