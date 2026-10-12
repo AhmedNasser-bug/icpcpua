@@ -1,6 +1,17 @@
 import Link from 'next/link';
 import { RoleInspectorConsole } from '@/components/recruitment/RoleInspectorConsole';
 import { Role3DCanvas } from '@/components/recruitment/Role3DCanvas';
+import { rolesData, type RoleId } from '@/data/recruitment/roles';
+
+function cardMeta(role: RoleId) {
+    return { role, badge: rolesData[role].levelBadge, href: `/specs/${role}` };
+}
+
+const INSTRUCTOR = cardMeta('instructor');
+const OPS_PR = cardMeta('ops-pr');
+const HR = cardMeta('hr');
+const DESIGN_DEV = cardMeta('design-dev');
+const MARKETING = cardMeta('marketing');
 
 export default function RecruitmentLandingPage() {
     return (
@@ -68,14 +79,14 @@ export default function RecruitmentLandingPage() {
                         <div className="absolute w-3 h-3 bg-white border-[3px] border-[#0F0F0F] z-10 -bottom-[6px] -right-[6px]"></div>
                         <div className="flex justify-between items-start mb-4">
                             <h2 className="font-display text-4xl font-black uppercase leading-none tracking-tight">The Instructor</h2>
-                            <span className="bg-[#0F0F0F] text-white px-3 py-1 text-sm font-black">LVL_01</span>
+                            <span className="bg-[#0F0F0F] text-white px-3 py-1 text-sm font-black">{INSTRUCTOR.badge}</span>
                         </div>
                         {/* 3D Generative Tree Visual */}
                         <div className="mb-6 border-[3px] border-[#0F0F0F] bg-[#050505] relative overflow-hidden shadow-[4px_4px_0px_#0F0F0F]">
                             <div className="absolute top-2 left-2 z-10 font-mono text-[10px] text-white/80 uppercase tracking-widest bg-black/80 px-2 py-0.5 border border-white/20">
                                 {"// 3D NODE: ALGO_BINARY_TREE"}
                             </div>
-                            <Role3DCanvas role="instructor" height="210px" interactive={true} autoRotate={true} />
+                            <Role3DCanvas role={INSTRUCTOR.role} height="210px" interactive={true} autoRotate={true} />
                         </div>
                         <div className="font-grotesk space-y-6 mb-8">
                             <div>
@@ -100,7 +111,7 @@ export default function RecruitmentLandingPage() {
                                 </div>
                             </div>
                         </div>
-                        <Link href="/specs/instructor" className="block text-center w-full bg-white text-[#0F0F0F] py-4 border-[3px] border-[#0F0F0F] font-black uppercase text-xl shadow-[8px_8px_0px_0px_#0F0F0F] active:shadow-none active:translate-x-2 active:translate-y-2 transition-all">
+                        <Link href={INSTRUCTOR.href} className="block text-center w-full bg-white text-[#0F0F0F] py-4 border-[3px] border-[#0F0F0F] font-black uppercase text-xl shadow-[8px_8px_0px_0px_#0F0F0F] active:shadow-none active:translate-x-2 active:translate-y-2 transition-all">
                             View Instructor Spec Sheet &amp; Guide
                         </Link>
                     </div>
@@ -111,14 +122,14 @@ export default function RecruitmentLandingPage() {
                         <div className="absolute w-3 h-3 bg-white border-[3px] border-[#0F0F0F] z-10 -bottom-[6px] -right-[6px]"></div>
                         <div className="flex justify-between items-start mb-4">
                             <h2 className="font-display text-4xl font-black uppercase leading-none tracking-tight">Operations &amp; PR</h2>
-                            <span className="bg-[#0F0F0F] text-white px-3 py-1 text-sm font-black">LVL_02</span>
+                            <span className="bg-[#0F0F0F] text-white px-3 py-1 text-sm font-black">{OPS_PR.badge}</span>
                         </div>
                         {/* 3D Generative Radar Visual */}
                         <div className="mb-6 border-[3px] border-[#0F0F0F] bg-[#050505] relative overflow-hidden shadow-[4px_4px_0px_#0F0F0F]">
                             <div className="absolute top-2 left-2 z-10 font-mono text-[10px] text-white/80 uppercase tracking-widest bg-black/80 px-2 py-0.5 border border-white/20">
                                 {"// 3D NODE: RADAR_PHASED_ARRAY"}
                             </div>
-                            <Role3DCanvas role="ops-pr" height="210px" interactive={true} autoRotate={true} />
+                            <Role3DCanvas role={OPS_PR.role} height="210px" interactive={true} autoRotate={true} />
                         </div>
                         <div className="font-grotesk space-y-6 mb-8">
                             <div>
@@ -143,7 +154,7 @@ export default function RecruitmentLandingPage() {
                                 </div>
                             </div>
                         </div>
-                        <Link href="/specs/ops-pr" className="block text-center w-full bg-white text-[#0F0F0F] py-4 border-[3px] border-[#0F0F0F] font-black uppercase text-xl shadow-[8px_8px_0px_0px_#0F0F0F] active:shadow-none active:translate-x-2 active:translate-y-2 transition-all">
+                        <Link href={OPS_PR.href} className="block text-center w-full bg-white text-[#0F0F0F] py-4 border-[3px] border-[#0F0F0F] font-black uppercase text-xl shadow-[8px_8px_0px_0px_#0F0F0F] active:shadow-none active:translate-x-2 active:translate-y-2 transition-all">
                             View PR Spec Sheet &amp; Guide
                         </Link>
                     </div>
@@ -154,14 +165,14 @@ export default function RecruitmentLandingPage() {
                         <div className="absolute w-3 h-3 bg-white border-[3px] border-[#0F0F0F] z-10 -bottom-[6px] -right-[6px]"></div>
                         <div className="flex justify-between items-start mb-4">
                             <h2 className="font-display text-4xl font-black uppercase leading-none tracking-tight">HR / Monitoring</h2>
-                            <span className="bg-white text-[#0F0F0F] px-3 py-1 text-sm font-black">LVL_03</span>
+                            <span className="bg-white text-[#0F0F0F] px-3 py-1 text-sm font-black">{HR.badge}</span>
                         </div>
                         {/* 3D Generative Gyroscope Visual */}
                         <div className="mb-6 border-[3px] border-[#0F0F0F] bg-[#050505] relative overflow-hidden shadow-[4px_4px_0px_#0F0F0F]">
                             <div className="absolute top-2 left-2 z-10 font-mono text-[10px] text-white/80 uppercase tracking-widest bg-black/80 px-2 py-0.5 border border-white/20">
                                 {"// 3D NODE: GYROSCOPIC_EQUILIBRIUM"}
                             </div>
-                            <Role3DCanvas role="hr" height="210px" interactive={true} autoRotate={true} />
+                            <Role3DCanvas role={HR.role} height="210px" interactive={true} autoRotate={true} />
                         </div>
                         <div className="font-grotesk space-y-6 mb-8">
                             <div>
@@ -186,7 +197,7 @@ export default function RecruitmentLandingPage() {
                                 </div>
                             </div>
                         </div>
-                        <Link href="/specs/hr" className="block text-center w-full bg-white text-[#0F0F0F] py-4 border-[3px] border-[#0F0F0F] font-black uppercase text-xl shadow-[8px_8px_0px_0px_#0F0F0F] active:shadow-none active:translate-x-2 active:translate-y-2 transition-all">
+                        <Link href={HR.href} className="block text-center w-full bg-white text-[#0F0F0F] py-4 border-[3px] border-[#0F0F0F] font-black uppercase text-xl shadow-[8px_8px_0px_0px_#0F0F0F] active:shadow-none active:translate-x-2 active:translate-y-2 transition-all">
                             View HR Spec Sheet &amp; Guide
                         </Link>
                     </div>
@@ -197,14 +208,14 @@ export default function RecruitmentLandingPage() {
                         <div className="absolute w-3 h-3 bg-white border-[3px] border-[#0F0F0F] z-10 -bottom-[6px] -right-[6px]"></div>
                         <div className="flex justify-between items-start mb-4">
                             <h2 className="font-display text-4xl font-black uppercase leading-none tracking-tight">Design / Dev</h2>
-                            <span className="bg-white text-[#0F0F0F] px-3 py-1 text-sm font-black">LVL_04</span>
+                            <span className="bg-white text-[#0F0F0F] px-3 py-1 text-sm font-black">{DESIGN_DEV.badge}</span>
                         </div>
                         {/* 3D Generative Tesseract Visual */}
                         <div className="mb-6 border-[3px] border-[#0F0F0F] bg-[#050505] relative overflow-hidden shadow-[4px_4px_0px_#0F0F0F]">
                             <div className="absolute top-2 left-2 z-10 font-mono text-[10px] text-white/80 uppercase tracking-widest bg-black/80 px-2 py-0.5 border border-white/20">
                                 {"// 3D NODE: 4D_TESSERACT_LATTICE"}
                             </div>
-                            <Role3DCanvas role="design-dev" height="210px" interactive={true} autoRotate={true} />
+                            <Role3DCanvas role={DESIGN_DEV.role} height="210px" interactive={true} autoRotate={true} />
                         </div>
                         <div className="font-grotesk space-y-6 mb-8">
                             <div>
@@ -229,7 +240,7 @@ export default function RecruitmentLandingPage() {
                                 </div>
                             </div>
                         </div>
-                        <Link href="/specs/design-dev" className="block text-center w-full bg-white text-[#0F0F0F] py-4 border-[3px] border-[#0F0F0F] font-black uppercase text-xl shadow-[8px_8px_0px_0px_#0F0F0F] active:shadow-none active:translate-x-2 active:translate-y-2 transition-all">
+                        <Link href={DESIGN_DEV.href} className="block text-center w-full bg-white text-[#0F0F0F] py-4 border-[3px] border-[#0F0F0F] font-black uppercase text-xl shadow-[8px_8px_0px_0px_#0F0F0F] active:shadow-none active:translate-x-2 active:translate-y-2 transition-all">
                             View Dev Spec Sheet &amp; Guide
                         </Link>
                     </div>
@@ -240,14 +251,14 @@ export default function RecruitmentLandingPage() {
                         <div className="absolute w-3 h-3 bg-white border-[3px] border-[#0F0F0F] z-10 -bottom-[6px] -right-[6px]"></div>
                         <div className="flex justify-between items-start mb-4">
                             <h2 className="font-display text-4xl font-black uppercase leading-none tracking-tight">Specialised Marketing</h2>
-                            <span className="bg-[#0F0F0F] text-[#FFD500] px-3 py-1 text-sm font-black">LVL_05</span>
+                            <span className="bg-[#0F0F0F] text-[#FFD500] px-3 py-1 text-sm font-black">{MARKETING.badge}</span>
                         </div>
                         {/* 3D Generative Funnel Vortex Visual */}
                         <div className="mb-6 border-[3px] border-[#0F0F0F] bg-[#050505] relative overflow-hidden shadow-[4px_4px_0px_#0F0F0F]">
                             <div className="absolute top-2 left-2 z-10 font-mono text-[10px] text-white/80 uppercase tracking-widest bg-black/80 px-2 py-0.5 border border-white/20">
                                 {"// 3D NODE: GROWTH_FUNNEL_VORTEX"}
                             </div>
-                            <Role3DCanvas role="marketing" height="230px" interactive={true} autoRotate={true} />
+                            <Role3DCanvas role={MARKETING.role} height="230px" interactive={true} autoRotate={true} />
                         </div>
                         <div className="font-grotesk space-y-6 mb-8">
                             <div>
@@ -273,7 +284,7 @@ export default function RecruitmentLandingPage() {
                                 </div>
                             </div>
                         </div>
-                        <Link href="/specs/marketing" className="block text-center w-full bg-white text-[#0F0F0F] py-4 border-[3px] border-[#0F0F0F] font-black uppercase text-xl shadow-[8px_8px_0px_0px_#0F0F0F] active:shadow-none active:translate-x-2 active:translate-y-2 transition-all">
+                        <Link href={MARKETING.href} className="block text-center w-full bg-white text-[#0F0F0F] py-4 border-[3px] border-[#0F0F0F] font-black uppercase text-xl shadow-[8px_8px_0px_0px_#0F0F0F] active:shadow-none active:translate-x-2 active:translate-y-2 transition-all">
                             View Marketing Spec Sheet &amp; Guide
                         </Link>
                     </div>
