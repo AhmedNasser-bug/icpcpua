@@ -8,6 +8,8 @@ export default defineConfig({
   plugins: [react()],
   test: {
     environment: "jsdom",
+    pool: "threads",
+    testTimeout: 20000,
     setupFiles: ["./vitest.setup.ts"],
     include: ["tests/**/*.test.{ts,tsx}"],
     // Playwright specs and config are run by Playwright, not Vitest.

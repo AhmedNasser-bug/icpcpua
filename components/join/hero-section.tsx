@@ -11,7 +11,7 @@ export function HeroSection() {
       </div>
       <div className="max-w-[1440px] mx-auto px-10 py-24 relative z-10">
         <div className="inline-block bg-[#7B2CBF] text-white px-4 py-1 font-body font-bold uppercase tracking-widest text-sm border-[2px] border-[#0F0F0F] mb-6">
-          Applications Open — 2026 Season
+          Admissions Launching Soon — Season 2026
         </div>
         <h1
           className="font-display text-4xl md:text-6xl lg:text-8xl leading-[0.9] uppercase text-[#0F0F0F] mb-8 [text-shadow:4px_4px_0_#00E5FF]"

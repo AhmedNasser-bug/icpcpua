@@ -9,7 +9,20 @@ draft until the first tagged release.
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-18
+
 ### Added
+
+- "Wait For It" admissions teaser on `/join` (`ApplicationSection`) and the home `JoinModal`.
+- Pitching for the two Training tracks: Level 1 (Fundamentals: C++ STL, Math, Two Pointers) and Level 2 (Advanced: Graph Theory, Dynamic Programming, ECPC qualification).
+- Pitching for the live Leaderboard: real-time solves, gym ratings, point audit ledger, and national team selection.
+- Early access priority waitlist notification form with local persistence and referral scout tracking.
+
+### Removed
+
+- Unverified fake cadet enrollment forms from `/join` and home modal in preparation for multi-provider authentication (Google, GitHub, Phone).
+
+### Changed
 
 - Supabase migration for the referral schema (`bounty_scouts`,
   `bounty_referrals`, RLS policies and the `recruits_count` trigger).

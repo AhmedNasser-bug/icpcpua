@@ -3,85 +3,96 @@
 import { useState, Suspense } from "react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
-import { useTraineeRegistration } from "@/hooks/use-trainee-registration"
 import { VectorNodes } from "@/components/vector-nodes"
-import { Check, Sparkles, Loader2, AlertCircle, Trophy, UserCheck } from "lucide-react"
+import {
+  Sparkles,
+  Trophy,
+  Code2,
+  BellRing,
+  ArrowRight,
+  CheckCircle2,
+  Compass,
+  Flame,
+  Award,
+} from "lucide-react"
 
-/* ─── Inner Form Logic with URL Params ─── */
-function ApplicationFormContent() {
+/* ─── Waitlist & Pitch Inner Component ─── */
+function WaitlistContent() {
   const searchParams = useSearchParams()
   const refCodeParam = searchParams.get("ref") || ""
 
-  const [creditedScout, setCreditedScout] = useState<string | null>(null)
+  const [email, setEmail] = useState("")
+  const [universityId, setUniversityId] = useState("")
+  const [submitted, setSubmitted] = useState(false)
+  const [loading, setLoading] = useState(false)
 
-  const { form, setForm, submitted, loading, errorMsg, awardedPoints, handleSubmit } =
-    useTraineeRegistration({
-      initialReferralCode: refCodeParam,
-      onRegistered: async (submittedForm, { simulated }) => {
-        if (simulated || !submittedForm.referralCode.trim()) return
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!email.trim()) return
+    setLoading(true)
 
-        try {
-          // Supabase is only needed when a referral is actually credited.
-          const { recordBountyReferral } = await import("@/lib/bounty")
-          const bountyRes = await recordBountyReferral(
-            submittedForm.referralCode.trim(),
-            submittedForm.fullName.trim(),
-            submittedForm.universityId.trim()
-          )
-          if (bountyRes.success) {
-            setCreditedScout(submittedForm.referralCode.trim())
-          }
-        } catch (err) {
-          console.error("Referral logging error:", err)
-        }
-      },
-    })
+    // Store in local waitlist ledger for immediate client confirmation
+    try {
+      const waitlistEntry = {
+        email: email.trim(),
+        universityId: universityId.trim(),
+        referralCode: refCodeParam.toUpperCase(),
+        timestamp: new Date().toISOString(),
+      }
+      const existing = JSON.parse(localStorage.getItem("pua_icpc_waitlist") || "[]")
+      existing.push(waitlistEntry)
+      localStorage.setItem("pua_icpc_waitlist", JSON.stringify(existing))
+    } catch {
+      // LocalStorage quota/incognito fallback
+    }
+
+    setTimeout(() => {
+      setLoading(false)
+      setSubmitted(true)
+    }, 400)
+  }
 
   if (submitted) {
     return (
-      <div className="flex flex-col items-center gap-6 py-16 text-center animate-slide-in">
-        <div className="w-24 h-24 bg-[#FFD500] border-[4px] border-[#0F0F0F] shadow-[8px_8px_0px_#0F0F0F] flex items-center justify-center">
-          <Check className="w-14 h-14 text-[#0F0F0F] stroke-[3]" />
-        </div>
-        
-        <div className="space-y-2">
-          <span className="font-mono text-xs font-bold uppercase px-3 py-1 bg-[#00E5FF] border-2 border-[#0F0F0F]">
-            REGISTRATION ACTIVATED // SEASON 2026
-          </span>
-          <h3 className="font-display text-4xl sm:text-5xl uppercase text-[#7B2CBF] [text-shadow:4px_4px_0_#00E5FF]">
-            YOU&apos;RE IN THE SQUAD!
-          </h3>
+      <div className="flex flex-col items-center gap-6 py-10 text-center animate-slide-in">
+        <div className="w-20 h-20 bg-[#FFD500] border-[4px] border-[#0F0F0F] shadow-[6px_6px_0px_#0F0F0F] flex items-center justify-center">
+          <CheckCircle2 className="w-12 h-12 text-[#0F0F0F] stroke-[2.5]" />
         </div>
 
-        <div className="p-5 bg-white border-[3px] border-[#0F0F0F] shadow-[6px_6px_0px_#0F0F0F] w-full max-w-md">
-          <div className="flex items-center justify-center gap-2 text-[#7B2CBF] mb-1">
-            <Trophy className="w-6 h-6" />
-            <p className="font-display text-3xl">+{awardedPoints} POINTS AWARDED</p>
-          </div>
-          <p className="font-mono text-xs text-neutral-600 uppercase">
-            Cadet {form.fullName} (Uni ID: {form.universityId}) is now active on the Leaderboard.
+        <div className="space-y-2">
+          <span className="font-mono text-xs font-bold uppercase px-3 py-1 bg-[#00E5FF] border-2 border-[#0F0F0F]">
+            WAITLIST CONFIRMED // PRIORITY PASS LOCKED
+          </span>
+          <h3 className="font-display text-3xl sm:text-4xl uppercase text-[#7B2CBF] [text-shadow:3px_3px_0_#00E5FF]">
+            YOU&apos;RE FIRST IN LINE!
+          </h3>
+          <p className="font-body text-sm font-bold text-[#0F0F0F]/80 max-w-md mx-auto">
+            We will dispatch your early admissions link directly to{" "}
+            <span className="text-[#7B2CBF] underline">{email}</span> the moment the gates unlock.
           </p>
         </div>
 
-        {creditedScout && (
-          <div className="bg-[#FFD500] border-[3px] border-[#0F0F0F] p-4 shadow-[4px_4px_0px_#0F0F0F] text-xs font-bold uppercase tracking-wider flex items-center gap-2">
-            <UserCheck className="w-5 h-5 text-[#0F0F0F]" />
-            <span>SCOUT CREDIT DISPATCHED TO [{creditedScout}] // BOUNTY ATTACHED</span>
+        {refCodeParam && (
+          <div className="bg-[#FFD500] border-[3px] border-[#0F0F0F] p-3 shadow-[4px_4px_0px_#0F0F0F] text-xs font-bold uppercase tracking-wider flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-[#0F0F0F]" />
+            <span>SCOUT INVITATION ATTACHED: [{refCodeParam.toUpperCase()}]</span>
           </div>
         )}
 
-        <div className="flex flex-col sm:flex-row gap-4 mt-2">
+        <div className="flex flex-col sm:flex-row gap-4 mt-4 w-full justify-center">
           <Link
             href="/leaderboard"
-            className="btn-solid bg-[#FFD500] text-[#0F0F0F] font-display text-lg uppercase tracking-wider border-[3px] border-[#0F0F0F] shadow-solid px-8 py-3.5 hover:-translate-y-1 transition-transform"
+            className="btn-solid bg-[#FFD500] text-[#0F0F0F] font-display text-base uppercase tracking-wider border-[3px] border-[#0F0F0F] shadow-solid px-6 py-3 hover:-translate-y-1 transition-transform inline-flex items-center justify-center gap-2"
           >
-            VIEW LEADERBOARD STANDING
+            <Trophy className="w-5 h-5" />
+            <span>VIEW LIVE LEADERBOARD</span>
           </Link>
           <Link
             href="/events"
-            className="btn-solid bg-white text-[#0F0F0F] font-display text-lg uppercase tracking-wider border-[3px] border-[#0F0F0F] shadow-solid px-8 py-3.5 hover:-translate-y-1 transition-transform"
+            className="btn-solid bg-white text-[#0F0F0F] font-display text-base uppercase tracking-wider border-[3px] border-[#0F0F0F] shadow-solid px-6 py-3 hover:-translate-y-1 transition-transform inline-flex items-center justify-center gap-2"
           >
-            VIEW CALENDAR & SESSIONS
+            <Compass className="w-5 h-5" />
+            <span>EXPLORE TRAINING CALENDAR</span>
           </Link>
         </div>
       </div>
@@ -89,163 +100,149 @@ function ApplicationFormContent() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-      {/* Referral indicator */}
-      {form.referralCode && (
+    <div className="flex flex-col gap-8">
+      {/* Referral Banner */}
+      {refCodeParam && (
         <div className="bg-[#00E5FF] border-[3px] border-[#0F0F0F] p-3 shadow-[3px_3px_0px_#0F0F0F] flex items-center justify-between text-xs font-bold uppercase">
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-[#0F0F0F]" />
-            <span>REFERRED BY SCOUT: <strong>{form.referralCode}</strong></span>
+            <span>INVITED BY SCOUT: <strong>{refCodeParam.toUpperCase()}</strong></span>
           </div>
-          <span className="bg-white border border-[#0F0F0F] px-1.5 py-0.5 text-[10px]">
-            BOUNTY ATTACHED
+          <span className="bg-white border border-[#0F0F0F] px-2 py-0.5 text-[10px]">
+            VIP NOTIFICATION
           </span>
         </div>
       )}
 
-      {errorMsg && (
-        <div className="p-4 bg-red-100 border-[3px] border-[#FF0055] text-[#FF0055] font-mono text-xs flex items-center gap-3">
-          <AlertCircle className="w-5 h-5 shrink-0" />
-          <span>{errorMsg}</span>
+      {/* Two Pillars: The Training & The Leaderboard */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Pillar 1: The Training */}
+        <div className="bg-white border-[3px] border-[#0F0F0F] p-6 shadow-[5px_5px_0px_#0F0F0F] flex flex-col justify-between">
+          <div>
+            <div className="inline-flex items-center gap-2 px-2.5 py-1 bg-[#FFD500] border-2 border-[#0F0F0F] font-mono text-xs font-bold uppercase mb-3">
+              <Code2 className="w-4 h-4 text-[#0F0F0F]" />
+              <span>THE TRAINING MATRIX</span>
+            </div>
+            <h3 className="font-display text-2xl uppercase text-[#0F0F0F] mb-3">
+              TWO ELITE TRACKS
+            </h3>
+            <p className="font-body text-xs text-[#0F0F0F]/80 leading-relaxed mb-4">
+              A structured, mentor-led curriculum designed to elevate your problem-solving from basic syntax to competitive algorithmic mastery.
+            </p>
+            <ul className="space-y-2.5 font-mono text-xs text-[#0F0F0F]">
+              <li className="flex items-start gap-2 bg-[#FFF4E0] p-2 border border-[#0F0F0F]">
+                <Flame className="w-4 h-4 text-[#FF0055] shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-bold uppercase text-[#7B2CBF]">Level 1 (Fundamentals):</span> C++ STL, Complexity Analysis, Two Pointers, Math &amp; Recursion.
+                </div>
+              </li>
+              <li className="flex items-start gap-2 bg-[#FFF4E0] p-2 border border-[#0F0F0F]">
+                <Flame className="w-4 h-4 text-[#7B2CBF] shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-bold uppercase text-[#7B2CBF]">Level 2 (Advanced / ECPC):</span> Graph Theory, Dynamic Programming, Trees &amp; Segment Trees.
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div className="mt-4 pt-4 border-t-2 border-[#0F0F0F] flex items-center justify-between text-xs font-bold text-neutral-600 uppercase">
+            <span>100% Free Community</span>
+            <span className="text-[#7B2CBF]">Weekly Live Contests</span>
+          </div>
         </div>
-      )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        <div>
-          <label className="font-body text-xs font-bold uppercase block mb-1.5 tracking-widest">
-            Full Name *
-          </label>
-          <input
-            required
-            className="w-full border-[3px] border-[#0F0F0F] bg-white px-4 py-3 font-body text-sm font-bold focus:outline-none focus:border-[#7B2CBF] shadow-neo"
-            placeholder="e.g. Ahmed Khalid"
-            value={form.fullName}
-            onChange={(e) => setForm({ ...form, fullName: e.target.value })}
-          />
+        {/* Pillar 2: The Leaderboard */}
+        <div className="bg-white border-[3px] border-[#0F0F0F] p-6 shadow-[5px_5px_0px_#0F0F0F] flex flex-col justify-between">
+          <div>
+            <div className="inline-flex items-center gap-2 px-2.5 py-1 bg-[#00E5FF] border-2 border-[#0F0F0F] font-mono text-xs font-bold uppercase mb-3">
+              <Trophy className="w-4 h-4 text-[#0F0F0F]" />
+              <span>THE LEADERBOARD</span>
+            </div>
+            <h3 className="font-display text-2xl uppercase text-[#0F0F0F] mb-3">
+              CLIMB THE RANKS
+            </h3>
+            <p className="font-body text-xs text-[#0F0F0F]/80 leading-relaxed mb-4">
+              Real-time competitive ranking engine. Solve gym problems, attend deep-dive sessions, and climb the scoreboard to earn official PUA team qualification.
+            </p>
+            <ul className="space-y-2.5 font-mono text-xs text-[#0F0F0F]">
+              <li className="flex items-start gap-2 bg-[#FFF4E0] p-2 border border-[#0F0F0F]">
+                <Award className="w-4 h-4 text-[#FFD500] shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-bold uppercase text-[#0F0F0F]">Point Audit Engine:</span> Earn points for solved problems, upsolving streaks, and campus drills.
+                </div>
+              </li>
+              <li className="flex items-start gap-2 bg-[#FFF4E0] p-2 border border-[#0F0F0F]">
+                <Award className="w-4 h-4 text-[#00E5FF] shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-bold uppercase text-[#0F0F0F]">ECPC Team Selection:</span> Top cadets secure sponsored slots in national programming championships.
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div className="mt-4 pt-4 border-t-2 border-[#0F0F0F] flex items-center justify-between">
+            <Link
+              href="/leaderboard"
+              className="text-xs font-bold text-[#7B2CBF] hover:text-[#FF0055] inline-flex items-center gap-1 uppercase underline"
+            >
+              Preview Live Leaderboard &rarr;
+            </Link>
+            <span className="font-mono text-[11px] bg-[#0F0F0F] text-white px-2 py-0.5">
+              SEASON 2026
+            </span>
+          </div>
         </div>
-        <div>
-          <label className="font-body text-xs font-bold uppercase block mb-1.5 tracking-widest">
-            University ID *
-          </label>
-          <input
-            required
-            type="text"
-            className="w-full border-[3px] border-[#0F0F0F] bg-white px-4 py-3 font-body text-sm font-bold focus:outline-none focus:border-[#7B2CBF] shadow-neo"
-            placeholder="e.g. 202300481"
-            value={form.universityId}
-            onChange={(e) => setForm({ ...form, universityId: e.target.value })}
-          />
+      </div>
+
+      {/* Waitlist Callout Form */}
+      <div className="bg-[#FFFDF8] border-[3px] border-[#0F0F0F] p-6 shadow-[5px_5px_0px_#0F0F0F]">
+        <div className="mb-4">
+          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-[#FF0055] text-white font-mono text-[11px] font-bold uppercase mb-2">
+            <BellRing className="w-3.5 h-3.5" />
+            <span>EARLY ACCESS PASS</span>
+          </div>
+          <h4 className="font-display text-xl sm:text-2xl uppercase text-[#0F0F0F]">
+            BE FIRST TO KNOW WHEN REGISTRATION UNLOCKS
+          </h4>
+          <p className="font-body text-xs text-[#0F0F0F]/70 font-bold mt-1">
+            Official admissions open soon. Drop your email to lock priority access before public spots fill up.
+          </p>
         </div>
-        <div>
-          <label className="font-body text-xs font-bold uppercase block mb-1.5 tracking-widest">
-            Email Address *
-          </label>
+
+        <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
           <input
             required
             type="email"
-            className="w-full border-[3px] border-[#0F0F0F] bg-white px-4 py-3 font-body text-sm font-bold focus:outline-none focus:border-[#7B2CBF] shadow-neo"
-            placeholder="you@pua.edu.eg"
-            value={form.email}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Enter your student or personal email..."
+            className="flex-grow border-[3px] border-[#0F0F0F] bg-white px-4 py-3 font-body text-sm font-bold focus:outline-none focus:border-[#7B2CBF] shadow-neo"
+            aria-label="Email address for waitlist notification"
           />
-        </div>
-        <div>
-          <label className="font-body text-xs font-bold uppercase block mb-1.5 tracking-widest">
-            Phone / WhatsApp *
-          </label>
           <input
-            required
-            type="tel"
-            className="w-full border-[3px] border-[#0F0F0F] bg-white px-4 py-3 font-body text-sm font-bold focus:outline-none focus:border-[#7B2CBF] shadow-neo"
-            placeholder="01012345678"
-            value={form.phone}
-            onChange={(e) => setForm({ ...form, phone: e.target.value })}
+            type="text"
+            value={universityId}
+            onChange={(e) => setUniversityId(e.target.value)}
+            placeholder="Uni ID (Optional)"
+            className="sm:w-36 border-[3px] border-[#0F0F0F] bg-white px-4 py-3 font-body text-sm font-bold focus:outline-none focus:border-[#7B2CBF] shadow-neo"
+            aria-label="University ID (optional)"
           />
-        </div>
-        <div>
-          <label className="font-body text-xs font-bold uppercase block mb-1.5 tracking-widest">
-            Academic Year *
-          </label>
-          <select
-            required
-            title="Academic Year"
-            className="w-full border-[3px] border-[#0F0F0F] bg-white px-4 py-3 font-body text-sm font-bold focus:outline-none focus:border-[#7B2CBF] shadow-neo"
-            value={form.academicYear}
-            onChange={(e) => setForm({ ...form, academicYear: e.target.value })}
+          <button
+            type="submit"
+            disabled={loading}
+            className="btn-solid bg-[#7B2CBF] text-white font-display text-base uppercase tracking-wider border-[3px] border-[#0F0F0F] shadow-solid px-6 py-3 hover:bg-[#FF0055] transition-all inline-flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 shrink-0"
           >
-            <option value="Year 1">Year 1 (Preparatory / Freshman)</option>
-            <option value="Year 2">Year 2 (Sophomore)</option>
-            <option value="Year 3">Year 3 (Junior)</option>
-            <option value="Year 4">Year 4 (Senior)</option>
-          </select>
-        </div>
-        <div>
-          <label className="font-body text-xs font-bold uppercase block mb-1.5 tracking-widest">
-            Training Track *
-          </label>
-          <select
-            required
-            title="Training Track"
-            className="w-full border-[3px] border-[#0F0F0F] bg-white px-4 py-3 font-body text-sm font-bold focus:outline-none focus:border-[#7B2CBF] shadow-neo"
-            value={form.track}
-            onChange={(e) => setForm({ ...form, track: e.target.value })}
-          >
-            <option value="level_1">Level 1 — Algorithmic Fundamentals (From Scratch)</option>
-            <option value="level_2">Level 2 — Advanced ECPC &amp; Graph/DP</option>
-          </select>
-        </div>
+            <span>JOIN WAITLIST</span>
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </form>
       </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        <div>
-          <label className="font-body text-xs font-bold uppercase block mb-1.5 tracking-widest">
-            Codeforces Handle <span className="normal-case text-[#0F0F0F]/50">(optional)</span>
-          </label>
-          <input
-            className="w-full border-[3px] border-[#0F0F0F] bg-white px-4 py-3 font-body text-sm font-bold focus:outline-none focus:border-[#7B2CBF] shadow-neo"
-            placeholder="tourist"
-            value={form.codeforcesHandle}
-            onChange={(e) => setForm({ ...form, codeforcesHandle: e.target.value })}
-          />
-        </div>
-        <div>
-          <label className="font-body text-xs font-bold uppercase block mb-1.5 tracking-widest">
-            Scout Referral Code <span className="normal-case text-[#0F0F0F]/50">(optional)</span>
-          </label>
-          <input
-            className="w-full border-[3px] border-[#0F0F0F] bg-white px-4 py-3 font-body text-sm font-bold focus:outline-none focus:border-[#7B2CBF] shadow-neo uppercase"
-            placeholder="E.G. AHMED-0481"
-            value={form.referralCode}
-            onChange={(e) => setForm({ ...form, referralCode: e.target.value.toUpperCase() })}
-          />
-        </div>
-      </div>
-
-      <button
-        type="submit"
-        disabled={loading}
-        className="btn-solid mt-3 bg-[#7B2CBF] text-white font-display text-xl sm:text-2xl uppercase tracking-wider border-[3px] border-[#0F0F0F] shadow-solid py-4 hover:bg-[#FF0055] transition-all flex items-center justify-center gap-3 cursor-pointer disabled:opacity-50"
-      >
-        {loading ? (
-          <>
-            <Loader2 className="w-6 h-6 animate-spin" />
-            <span>CONFIRMING REGISTRATION...</span>
-          </>
-        ) : (
-          <>
-            <Sparkles className="w-6 h-6" />
-            <span>SUBMIT REGISTRATION &amp; CLAIM +10 POINTS</span>
-          </>
-        )}
-      </button>
 
       <p className="font-mono text-xs text-center text-neutral-600">
-        Interested in committee roles (Instructors, HR, Operations, Marketing, Design/Dev)?{" "}
+        Interested in joining as an instructor, coach, or committee member?{" "}
         <Link href="/recruitment" className="underline font-bold text-[#7B2CBF] hover:text-[#FF0055]">
-          Explore the Leadership Directory &rarr;
+          Explore the Committee Directory &rarr;
         </Link>
       </p>
-    </form>
+    </div>
   )
 }
 
@@ -253,24 +250,24 @@ function ApplicationFormContent() {
 export function ApplicationSection() {
   return (
     <section className="bg-white border-b-[3px] border-[#0F0F0F] py-20 px-4">
-      <div className="max-w-3xl mx-auto">
+      <div className="max-w-4xl mx-auto">
         <div className="bg-[#FFF4E0] border-[4px] border-[#0F0F0F] shadow-solid p-6 md:p-12 relative">
           <VectorNodes />
 
           <div className="mb-8 border-b-[3px] border-[#0F0F0F] pb-6">
             <span className="font-mono text-xs font-bold uppercase tracking-widest text-[#FF0055] block mb-2">
-              Season 2026 Admissions
+              Admissions Launching Soon // Season 2026
             </span>
             <h2 className="font-display text-3xl md:text-5xl uppercase text-[#0F0F0F]">
-              CADET ENROLLMENT FORM
+              WAIT FOR IT: CRACK THE CODE. RULE THE LEADERBOARD.
             </h2>
             <p className="font-body text-sm font-bold text-[#0F0F0F]/70 mt-2">
-              Registration is completely free and open to all PUA students regardless of faculty or level.
+              Competitive programming at PUA is entering a new era. Review the training tracks, check out the live leaderboard, and secure your early access spot.
             </p>
           </div>
 
-          <Suspense fallback={<div className="font-mono text-center py-12">Loading registration matrix...</div>}>
-            <ApplicationFormContent />
+          <Suspense fallback={<div className="font-mono text-center py-12">Loading admissions matrix...</div>}>
+            <WaitlistContent />
           </Suspense>
         </div>
       </div>

@@ -7,33 +7,11 @@ vi.mock("next/navigation", () => ({
   useSearchParams: () => ({ get: searchParamsGet }),
 }))
 
-vi.mock("@/lib/bounty", () => ({
-  recordBountyReferral: vi.fn(),
-}))
-
 import { ApplicationSection } from "@/components/join/application-section"
-import { recordBountyReferral } from "@/lib/bounty"
-
-const bountyMock = vi.mocked(recordBountyReferral)
-
-function jsonResponse(body: unknown, ok = true) {
-  return { ok, json: async () => body }
-}
-
-function fillRequiredFields() {
-  fireEvent.change(screen.getByPlaceholderText("e.g. Ahmed Khalid"), { target: { value: "Ahmed Khalid" } })
-  fireEvent.change(screen.getByPlaceholderText("e.g. 202300481"), { target: { value: "202300481" } })
-  fireEvent.change(screen.getByPlaceholderText("you@pua.edu.eg"), { target: { value: "ahmed@example.com" } })
-  fireEvent.change(screen.getByPlaceholderText("01012345678"), { target: { value: "01000000000" } })
-}
-
-function submitForm() {
-  fireEvent.submit(screen.getByPlaceholderText("e.g. Ahmed Khalid").closest("form")!)
-}
 
 beforeEach(() => {
   searchParamsGet.mockReturnValue(null)
-  bountyMock.mockReset()
+  localStorage.clear()
 })
 
 afterEach(() => {
@@ -41,99 +19,65 @@ afterEach(() => {
   vi.restoreAllMocks()
 })
 
-describe("ApplicationSection", () => {
-  it("shows the attached scout when the URL carries a referral code", () => {
+describe("ApplicationSection (Wait For It)", () => {
+  it("pitches both the training tracks and the live leaderboard", () => {
+    render(<ApplicationSection />)
+
+    // Training pitch assertions
+    expect(screen.getByText("THE TRAINING MATRIX")).toBeTruthy()
+    expect(screen.getByText("TWO ELITE TRACKS")).toBeTruthy()
+    expect(screen.getByText(/Level 1 \(Fundamentals\):/)).toBeTruthy()
+    expect(screen.getByText(/Level 2 \(Advanced \/ ECPC\):/)).toBeTruthy()
+
+    // Leaderboard pitch assertions
+    expect(screen.getByText("THE LEADERBOARD")).toBeTruthy()
+    expect(screen.getByText("CLIMB THE RANKS")).toBeTruthy()
+    expect(screen.getByText(/Point Audit Engine:/)).toBeTruthy()
+    expect(screen.getByText(/ECPC Team Selection:/)).toBeTruthy()
+
+    // Leaderboard preview link
+    const previewLink = screen.getByText(/Preview Live Leaderboard/).closest("a")
+    expect(previewLink?.getAttribute("href")).toBe("/leaderboard")
+  })
+
+  it("surfaces the invited scout badge when the URL carries a referral code", () => {
     searchParamsGet.mockReturnValue("scout-01")
     render(<ApplicationSection />)
 
-    expect(screen.getByText(/REFERRED BY SCOUT/)).toBeTruthy()
+    expect(screen.getByText(/INVITED BY SCOUT:/)).toBeTruthy()
     expect(screen.getByText("SCOUT-01")).toBeTruthy()
-    expect(screen.getByText("BOUNTY ATTACHED")).toBeTruthy()
+    expect(screen.getByText("VIP NOTIFICATION")).toBeTruthy()
   })
 
-  it("registers the cadet and credits the scout on success", async () => {
+  it("submits the waitlist form and displays priority confirmation state", async () => {
     searchParamsGet.mockReturnValue("scout-01")
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue(jsonResponse({ success: true, trainee: { pointsTotal: 42 } }))
-    )
-    bountyMock.mockResolvedValue({ success: true, error: null })
     render(<ApplicationSection />)
 
-    fillRequiredFields()
-    submitForm()
+    const emailInput = screen.getByLabelText(/Email address for waitlist notification/)
+    const uniIdInput = screen.getByLabelText(/University ID \(optional\)/)
 
-    await screen.findByText("YOU'RE IN THE SQUAD!")
-    expect(screen.getByText("+42 POINTS AWARDED")).toBeTruthy()
-    expect(
-      screen.getByText(/SCOUT CREDIT DISPATCHED TO \[SCOUT-01\]/)
-    ).toBeTruthy()
-    expect(bountyMock).toHaveBeenCalledWith("SCOUT-01", "Ahmed Khalid", "202300481")
-  })
+    fireEvent.change(emailInput, { target: { value: "cadet@pua.edu.eg" } })
+    fireEvent.change(uniIdInput, { target: { value: "202300481" } })
 
-  it("does not credit the scout when the API ran in simulated fallback mode", async () => {
-    searchParamsGet.mockReturnValue("scout-01")
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue(
-        jsonResponse({ success: true, simulated: true, trainee: { pointsTotal: 10 } })
-      )
-    )
-    render(<ApplicationSection />)
+    fireEvent.click(screen.getByRole("button", { name: /JOIN WAITLIST/ }))
 
-    fillRequiredFields()
-    submitForm()
+    await screen.findByText("YOU'RE FIRST IN LINE!")
+    expect(screen.getByText("WAITLIST CONFIRMED // PRIORITY PASS LOCKED")).toBeTruthy()
+    expect(screen.getByText("cadet@pua.edu.eg")).toBeTruthy()
+    expect(screen.getByText(/SCOUT INVITATION ATTACHED: \[SCOUT-01\]/)).toBeTruthy()
 
-    await screen.findByText("YOU'RE IN THE SQUAD!")
-    expect(bountyMock).not.toHaveBeenCalled()
-    expect(screen.queryByText(/SCOUT CREDIT DISPATCHED/)).toBeNull()
-  })
+    // Verify localStorage persistence
+    const saved = JSON.parse(localStorage.getItem("pua_icpc_waitlist") || "[]")
+    expect(saved).toHaveLength(1)
+    expect(saved[0].email).toBe("cadet@pua.edu.eg")
+    expect(saved[0].universityId).toBe("202300481")
+    expect(saved[0].referralCode).toBe("SCOUT-01")
 
-  it("registers without touching the bounty pipeline when no referral is attached", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue(jsonResponse({ success: true, trainee: { pointsTotal: 10 } }))
-    )
-    render(<ApplicationSection />)
+    // Check post-submission navigation CTAs
+    const leaderboardCta = screen.getByText("VIEW LIVE LEADERBOARD").closest("a")
+    expect(leaderboardCta?.getAttribute("href")).toBe("/leaderboard")
 
-    fillRequiredFields()
-    submitForm()
-
-    await screen.findByText("YOU'RE IN THE SQUAD!")
-    expect(bountyMock).not.toHaveBeenCalled()
-    expect(screen.queryByText(/SCOUT CREDIT DISPATCHED/)).toBeNull()
-  })
-
-  it("still confirms registration when referral logging fails", async () => {
-    searchParamsGet.mockReturnValue("scout-01")
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue(jsonResponse({ success: true, trainee: { pointsTotal: 10 } }))
-    )
-    bountyMock.mockRejectedValue(new Error("database down"))
-    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {})
-    render(<ApplicationSection />)
-
-    fillRequiredFields()
-    submitForm()
-
-    await screen.findByText("YOU'RE IN THE SQUAD!")
-    expect(screen.queryByText(/SCOUT CREDIT DISPATCHED/)).toBeNull()
-    expect(consoleError).toHaveBeenCalled()
-  })
-
-  it("surfaces an API error and keeps the form open", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue(jsonResponse({ success: false, error: "University ID already registered." }, false))
-    )
-    render(<ApplicationSection />)
-
-    fillRequiredFields()
-    submitForm()
-
-    await screen.findByText("University ID already registered.")
-    expect(screen.getByPlaceholderText("e.g. Ahmed Khalid")).toBeTruthy()
-    expect(screen.queryByText("YOU'RE IN THE SQUAD!")).toBeNull()
+    const calendarCta = screen.getByText("EXPLORE TRAINING CALENDAR").closest("a")
+    expect(calendarCta?.getAttribute("href")).toBe("/events")
   })
 })

@@ -1,105 +1,71 @@
 import { fireEvent, render, screen } from "@testing-library/react"
-import { afterEach, describe, expect, it, vi } from "vitest"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { JoinModal } from "@/components/home/join-modal"
 
-function jsonResponse(body: unknown, ok = true) {
-  return { ok, json: async () => body }
-}
-
-function fillRequiredFields() {
-  fireEvent.change(screen.getByLabelText(/Full Name/), { target: { value: "Ahmed Nasser" } })
-  fireEvent.change(screen.getByLabelText(/University ID/), { target: { value: "202300481" } })
-  fireEvent.change(screen.getByLabelText(/Email Address/), { target: { value: "ahmed@example.com" } })
-  fireEvent.change(screen.getByLabelText(/Phone/), { target: { value: "01000000000" } })
-}
-
-function submitForm() {
-  fireEvent.submit(screen.getByLabelText(/Full Name/).closest("form")!)
-}
+beforeEach(() => {
+  localStorage.clear()
+})
 
 afterEach(() => {
   vi.unstubAllGlobals()
+  vi.restoreAllMocks()
 })
 
-describe("JoinModal", () => {
-  it("submits the cadet details and confirms the awarded points", async () => {
-    const fetchMock = vi.fn().mockResolvedValue(jsonResponse({ success: true, trainee: { pointsTotal: 25 } }))
-    vi.stubGlobal("fetch", fetchMock)
+describe("JoinModal (Wait For It)", () => {
+  it("renders the teaser pitching the training and leaderboard", () => {
     render(<JoinModal onClose={vi.fn()} />)
 
-    fillRequiredFields()
-    submitForm()
-
-    await screen.findByText("YOU'RE IN!")
-    expect(screen.getByText("+25 POINTS")).toBeTruthy()
-
-    const [url, init] = fetchMock.mock.calls[0]
-    expect(url).toBe("/api/trainees/register")
-    expect(init.method).toBe("POST")
-    expect(JSON.parse(init.body)).toEqual({
-      fullName: "Ahmed Nasser",
-      universityId: "202300481",
-      email: "ahmed@example.com",
-      phone: "01000000000",
-      academicYear: "Year 1",
-      track: "level_1",
-      codeforcesHandle: "",
-    })
+    expect(screen.getByText("WAIT FOR IT")).toBeTruthy()
+    expect(screen.getByText("Season 2026 // Launching Soon")).toBeTruthy()
+    expect(screen.getByText("THE TRAINING")).toBeTruthy()
+    expect(screen.getByText("THE LEADERBOARD")).toBeTruthy()
   })
 
-  it("disables the submit control while the registration is in flight", async () => {
-    let resolveFetch!: (value: unknown) => void
-    const fetchMock = vi.fn(
-      () =>
-        new Promise((resolve) => {
-          resolveFetch = resolve
-        })
-    )
-    vi.stubGlobal("fetch", fetchMock)
+  it("submits the waitlist email and renders priority pass confirmation", async () => {
     render(<JoinModal onClose={vi.fn()} />)
 
-    fillRequiredFields()
-    submitForm()
+    const emailInput = screen.getByLabelText(/Email Address for Priority Access/)
+    fireEvent.change(emailInput, { target: { value: "student@pua.edu.eg" } })
 
-    const pendingButton = screen.getByRole("button", { name: /REGISTERING/ }) as HTMLButtonElement
-    expect(pendingButton.disabled).toBe(true)
+    const submitBtn = screen.getByRole("button", { name: /NOTIFY ME WHEN ADMISSIONS OPEN/ })
+    fireEvent.click(submitBtn)
 
-    resolveFetch(jsonResponse({ success: true, trainee: { pointsTotal: 10 } }))
+    await screen.findByText("YOU'RE ON THE LIST!")
+    expect(screen.getByText("PRIORITY PASS LOCKED")).toBeTruthy()
+    expect(screen.getByText("student@pua.edu.eg")).toBeTruthy()
 
-    await screen.findByText("YOU'RE IN!")
-    expect(screen.queryByText("REGISTERING...")).toBeNull()
+    // Verify localStorage persistence
+    const saved = JSON.parse(localStorage.getItem("pua_icpc_waitlist") || "[]")
+    expect(saved).toHaveLength(1)
+    expect(saved[0].email).toBe("student@pua.edu.eg")
+    expect(saved[0].source).toBe("home_modal")
+
+    // Check action links
+    const leaderboardLink = screen.getByText("EXPLORE LEADERBOARD PREVIEW").closest("a")
+    expect(leaderboardLink?.getAttribute("href")).toBe("/leaderboard")
+
+    const syllabusLink = screen.getByText("READ TRACK SYLLABUS").closest("a")
+    expect(syllabusLink?.getAttribute("href")).toBe("/join")
   })
 
-  it("surfaces an API error and keeps the form open", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue(jsonResponse({ success: false, error: "Email is invalid." }, false))
-    )
+  it("links to the /join syllabus and /leaderboard pages from the teaser form", () => {
     render(<JoinModal onClose={vi.fn()} />)
 
-    fillRequiredFields()
-    submitForm()
+    const leaderboardLink = screen.getByText("View Leaderboard").closest("a")
+    expect(leaderboardLink?.getAttribute("href")).toBe("/leaderboard")
 
-    await screen.findByText("Email is invalid.")
-    expect(screen.getByPlaceholderText("e.g. Ahmed Mahmoud")).toBeTruthy()
-    expect(screen.queryByText("YOU'RE IN!")).toBeNull()
+    const detailsLink = screen.getByText(/Full Syllabus & Details/).closest("a")
+    expect(detailsLink?.getAttribute("href")).toBe("/join")
   })
 
-  it("links to the /join application page", () => {
-    render(<JoinModal onClose={vi.fn()} />)
-
-    const link = screen.getByText(/Need committee hiring details/).closest("a")
-    expect(link?.getAttribute("href")).toBe("/join")
-  })
-
-  it("closes on Escape and from the close control", () => {
+  it("closes on Escape and from the close button control", () => {
     const onClose = vi.fn()
     render(<JoinModal onClose={onClose} />)
 
     fireEvent.keyDown(window, { key: "Escape" })
     expect(onClose).toHaveBeenCalledTimes(1)
 
-    fireEvent.click(screen.getByRole("button", { name: "Close registration dialog" }))
+    fireEvent.click(screen.getByRole("button", { name: "Close dialog" }))
     expect(onClose).toHaveBeenCalledTimes(2)
   })
 })
