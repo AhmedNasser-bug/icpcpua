@@ -16,6 +16,7 @@ import {
   Briefcase,
   Share2,
   Sparkles,
+  UserRound,
 } from "lucide-react"
 import { PuaLogo } from "./pua-logo"
 
@@ -45,6 +46,7 @@ export function PuaNavbar() {
   }, [])
 
   const secondaryLinks = [
+    { href: "/profile", label: "Cadet Profile", desc: "Sign in, link Codeforces & view rank", icon: UserRound },
     { href: "/hall-of-fame", label: "Hall of Fame", desc: "Top alumni & regional champions", icon: Award },
     { href: "/resources", label: "Resources", desc: "Curated sheets, toolkits & books", icon: BookOpen },
     { href: "/faq", label: "FAQ", desc: "Answers to common student questions", icon: HelpCircle },

@@ -66,6 +66,9 @@ export function Footer() {
                 <Link href="/leaderboard" className="hover:text-[#00E5FF] transition-colors">Live Leaderboard</Link>
               </li>
               <li>
+                <Link href="/profile" className="hover:text-[#00E5FF] transition-colors">Cadet Profile & Codeforces</Link>
+              </li>
+              <li>
                 <Link href="/hall-of-fame" className="hover:text-[#00E5FF] transition-colors">Hall of Fame (Legends)</Link>
               </li>
               <li>

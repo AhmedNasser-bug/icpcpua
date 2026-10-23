@@ -1,5 +1,13 @@
 import type { LeaderboardUser } from "./types"
 
+function ratingLabel(rating: number | null): string {
+  return rating === null ? "Unrated" : String(rating)
+}
+
+function solvedLabel(solved: number | null): string {
+  return solved === null ? "—" : String(solved)
+}
+
 const PODIUM_COLORS = ["#FFD500", "#E0E0E0", "#FF0055"]
 const PODIUM_HEIGHTS = ["h-44", "h-32", "h-28"]
 
@@ -32,9 +40,9 @@ export function LeaderboardPodium({ entries }: { entries: LeaderboardUser[] }) {
             className={`w-24 sm:w-28 ${PODIUM_HEIGHTS[1]} border-[3px] border-[#0F0F0F] shadow-solid flex flex-col items-center justify-center gap-1`}
             style={{ backgroundColor: PODIUM_COLORS[1] }}
           >
-            <span className="font-display text-3xl sm:text-4xl text-[#0F0F0F]">2</span>
+            <span className="font-display text-3xl sm:text-4xl text-[#0F0F0F]">{entries[1].rank}</span>
             <span className="font-body text-xs font-bold">{entries[1].pointsTotal} PTS</span>
-            <span className="font-mono text-[9px] text-neutral-700">R: {entries[1].rating}</span>
+            <span className="font-mono text-[9px] text-neutral-700">R: {ratingLabel(entries[1].rating)}</span>
           </div>
         </div>
       )}
@@ -56,9 +64,9 @@ export function LeaderboardPodium({ entries }: { entries: LeaderboardUser[] }) {
             className={`w-28 sm:w-32 ${PODIUM_HEIGHTS[0]} border-[3px] border-[#0F0F0F] shadow-solid flex flex-col items-center justify-center gap-1`}
             style={{ backgroundColor: PODIUM_COLORS[0] }}
           >
-            <span className="font-display text-4xl sm:text-5xl text-[#0F0F0F]">1</span>
+            <span className="font-display text-4xl sm:text-5xl text-[#0F0F0F]">{entries[0].rank}</span>
             <span className="font-body text-sm font-bold">{entries[0].pointsTotal} PTS</span>
-            <span className="font-mono text-[10px] text-neutral-800 font-bold">R: {entries[0].rating} {"// S: "}{entries[0].solved}</span>
+            <span className="font-mono text-[10px] text-neutral-800 font-bold">R: {ratingLabel(entries[0].rating)} {"// S: "}{solvedLabel(entries[0].solved)}</span>
           </div>
         </div>
       )}
@@ -79,9 +87,9 @@ export function LeaderboardPodium({ entries }: { entries: LeaderboardUser[] }) {
             className={`w-24 sm:w-28 ${PODIUM_HEIGHTS[2]} border-[3px] border-[#0F0F0F] shadow-solid flex flex-col items-center justify-center gap-1`}
             style={{ backgroundColor: PODIUM_COLORS[2] }}
           >
-            <span className="font-display text-3xl sm:text-4xl text-white">3</span>
+            <span className="font-display text-3xl sm:text-4xl text-white">{entries[2].rank}</span>
             <span className="font-body text-xs font-bold text-white">{entries[2].pointsTotal} PTS</span>
-            <span className="font-mono text-[9px] text-neutral-100">R: {entries[2].rating}</span>
+            <span className="font-mono text-[9px] text-neutral-100">R: {ratingLabel(entries[2].rating)}</span>
           </div>
         </div>
       )}

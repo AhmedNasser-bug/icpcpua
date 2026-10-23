@@ -5,6 +5,7 @@ import { Footer } from "@/components/footer"
 import { Marquee } from "@/components/pua-marquee"
 
 const SECONDARY_LINKS: Array<[string, string]> = [
+  ["Cadet Profile", "/profile"],
   ["Hall of Fame", "/hall-of-fame"],
   ["Resources", "/resources"],
   ["FAQ", "/faq"],
