@@ -1,4 +1,5 @@
 import { getApps, initializeApp, cert, App } from "firebase-admin/app"
+import { getAuth, Auth } from "firebase-admin/auth"
 import { getFirestore, Firestore, FieldValue } from "firebase-admin/firestore"
 
 function getFirebaseAdminApp(): App | null {
@@ -38,4 +39,5 @@ function getFirebaseAdminApp(): App | null {
 
 const adminApp = getFirebaseAdminApp()
 export const adminDb: Firestore | null = adminApp ? getFirestore(adminApp) : null
+export const adminAuth: Auth | null = adminApp ? getAuth(adminApp) : null
 export { FieldValue }

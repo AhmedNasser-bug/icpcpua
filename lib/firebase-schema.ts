@@ -1,6 +1,14 @@
-type AcademicYear = "Year 1" | "Year 2" | "Year 3" | "Year 4"
-type TraineeTrack = "level_1" | "level_2"
+export const ACADEMIC_YEARS = ["Year 1", "Year 2", "Year 3", "Year 4"] as const
+type AcademicYear = (typeof ACADEMIC_YEARS)[number]
+
+export const TRAINEE_TRACKS = ["level_1", "level_2"] as const
+type TraineeTrack = (typeof TRAINEE_TRACKS)[number]
+
 type TraineeStatus = "active" | "probation" | "graduated" | "inactive"
+
+type AuthMigrationState = "pending" | "linked" | "failed" | "skipped"
+
+export type CodeforcesSyncStatus = "never" | "success" | "failed"
 
 export interface TraineeDocument {
   id: string
@@ -10,11 +18,28 @@ export interface TraineeDocument {
   phone: string
   academicYear: AcademicYear
   track: TraineeTrack
+  authUid?: string
+  authEmail?: string | null
+  authLinkedAt?: string | null
+  authMigrationState?: AuthMigrationState
+  authMigrationUpdatedAt?: string | null
+  authClaimCodeHash?: string | null
+  authClaimExpiresAt?: string | null
   codeforcesHandle: string
+  codeforcesHandleLower?: string
+  cfHandleVerified?: boolean
   status: TraineeStatus
   pointsTotal: number
-  cfRating: number
-  cfSolvedCount: number
+  cfRating: number | null
+  cfMaxRating?: number | null
+  cfSolvedCount: number | null
+  cfSolvedProblemKeys?: string[]
+  cfLastSubmissionId?: number | null
+  cfLastSyncedAt?: string | null
+  cfSyncAttemptedAt?: string | null
+  cfSyncStatus?: CodeforcesSyncStatus
+  cfSyncError?: string | null
+  cfNextSyncAt?: string | null
   attendedSessionsCount: number
   qrScansCount: number
   registeredAt: string

@@ -23,10 +23,13 @@
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui"
+    "test:e2e:ui": "playwright test --ui",
+    "auth:migrate": "node scripts/migrate-trainee-auth.mjs",
+    "auth:grant-admin": "node scripts/grant-admin.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.3",
+    "firebase": "^13.1.0",
     "firebase-admin": "^14.5.0",
     "framer-motion": "^12.36.0",
     "lucide-react": "^0.564.0",

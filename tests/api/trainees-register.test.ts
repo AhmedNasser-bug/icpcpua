@@ -4,14 +4,26 @@ const { adminDbRef } = vi.hoisted(() => ({
   adminDbRef: { current: null as unknown },
 }))
 
-vi.mock("@/lib/firebase-admin", () => ({
-  get adminDb() {
-    return adminDbRef.current
-  },
-  FieldValue: { increment: (n: number) => ({ __increment: n }) },
-}))
+vi.mock("@/lib/firebase-admin", async () => {
+  const { adminAuthMock } = await import("../helpers/auth")
+  return {
+    get adminDb() {
+      return adminDbRef.current
+    },
+    adminAuth: adminAuthMock,
+    FieldValue: { increment: (n: number) => ({ __increment: n }) },
+  }
+})
 
 import { POST } from "@/app/api/trainees/register/route"
+import {
+  TRAINEE_AUTH_LINKS_COLLECTION,
+  TRAINEE_AUTH_REVERSE_COLLECTION,
+  TRAINEE_EMAIL_LINKS_COLLECTION,
+  traineeEmailLinkDocumentId,
+} from "@/lib/trainee-session"
+import { adminAuthMock, authUidFor, resetAdminAuthMock } from "../helpers/auth"
+import { FakeFirestore } from "../helpers/fake-firestore"
 
 const VALID_BODY = {
   fullName: "  Ahmed Nasser ",
@@ -21,37 +33,7 @@ const VALID_BODY = {
   academicYear: "Year 2",
   track: "level_2",
   codeforcesHandle: "@ahmed_cp",
-}
-
-function createRegisterDbMock(options: { exists?: boolean; commitFailure?: Error } = {}) {
-  const setCalls: Array<{ ref: unknown; data: unknown }> = []
-  const docRef = {
-    id: "trainee-1",
-    get: vi.fn(async () => ({ exists: options.exists ?? false })),
-  }
-  const traineeDoc = vi.fn((id: string) => {
-    void id
-    return docRef
-  })
-  const eventDocRef = { id: "event-1" }
-  const eventDoc = vi.fn(() => eventDocRef)
-  const batch = {
-    set: vi.fn((ref: unknown, data: unknown) => {
-      setCalls.push({ ref, data })
-    }),
-    commit: vi.fn(async () => {
-      if (options.commitFailure) throw options.commitFailure
-    }),
-  }
-  const adminDb = {
-    collection: vi.fn((name: string) => {
-      if (name === "trainees") return { doc: traineeDoc }
-      if (name === "point_events") return { doc: eventDoc }
-      throw new Error(`unexpected collection: ${name}`)
-    }),
-    batch: vi.fn(() => batch),
-  }
-  return { adminDb, setCalls, batch, docRef, traineeDoc }
+  idToken: "firebase-id-token",
 }
 
 function post(body: unknown) {
@@ -64,7 +46,13 @@ function post(body: unknown) {
 
 beforeEach(() => {
   adminDbRef.current = null
-  vi.clearAllMocks()
+  resetAdminAuthMock()
+  adminAuthMock.verifyIdToken.mockResolvedValue({
+    uid: authUidFor("202300481"),
+    email: "ahmed@example.com",
+    email_verified: false,
+  })
+  adminAuthMock.createSessionCookie.mockResolvedValue("registered-session")
 })
 
 describe("POST /api/trainees/register", () => {
@@ -76,14 +64,32 @@ describe("POST /api/trainees/register", () => {
     expect(body).toEqual({ success: false, error: "Please fill in all required fields." })
   })
 
+  it("rejects a malformed Codeforces handle before writing", async () => {
+    const db = new FakeFirestore()
+    adminDbRef.current = db
+
+    const response = await POST(post({ ...VALID_BODY, codeforcesHandle: "@bad handle!" }))
+    const body = await response.json()
+
+    expect(response.status).toBe(400)
+    expect(body.success).toBe(false)
+    expect(db.read("trainees", "202300481")).toBeUndefined()
+  })
+
+  it("requires authentication once a database is configured", async () => {
+    adminDbRef.current = new FakeFirestore()
+
+    const response = await POST(post({ ...VALID_BODY, idToken: "" }))
+    expect(response.status).toBe(401)
+  })
+
   it("returns a simulated trainee when Firebase is not configured", async () => {
-    const response = await POST(post(VALID_BODY))
+    const response = await POST(post({ ...VALID_BODY, idToken: "" }))
     const body = await response.json()
 
     expect(response.status).toBe(200)
     expect(body.success).toBe(true)
     expect(body.simulated).toBe(true)
-    expect(body.message).toBe("Registration received (development fallback mode).")
     expect(body.trainee).toEqual({
       id: "sim_202300481",
       fullName: "Ahmed Nasser",
@@ -98,17 +104,18 @@ describe("POST /api/trainees/register", () => {
     })
   })
 
-  it("normalises the input and writes the trainee plus the welcome point event", async () => {
-    const db = createRegisterDbMock()
-    adminDbRef.current = db.adminDb
+  it("writes the trainee, auth links, handle registry and welcome event atomically", async () => {
+    const db = new FakeFirestore()
+    adminDbRef.current = db
 
     const response = await POST(post(VALID_BODY))
     const body = await response.json()
+    const trainee = db.read("trainees", "202300481")!
 
     expect(response.status).toBe(200)
     expect(body.success).toBe(true)
     expect(body.simulated).toBe(false)
-    expect(body.trainee).toMatchObject({
+    expect(trainee).toMatchObject({
       id: "202300481",
       fullName: "Ahmed Nasser",
       universityId: "202300481",
@@ -117,68 +124,132 @@ describe("POST /api/trainees/register", () => {
       academicYear: "Year 2",
       track: "level_2",
       codeforcesHandle: "ahmed_cp",
+      codeforcesHandleLower: "ahmed_cp",
+      authUid: authUidFor("202300481"),
       status: "active",
       pointsTotal: 10,
-      cfRating: 0,
-      cfSolvedCount: 0,
-      attendedSessionsCount: 0,
-      qrScansCount: 0,
+      cfRating: null,
+      cfSolvedCount: null,
     })
-    expect(body.trainee.registeredAt).toEqual(expect.any(String))
-    expect(body.trainee.updatedAt).toEqual(expect.any(String))
+    expect(db.read(TRAINEE_AUTH_LINKS_COLLECTION, authUidFor("202300481"))).toMatchObject({
+      traineeId: "202300481",
+    })
+    expect(db.read(TRAINEE_EMAIL_LINKS_COLLECTION, traineeEmailLinkDocumentId("ahmed@example.com"))).toMatchObject({
+      traineeId: "202300481",
+    })
+    expect(db.read("codeforces_links", "ahmed_cp")).toMatchObject({
+      universityId: "202300481",
+      handle: "ahmed_cp",
+    })
+    expect((await db.collection("point_events").get()).docs).toHaveLength(1)
+    expect(response.headers.get("set-cookie")).toContain("registered-session")
+  })
 
-    expect(db.traineeDoc).toHaveBeenCalledWith("202300481")
-    expect(db.batch.set).toHaveBeenCalledTimes(2)
-    expect(db.setCalls[0]).toEqual({
-      ref: db.docRef,
-      data: body.trainee,
-    })
-    expect(db.setCalls[1]).toEqual({
-      ref: { id: "event-1" },
-      data: {
-        id: "event-1",
-        traineeId: "202300481",
-        universityId: "202300481",
-        type: "registration_welcome",
-        points: 10,
-        reason: "Initial onboarding & profile creation bonus",
-        createdAt: body.trainee.registeredAt,
-      },
-    })
-    expect(db.batch.commit).toHaveBeenCalledTimes(1)
+  it("is idempotent for a retry from the same Firebase UID", async () => {
+    const db = new FakeFirestore()
+    adminDbRef.current = db
+
+    const first = await POST(post(VALID_BODY))
+    const second = await POST(post(VALID_BODY))
+
+    expect(first.status).toBe(200)
+    expect(second.status).toBe(200)
+    expect((await db.collection("point_events").get()).docs).toHaveLength(1)
   })
 
   it("rejects a duplicate university ID with a 409", async () => {
-    const db = createRegisterDbMock({ exists: true })
-    adminDbRef.current = db.adminDb
+    const db = new FakeFirestore()
+    db.seed("trainees", "202300481", {
+      id: "202300481",
+      email: "other@example.com",
+      authUid: "someone-else",
+      status: "active",
+    })
+    adminDbRef.current = db
 
     const response = await POST(post(VALID_BODY))
     const body = await response.json()
 
     expect(response.status).toBe(409)
-    expect(body).toEqual({
-      success: false,
-      error: "A trainee with this University ID is already registered in the system.",
-    })
-    expect(db.batch.set).not.toHaveBeenCalled()
+    expect(body.success).toBe(false)
   })
 
-  it("returns a 500 response when the batch write fails", async () => {
-    const db = createRegisterDbMock({ commitFailure: new Error("write conflict") })
-    adminDbRef.current = db.adminDb
+  it("rejects a UID already linked to another trainee", async () => {
+    const db = new FakeFirestore()
+    db.seed(TRAINEE_AUTH_LINKS_COLLECTION, authUidFor("202300481"), {
+      traineeId: "202300999",
+      uid: authUidFor("202300481"),
+    })
+    adminDbRef.current = db
 
     const response = await POST(post(VALID_BODY))
-    const body = await response.json()
-
-    expect(response.status).toBe(500)
-    expect(body).toEqual({ success: false, error: "write conflict" })
+    expect(response.status).toBe(409)
+    expect(db.read("trainees", "202300481")).toBeUndefined()
   })
 
-  it("returns a 500 response for a malformed JSON body", async () => {
+  it("rejects a trainee with a different reverse UID mapping", async () => {
+    const db = new FakeFirestore()
+    db.seed(TRAINEE_AUTH_REVERSE_COLLECTION, "202300481", {
+      traineeId: "202300481",
+      uid: "someone-else",
+    })
+    adminDbRef.current = db
+
+    const response = await POST(post(VALID_BODY))
+    expect(response.status).toBe(409)
+    expect(db.read("trainees", "202300481")).toBeUndefined()
+  })
+
+  it("rejects an email already owned by another trainee", async () => {
+    const db = new FakeFirestore()
+    db.seed(TRAINEE_EMAIL_LINKS_COLLECTION, traineeEmailLinkDocumentId("ahmed@example.com"), {
+      traineeId: "202300999",
+      email: "ahmed@example.com",
+    })
+    adminDbRef.current = db
+
+    const response = await POST(post(VALID_BODY))
+    expect(response.status).toBe(409)
+  })
+
+  it("rejects a Codeforces handle already owned by another trainee", async () => {
+    const db = new FakeFirestore()
+    db.seed("codeforces_links", "ahmed_cp", {
+      universityId: "202300999",
+      handle: "ahmed_cp",
+    })
+    adminDbRef.current = db
+
+    const response = await POST(post(VALID_BODY))
+    expect(response.status).toBe(409)
+    expect(db.read("trainees", "202300481")).toBeUndefined()
+  })
+
+  it("rejects a body email that differs from the verified token email", async () => {
+    adminDbRef.current = new FakeFirestore()
+
+    const response = await POST(post({ ...VALID_BODY, email: "other@example.com" }))
+    expect(response.status).toBe(400)
+  })
+
+  it("rate-limits repeated registration attempts", async () => {
+    const db = new FakeFirestore()
+    adminDbRef.current = db
+
+    let lastStatus = 0
+    for (let attempt = 0; attempt < 11; attempt += 1) {
+      const response = await POST(post(VALID_BODY))
+      lastStatus = response.status
+    }
+
+    expect(lastStatus).toBe(429)
+  })
+
+  it("returns a 400 response for a malformed JSON body", async () => {
     const response = await POST(post("{not-json"))
     const body = await response.json()
 
-    expect(response.status).toBe(500)
-    expect(body.success).toBe(false)
+    expect(response.status).toBe(400)
+    expect(body).toEqual({ success: false, error: "Request body must be valid JSON." })
   })
 })
