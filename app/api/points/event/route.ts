@@ -1,3 +1,4 @@
+import { timingSafeEqual } from "node:crypto"
 import { NextResponse } from "next/server"
 import type { UpdateData } from "firebase-admin/firestore"
 import { adminDb, FieldValue } from "@/lib/firebase-admin"
@@ -8,6 +9,8 @@ import {
   TraineeDocument,
 } from "@/lib/firebase-schema"
 import { getErrorMessage } from "@/lib/errors"
+import { asObject, readJsonBody, RequestBodyError } from "@/lib/http"
+import { isProductionRuntime } from "@/lib/server-env"
 
 const MAX_POINTS_PER_EVENT = 1000
 
@@ -15,10 +18,19 @@ function isPointEventType(value: unknown): value is PointEventType {
   return typeof value === "string" && (POINT_EVENT_TYPES as readonly string[]).includes(value)
 }
 
+function safeEqual(left: string, right: string): boolean {
+  const leftBuffer = Buffer.from(left)
+  const rightBuffer = Buffer.from(right)
+  if (leftBuffer.length !== rightBuffer.length) return false
+  return timingSafeEqual(leftBuffer, rightBuffer)
+}
+
 function isAuthorized(req: Request) {
   const secret = process.env.POINTS_EVENT_SECRET
-  if (!secret) return true
-  return req.headers.get("authorization") === `Bearer ${secret}`
+  if (!secret) return !isProductionRuntime()
+  const authorization = req.headers.get("authorization") ?? ""
+  const match = /^Bearer\s+(.+)$/i.exec(authorization)
+  return match ? safeEqual(match[1]!, secret) : false
 }
 
 export async function POST(req: Request) {
@@ -27,8 +39,19 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: "Unauthorized." }, { status: 401 })
     }
 
-    const body = await req.json()
-    const { universityId, type, points, reason, metadata } = body
+    const body = asObject(await readJsonBody(req))
+    const universityId = body.universityId as string | undefined
+    const type = body.type
+    const points = body.points
+    const reason = body.reason as string | undefined
+    const metadata = body.metadata as PointEventDocument["metadata"] | undefined
+
+    if (typeof reason === "string" && reason.length > 500) {
+      return NextResponse.json(
+        { success: false, error: "Reason must be 500 characters or fewer." },
+        { status: 400 }
+      )
+    }
 
     if (!universityId || !type || typeof points !== "number" || !reason) {
       return NextResponse.json(
@@ -130,6 +153,12 @@ export async function POST(req: Request) {
       event: eventData,
     })
   } catch (error) {
+    if (error instanceof RequestBodyError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.status }
+      )
+    }
     console.error("Point event processing error:", error)
     return NextResponse.json(
       { success: false, error: getErrorMessage(error, "Failed to log point event.") },

@@ -57,7 +57,7 @@ function post(body: unknown) {
   return new Request("http://localhost/api/points/event", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
+    body: typeof body === "string" ? body : JSON.stringify(body),
   })
 }
 
@@ -238,6 +238,14 @@ describe("POST /api/points/event", () => {
     expect(response.status).toBe(200)
     expect(db.pointEvents.get).not.toHaveBeenCalled()
     expect(db.batch.commit).toHaveBeenCalledTimes(1)
+  })
+
+  it("returns a 400 response for a malformed JSON body", async () => {
+    const response = await POST(post("{not-json"))
+    const body = await response.json()
+
+    expect(response.status).toBe(400)
+    expect(body).toEqual({ success: false, error: "Request body must be valid JSON." })
   })
 
   it("returns a 500 response when the batch commit fails", async () => {
