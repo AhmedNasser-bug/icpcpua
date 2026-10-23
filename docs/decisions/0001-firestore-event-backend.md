@@ -51,8 +51,9 @@ from the browser with a publishable anon key.
   only be gated by an optional shared secret (`POINTS_EVENT_SECRET`).
 - Bad, because the `leaderboard_cache` collection from the original design was
   never built and the leaderboard queries `trainees` directly.
-- Bad, because the `applications` and `hr_records` collections and the
-  Codeforces sync job (`cf_sync`) remain unimplemented proposals.
+- Bad, because the `applications` and `hr_records` collections remain
+  unimplemented proposals. (The Codeforces sync proposed here was implemented
+  later; see [ADR 0002](./0002-codeforces-sync.md).)
 
 ### Confirmation
 

@@ -32,7 +32,9 @@ also need `pnpm lint:md` and `pnpm check:docs`. Anything that touches
 Routes live in `app/`, feature UI in `components/<feature>/`, static content in
 `data/`, shared logic in `lib/` and `hooks/`. Unit tests mirror the source tree
 under `tests/`; browser specs live in `e2e/`. Start architecture work from
-`docs/architecture/overview.md` and `docs/data-model.md`.
+`docs/architecture/overview.md` and `docs/data-model.md`. Codeforces work is
+concentrated in `lib/codeforces/`; the authoritative ranking service is
+`lib/leaderboard.ts`.
 
 ## Conventions
 
@@ -51,6 +53,19 @@ under `tests/`; browser specs live in `e2e/`. Start architecture work from
 
 - Tests mock Supabase and Firebase Admin; no credentials needed. E2E fixtures
   abort any request to Supabase/Firebase/Google hosts and fail the test.
+- Leaderboard rank is computed from the persisted `pointsTotal` ledger with
+  competition ranking and a university-id tie-break. Codeforces rating and
+  solved counts are synchronized display data; do not make them the score.
+- Trainee authentication uses Firebase Auth session cookies; `TRAINEE_SESSION_SECRET`
+  is obsolete. Deployed production needs the `NEXT_PUBLIC_FIREBASE_*` client
+  variables plus Firebase Admin credentials; the cron route needs `CRON_SECRET`
+  or `CF_SYNC_SECRET`. Admin routes require the verified `admin` custom claim,
+  never an email or request field.
+- Codeforces requests must stay behind `lib/codeforces/client.ts` and its
+  Firestore rate limiter/locks. Do not call the API from page requests or bypass
+  the two-second interval. A failed Firestore reservation must abort the request;
+  never add a production in-memory fallback. Lock writes must be fenced by the
+  owning token in the same transaction.
 - API routes fall back to simulated or seed data when Firebase env vars are
   absent (`lib/firebase-admin.ts`, `lib/supabase.ts`); do not "fix" the
   fallbacks — tests assert on them.

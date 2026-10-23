@@ -25,3 +25,9 @@ Design tokens, typography and visual rules live in [../DESIGN.md](../DESIGN.md).
 
 - [decisions/0001-firestore-event-backend.md](./decisions/0001-firestore-event-backend.md)
   — why cadet data uses Firestore with an immutable point ledger.
+- [decisions/0002-codeforces-sync.md](./decisions/0002-codeforces-sync.md)
+  — Codeforces synchronization, internal-points ranking and the original
+  session design (sessions superseded by ADR 0003).
+- [decisions/0003-firebase-authentication.md](./decisions/0003-firebase-authentication.md)
+  — Firebase Authentication, fenced Firestore locks and fail-closed rate
+  limiting.

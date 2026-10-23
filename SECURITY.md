@@ -21,8 +21,12 @@ live site.
 
 ## Relevant surfaces
 
-- `/api/trainees/register`, `/api/points/event` and `/api/leaderboard`
-  (Firestore access).
+- `/api/trainees/register`, `/api/trainees/session`, `/api/trainees/claim`,
+  `/api/trainees/codeforces*`, `/api/admin/*`, `/api/points/event` and
+  `/api/leaderboard` (Firestore access).
+- Firebase Authentication, session cookies and `admin` custom claims.
+- Firestore Security Rules (`firestore.rules`), which deny direct client access.
+- The Codeforces rate limiter, synchronization locks and cron authentication.
 - The Supabase anon key and Row Level Security for `bounty_scouts` and
   `bounty_referrals`; the schema is in
   [`supabase/migrations/20261012000000_bounty_schema.sql`](supabase/migrations/20261012000000_bounty_schema.sql).

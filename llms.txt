@@ -22,3 +22,4 @@
 
 - [Firestore backend plan](https://raw.githubusercontent.com/AhmedNasser-bug/icpcpua/main/docs/architecture/firebase-backend-plan.md): original design record, partially implemented
 - [ADR 0001](https://raw.githubusercontent.com/AhmedNasser-bug/icpcpua/main/docs/decisions/0001-firestore-event-backend.md): Firestore backend decision and consequences
+- [ADR 0002](https://raw.githubusercontent.com/AhmedNasser-bug/icpcpua/main/docs/decisions/0002-codeforces-sync.md): Codeforces synchronization and internal-points ranking

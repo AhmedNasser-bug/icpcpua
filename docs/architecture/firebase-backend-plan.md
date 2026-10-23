@@ -6,7 +6,9 @@
 > This is the original design for the Firestore backend, not a description of
 > the current system. [ADR 0001](../decisions/0001-firestore-event-backend.md)
 > records the decision, what was implemented and what remains a proposal;
-> [data-model.md](../data-model.md) has the schema that exists today.
+> [ADR 0002](../decisions/0002-codeforces-sync.md) records the later Codeforces
+> integration; [data-model.md](../data-model.md) has the schema that exists
+> today.
 
 **Target Subsystems:**
 

@@ -11,6 +11,7 @@
   // MD060 only enforces table pipe spacing, which the existing docs do not use.
   "config": {
     "MD013": false,
+    "MD024": { "siblings_only": true },
     "MD060": false
   }
 }
