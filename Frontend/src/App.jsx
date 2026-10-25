@@ -1,7 +1,69 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom';
-import { ArrowRight, BookOpen, CalendarDays, Check, ChevronDown, ChevronLeft, Clock3, Code2, KeyRound, LogOut, MapPin, Menu, Moon, QrCode, Search, Sun, Ticket, Trophy, Users, X } from 'lucide-react';
+import { ArrowRight, Bell, BookOpen, CalendarDays, Check, ChevronDown, ChevronLeft, Clock3, Code2, ExternalLink, KeyRound, Link2, LogOut, MapPin, Menu, Moon, Palette, Plus, QrCode, Search, Shield, Sun, Ticket, Trash2, Trophy, UserRound, Users, X } from 'lucide-react';
 import { api, eventDate } from './api.js';
+import { AdminRoadmapsPage, MyRoadmapsPage, RoadmapCheckInPage, RoadmapCyclePage, RoadmapDetailsPage, RoadmapsPage } from './Roadmaps.jsx';
+
+const USERNAME_PATTERN = /^[a-z0-9_]{3,20}$/;
+
+function normalizeUsername(value) {
+  return String(value ?? '').trim().toLowerCase();
+}
+
+function isValidUsername(value) {
+  return USERNAME_PATTERN.test(normalizeUsername(value));
+}
+
+function studentProfileForm(profile = {}, name = '') {
+  return {
+    name,
+    pictureUrl: profile.pictureUrl || '',
+    university: profile.university || '',
+    academicYear: profile.academicYear || '',
+    graduationYear: profile.graduationYear || '',
+    bio: profile.bio || '',
+    programmingLanguages: profile.programmingLanguages || [],
+    technicalInterests: profile.technicalInterests || [],
+    externalProfiles: {
+      githubUrl: profile.externalProfiles?.githubUrl || '',
+      linkedinUrl: profile.externalProfiles?.linkedinUrl || '',
+      codeforcesHandle: profile.externalProfiles?.codeforcesHandle || '',
+      codeforcesUrl: profile.externalProfiles?.codeforcesUrl || '',
+      otherProfiles: profile.externalProfiles?.otherProfiles || [],
+    },
+    cpStats: {
+      platform: profile.cpStats?.platform || '',
+      handle: profile.cpStats?.handle || '',
+      problemsSolved: profile.cpStats?.problemsSolved ?? '',
+      contestsParticipated: profile.cpStats?.contestsParticipated ?? '',
+      currentRating: profile.cpStats?.currentRating ?? '',
+      highestRating: profile.cpStats?.highestRating ?? '',
+    },
+    icpcJourney: profile.icpcJourney || [],
+    teamStatus: profile.teamStatus || '',
+    teamPreferences: {
+      preferredLanguage: profile.teamPreferences?.preferredLanguage || '',
+      experience: profile.teamPreferences?.experience || '',
+      schedule: profile.teamPreferences?.schedule || '',
+      preference: profile.teamPreferences?.preference || '',
+      introduction: profile.teamPreferences?.introduction || '',
+    },
+    trainingGoals: profile.trainingGoals || [],
+    trainingTopics: profile.trainingTopics || [],
+    milestones: profile.milestones || [],
+    trainingProgress: profile.trainingProgress || '',
+  };
+}
+
+function safeExternalUrl(value) {
+  if (typeof value !== 'string' || !value.trim()) return null;
+  try {
+    const url = new URL(value);
+    return ['http:', 'https:'].includes(url.protocol) && !url.username && !url.password ? url.href : null;
+  } catch {
+    return null;
+  }
+}
 
 function useSession() {
   const [token, setToken] = useState(() => localStorage.getItem('pua-token'));
@@ -35,7 +97,83 @@ function useSession() {
   return { token, user, loading, acceptSession, updateUser, signOut };
 }
 
-function Header({ user, onSignOut }) {
+function NotificationBellMenu({ token }) {
+  const [open, setOpen] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+  const navigate = useNavigate();
+
+  const refresh = useCallback(async () => {
+    try {
+      const result = await api('/notifications', { token });
+      setNotifications(result.notifications);
+      setUnreadCount(result.unreadCount);
+      setError('');
+    } catch (reason) {
+      setError(reason.message);
+    }
+  }, [token]);
+
+  useEffect(() => {
+    refresh();
+    const interval = window.setInterval(refresh, 60000);
+    return () => window.clearInterval(interval);
+  }, [refresh]);
+
+  const markRead = async (notification) => {
+    if (notification.readAt) return;
+    setBusy(true);
+    try {
+      await api(`/notifications/${encodeURIComponent(notification._id)}/read`, { method: 'PATCH', token });
+      await refresh();
+    } catch (reason) {
+      setError(reason.message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const openNotification = async (notification) => {
+    await markRead(notification);
+    setOpen(false);
+    navigate(notification.link);
+  };
+
+  const markAllRead = async () => {
+    setBusy(true);
+    try {
+      const result = await api('/notifications/read-all', { method: 'POST', token });
+      setNotifications(result.notifications);
+      setUnreadCount(result.unreadCount);
+      setError('');
+    } catch (reason) {
+      setError(reason.message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return <div className="notification-menu">
+    <button className="notification-bell" type="button" aria-label={`Notifications${unreadCount ? `, ${unreadCount} unread` : ''}`} aria-expanded={open} onClick={() => setOpen((value) => !value)}>
+      <Bell size={19} />
+      {unreadCount > 0 && <span className="notification-count">{unreadCount > 99 ? '99+' : unreadCount}</span>}
+    </button>
+    {open && <div className="notification-dropdown" role="dialog" aria-label="Recent notifications">
+      <div className="notification-dropdown-heading"><strong>Notifications</strong>{unreadCount > 0 && <button type="button" disabled={busy} onClick={markAllRead}>Mark all read</button>}</div>
+      {error && <div className="notification-inline-error" role="alert">{error}</div>}
+      {notifications.length === 0 ? <p className="notification-empty">No notifications yet.</p> : notifications.slice(0, 5).map((notification) => <button className={notification.readAt ? 'notification-item' : 'notification-item unread'} type="button" key={notification._id} onClick={() => openNotification(notification)}>
+        <span className="notification-item-title">{notification.title}</span>
+        <span className="notification-item-message">{notification.message}</span>
+        <time dateTime={notification.createdAt}>{new Date(notification.createdAt).toLocaleString()}</time>
+      </button>)}
+      <Link className="notification-view-all" to="/notifications" onClick={() => setOpen(false)}>View all notifications</Link>
+    </div>}
+  </div>;
+}
+
+function Header({ user, onSignOut, token }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const accountMenuRef = useRef(null);
@@ -65,8 +203,8 @@ function Header({ user, onSignOut }) {
   const isActive = (path) => path === '/'
     ? location.pathname === '/' || location.pathname.startsWith('/events/') || location.pathname.startsWith('/check-in/')
     : location.pathname === path || location.pathname.startsWith(`${path}/`);
-  const profilePath = user?.role === 'user' ? `/users/${user.id}` : null;
-  const accountActive = location.pathname === '/settings' || (profilePath && location.pathname === profilePath);
+  const profilePath = user?.role === 'user' && user.username ? `/users/${user.username}` : null;
+  const accountActive = location.pathname.startsWith('/settings') || (profilePath && location.pathname === profilePath);
 
   const navLink = (path, label) => (
     <Link className={isActive(path) ? 'nav-link active' : 'nav-link'} to={path} aria-current={isActive(path) ? 'page' : undefined}>{label}</Link>
@@ -75,27 +213,7 @@ function Header({ user, onSignOut }) {
   return (
     <header className="site-header">
       <Link className="brand" to="/" aria-label="PUA ICPC Community home" onClick={() => { setMenuOpen(false); setAccountOpen(false); }}>
-        <span className="brand-mark" aria-hidden="true">
-          <svg viewBox="0 0 136 136" focusable="false">
-            <path d="M12 12h114v114H12z" fill="#171714" />
-            <rect x="2" y="2" width="114" height="114" rx="3" fill="#fff4df" stroke="#171714" strokeWidth="2" />
-            <path d="M2 48 68 76l48-28M2 53l66 28 48-28" fill="none" stroke="#171714" strokeWidth="2.5" />
-            <path d="M3 50 68 78l46-28M3 54l65 28 47-28" fill="none" stroke="#00d9dc" strokeWidth="2" />
-            <path d="M3 68h111" fill="none" stroke="#ffda00" strokeWidth="2" />
-            <path d="M37 2 57 36h22L97 2" fill="#ffda00" stroke="#171714" strokeWidth="2" />
-            <path d="m42 2 18 34M92 2 76 36" fill="none" stroke="#00d9dc" strokeWidth="2" />
-            <circle cx="68" cy="34" r="14" fill="#ffda00" stroke="#171714" strokeWidth="2" />
-            <circle cx="63" cy="29" r="4" fill="#fffdf5" />
-            <path d="M52 46h32v7H52z" fill="#8124ce" stroke="#171714" strokeWidth="2" />
-            <path d="m54 53-4 40h36l-4-40z" fill="#8124ce" stroke="#171714" strokeWidth="2" />
-            <path d="M52 61h32M51 70h34M50 79h36" fill="none" stroke="#ff3c81" strokeWidth="2" />
-            <path d="M63 93V80a5 5 0 0 1 10 0v13" fill="#171714" />
-            <path d="M45 94h46v6H45z" fill="#8124ce" stroke="#171714" strokeWidth="2" />
-            <path d="m21 29 7 2-2 7-7-2zM97 61l7 2-2 7-7-2zM33 99l7 2-2 7-7-2z" fill="#8124ce" stroke="#171714" strokeWidth="2" />
-            <text x="18" y="81" fill="#171714" fontFamily="monospace" fontSize="15" fontWeight="700">{'{'}</text>
-          </svg>
-        </span>
-        <span className="brand-copy"><b>PUA ICPC</b><small>TRAINING COMMUNITY</small></span>
+        <img className="brand-logo" src="/pua-icpc-logo.png" alt="" />
       </Link>
       <button className="icon-button menu-toggle" aria-label={menuOpen ? 'Close navigation' : 'Open navigation'} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
         {menuOpen ? <X size={22} /> : <Menu size={22} />}
@@ -103,10 +221,15 @@ function Header({ user, onSignOut }) {
       <nav className={menuOpen ? 'main-nav open' : 'main-nav'} onClick={(event) => { if (event.target.closest('a')) setMenuOpen(false); }}>
         {navLink('/', 'Events')}
         {user && navLink('/my-events', 'My Events')}
+        {navLink('/roadmaps', 'Roadmaps')}
+        {user && navLink('/my-roadmaps', 'My Roadmaps')}
         {navLink('/resources', 'Resources')}
         {navLink('/leaderboard', 'Leaderboard')}
         {user?.role === 'admin' && navLink('/admin', 'Admin')}
+        {user?.role === 'admin' && navLink('/admin/roadmaps', 'Roadmap admin')}
         {user ? (
+          <>
+          <NotificationBellMenu token={token} />
           <div className="account-menu" ref={accountMenuRef}>
             <button className={accountActive ? 'account-trigger active' : 'account-trigger'} type="button" aria-haspopup="menu" aria-expanded={accountOpen} onClick={() => setAccountOpen((open) => !open)}>
               <span className="account-avatar" aria-hidden="true">{user.name.trim().charAt(0).toUpperCase()}</span>
@@ -115,13 +238,14 @@ function Header({ user, onSignOut }) {
             </button>
             {accountOpen && <div className="account-dropdown" role="menu" aria-label="Account menu">
               {profilePath && <Link className={location.pathname === profilePath ? 'active' : ''} to={profilePath} role="menuitem" aria-current={location.pathname === profilePath ? 'page' : undefined} onClick={() => setAccountOpen(false)}>My Profile</Link>}
-              <Link className={location.pathname === '/settings' ? 'active' : ''} to="/settings" role="menuitem" aria-current={location.pathname === '/settings' ? 'page' : undefined} onClick={() => setAccountOpen(false)}>Settings</Link>
+              <Link className={location.pathname.startsWith('/settings') ? 'active' : ''} to="/settings/account" role="menuitem" aria-current={location.pathname.startsWith('/settings') ? 'page' : undefined} onClick={() => setAccountOpen(false)}>Settings</Link>
               <div className="account-menu-divider" role="separator" />
               <button className="account-signout" type="button" role="menuitem" onClick={() => { setAccountOpen(false); setMenuOpen(false); onSignOut(); navigate('/login', { replace: true }); }}>
                 <LogOut size={15} aria-hidden="true" /> Sign Out
               </button>
             </div>}
           </div>
+          </>
         ) : (
           <Link className="button button-dark nav-join" to="/login">Join the community <ArrowRight size={16} /></Link>
         )}
@@ -306,9 +430,17 @@ function EventDetail({ token, user }) {
   );
 }
 
+function StudentIdField({ id, label, value, onChange }) {
+  return (
+    <div className="student-id-entry">
+      <label htmlFor={id}>{label}<input id={id} autoComplete="off" inputMode="numeric" pattern="[0-9]{4,20}" title="Enter 4–20 digits." required maxLength="20" value={value} onChange={onChange} /></label>
+    </div>
+  );
+}
+
 function AuthPage({ session }) {
   const [mode, setMode] = useState('login');
-  const [form, setForm] = useState({ name: '', email: '', studentId: '', password: '' });
+  const [form, setForm] = useState({ name: '', email: '', username: '', password: '' });
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const navigate = useNavigate();
@@ -319,14 +451,37 @@ function AuthPage({ session }) {
     event.preventDefault();
     setBusy(true);
     setError('');
+
+    if (mode === 'register') {
+      if (form.password !== form.confirmPassword) {
+        setError('Passwords do not match.');
+        setBusy(false);
+        return;
+      }
+      const username = normalizeUsername(form.username);
+      if (!isValidUsername(username)) {
+        setError('Username must be 3–20 characters using letters, numbers, and underscores.');
+        setBusy(false);
+        return;
+      }
+      setForm((current) => ({ ...current, username }));
+    }
+
     try {
-      const result = await api(`/auth/${mode}`, { method: 'POST', body: JSON.stringify(form) });
+      const payload = mode === 'register'
+        ? { name: form.name, email: form.email, username: normalizeUsername(form.username), password: form.password }
+        : { email: form.email, password: form.password };
+      const result = await api(`/auth/${mode}`, { method: 'POST', body: JSON.stringify(payload) });
       session.acceptSession(result);
+      if (!result.user?.username) {
+        navigate('/onboarding/username', { replace: true, state: { from } });
+        return;
+      }
       navigate(from, { replace: true });
     } catch (reason) { setError(reason.message); }
     finally { setBusy(false); }
   };
-  if (session.user) return <Navigate to="/my-events" replace />;
+  if (session.user) return <Navigate to={session.user.username ? '/my-events' : '/onboarding/username'} replace />;
 
   return (
     <main className="auth-layout">
@@ -337,8 +492,9 @@ function AuthPage({ session }) {
         <p>{mode === 'login' ? 'Pick up where you left off.' : 'Get into events, training, and everything ICPC.'}</p>
         {mode === 'register' && <label>Your name<input autoComplete="name" required maxLength="80" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></label>}
         <label>{mode === 'register' ? 'University email address' : 'Email address'}<input autoComplete="email" type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></label>
-        {mode === 'register' && <label>Student ID<input autoComplete="off" inputMode="numeric" pattern="[0-9]{4,20}" title="Enter 4–20 digits. The first 4 digits determine your academic year." required maxLength="20" value={form.studentId} onChange={(e) => setForm({ ...form, studentId: e.target.value })} /></label>}
+        {mode === 'register' && <label>Username<input autoComplete="username" required minLength="3" maxLength="20" pattern="[A-Za-z0-9_]{3,20}" value={form.username} onChange={(e) => setForm({ ...form, username: e.target.value })} /></label>}
         <label>Password<input autoComplete={mode === 'login' ? 'current-password' : 'new-password'} type="password" minLength="8" required value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} /></label>
+        {mode === 'register' && <label>Confirm password<input autoComplete="new-password" type="password" minLength="8" required value={form.confirmPassword || ''} onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })} /></label>}
         {error && <div className="notice error-notice">{error}</div>}
         <button className="button button-dark auth-submit" disabled={busy}>{busy ? 'One moment...' : mode === 'login' ? 'Log in' : 'Create account'} <ArrowRight size={17} /></button>
         <p className="auth-switch">{mode === 'login' ? 'New around here?' : 'Already have an account?'} <button type="button" onClick={() => { setMode(mode === 'login' ? 'register' : 'login'); setError(''); }}> {mode === 'login' ? 'Create an account' : 'Log in'}</button></p>
@@ -347,15 +503,101 @@ function AuthPage({ session }) {
   );
 }
 
+function UsernameSetupPage({ session }) {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [username, setUsername] = useState(session.user?.username || '');
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+  const from = location.state?.from || '/my-events';
+
+  if (!session.user) return <Navigate to="/login" replace />;
+  if (session.user.username) return <Navigate to={from} replace />;
+
+  const submit = async (event) => {
+    event.preventDefault();
+    const normalized = normalizeUsername(username);
+    if (!isValidUsername(normalized)) {
+      setError('Username must be 3–20 characters using letters, numbers, and underscores.');
+      return;
+    }
+
+    setBusy(true);
+    setError('');
+    try {
+      const result = await api('/auth/username', {
+        method: 'PUT',
+        token: session.token,
+        body: JSON.stringify({ username: normalized }),
+      });
+      session.updateUser(result.user);
+      navigate(from, { replace: true });
+    } catch (reason) {
+      setError(reason.message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <main className="page-wrap">
+      <div className="page-heading"><span className="eyebrow">WELCOME</span><h1>Choose your <span>username.</span></h1><p>Pick a username to continue using the ICPC Community. It must be 3–20 characters using only letters, numbers, and underscores.</p></div>
+      <section className="settings-card" aria-labelledby="username-onboarding-title">
+        <h2 id="username-onboarding-title">Username required</h2>
+        <p>Your account is ready, but your username is required before you can continue. This helps keep member profiles consistent and prevents duplicates.</p>
+        <form onSubmit={submit} className="student-id-form">
+          <label htmlFor="onboarding-username">Username<input id="onboarding-username" autoComplete="username" required minLength="3" maxLength="20" pattern="[A-Za-z0-9_]{3,20}" value={username} onChange={(event) => setUsername(event.target.value)} /></label>
+          {error && <div className="notice error-notice" role="alert">{error}</div>}
+          <button className="button button-dark" type="submit" disabled={busy}>{busy ? 'Saving...' : 'Save username'} <ArrowRight size={16} /></button>
+        </form>
+      </section>
+    </main>
+  );
+}
+
+function RequireUsername({ session, children }) {
+  const location = useLocation();
+
+  if (session.loading) {
+    return <div className="empty-state"><span className="loader" /> Loading your account...</div>;
+  }
+  if (!session.user) {
+    return <Navigate to="/login" replace state={{ from: location.pathname + location.search }} />;
+  }
+  if (!session.user.username && location.pathname !== '/onboarding/username') {
+    return <Navigate to="/onboarding/username" replace state={{ from: location.pathname + location.search }} />;
+  }
+  return children;
+}
+
 function SettingsPage({ session, theme, onThemeChange }) {
+  const { section } = useParams();
   const navigate = useNavigate();
   const [form, setForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
   const [studentId, setStudentId] = useState('');
+  const [username, setUsername] = useState(session.user.username || '');
   const [profileError, setProfileError] = useState('');
   const [profileBusy, setProfileBusy] = useState(false);
+  const [usernameError, setUsernameError] = useState('');
+  const [usernameBusy, setUsernameBusy] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [busy, setBusy] = useState(false);
+  const [studentProfile, setStudentProfile] = useState(() => studentProfileForm(session.user.profile, session.user.name));
+  const [profileSaveError, setProfileSaveError] = useState('');
+  const [profileFieldErrors, setProfileFieldErrors] = useState({});
+  const [profileSaveSuccess, setProfileSaveSuccess] = useState('');
+  const [profileSaveBusy, setProfileSaveBusy] = useState(false);
+  const [privacyError, setPrivacyError] = useState('');
+  const [privacySuccess, setPrivacySuccess] = useState('');
+  const [privacyBusy, setPrivacyBusy] = useState(false);
+  const [notificationPreferenceError, setNotificationPreferenceError] = useState('');
+  const [notificationPreferenceSuccess, setNotificationPreferenceSuccess] = useState('');
+  const [notificationPreferenceBusy, setNotificationPreferenceBusy] = useState(false);
+
+  useEffect(() => {
+    setUsername(session.user.username || '');
+  }, [session.user.username]);
 
   const submit = async (event) => {
     event.preventDefault();
@@ -401,39 +643,349 @@ function SettingsPage({ session, theme, onThemeChange }) {
     }
   };
 
+  const saveUsername = async (event) => {
+    event.preventDefault();
+    const normalized = normalizeUsername(username);
+    if (!isValidUsername(normalized)) {
+      setUsernameError('Username must be 3–20 characters using letters, numbers, and underscores.');
+      return;
+    }
+
+    setUsernameError('');
+    setUsernameBusy(true);
+    try {
+      const result = await api('/auth/username', {
+        method: 'PUT',
+        token: session.token,
+        body: JSON.stringify({ username: normalized }),
+      });
+      session.updateUser(result.user);
+    } catch (reason) {
+      setUsernameError(reason.message);
+    } finally {
+      setUsernameBusy(false);
+    }
+  };
+
+  const updateStudentProfileField = (field, value) => {
+    setStudentProfile((current) => ({ ...current, [field]: value }));
+    setProfileFieldErrors((current) => ({ ...current, [field]: '' }));
+    setProfileSaveSuccess('');
+  };
+
+  const updateNestedProfileField = (section, field, value) => {
+    setStudentProfile((current) => ({ ...current, [section]: { ...current[section], [field]: value } }));
+    setProfileFieldErrors((current) => ({ ...current, [`${section}.${field}`]: '' }));
+    setProfileSaveSuccess('');
+  };
+
+  const cancelStudentProfile = () => {
+    setStudentProfile(studentProfileForm(session.user.profile, session.user.name));
+    setProfileFieldErrors({});
+    setProfileSaveError('');
+    setProfileSaveSuccess('');
+  };
+
+  const saveStudentProfile = async (event) => {
+    event.preventDefault();
+    const errors = {};
+    const urls = [['pictureUrl', studentProfile.pictureUrl]];
+    urls.forEach(([field, value]) => {
+      if (value && !safeExternalUrl(value)) errors[field] = 'Enter a valid HTTP or HTTPS URL.';
+    });
+    setProfileFieldErrors(errors);
+    setProfileSaveError('');
+    setProfileSaveSuccess('');
+    if (Object.keys(errors).length) return;
+
+    setProfileSaveBusy(true);
+    try {
+      const result = await api('/auth/profile', {
+        method: 'PUT',
+        token: session.token,
+        body: JSON.stringify({
+          name: studentProfile.name,
+          pictureUrl: studentProfile.pictureUrl,
+          university: studentProfile.university,
+          academicYear: studentProfile.academicYear,
+          graduationYear: studentProfile.graduationYear,
+          bio: studentProfile.bio,
+          programmingLanguages: studentProfile.programmingLanguages,
+          technicalInterests: studentProfile.technicalInterests,
+          cpStats: studentProfile.cpStats,
+          icpcJourney: studentProfile.icpcJourney,
+          teamStatus: studentProfile.teamStatus,
+          teamPreferences: studentProfile.teamPreferences,
+          trainingGoals: studentProfile.trainingGoals,
+          trainingTopics: studentProfile.trainingTopics,
+          milestones: studentProfile.milestones,
+          trainingProgress: studentProfile.trainingProgress,
+        }),
+      });
+      session.updateUser(result.user);
+      setStudentProfile(studentProfileForm(result.user.profile, result.user.name));
+      setProfileSaveSuccess('Your profile has been saved.');
+    } catch (reason) {
+      if (reason.field) setProfileFieldErrors((current) => ({ ...current, [reason.field]: reason.message }));
+      setProfileSaveError(reason.message);
+    } finally {
+      setProfileSaveBusy(false);
+    }
+  };
+
+  const saveConnections = async (event) => {
+    event.preventDefault();
+    const errors = {};
+    [
+      ['externalProfiles.githubUrl', studentProfile.externalProfiles.githubUrl],
+      ['externalProfiles.linkedinUrl', studentProfile.externalProfiles.linkedinUrl],
+      ['externalProfiles.codeforcesUrl', studentProfile.externalProfiles.codeforcesUrl],
+    ].forEach(([field, value]) => {
+      if (value && !safeExternalUrl(value)) errors[field] = 'Enter a valid HTTP or HTTPS URL.';
+    });
+    studentProfile.externalProfiles.otherProfiles.forEach((entry, index) => {
+      if (entry.url && !safeExternalUrl(entry.url)) errors[`externalProfiles.otherProfiles.${index}.url`] = 'Enter a valid HTTP or HTTPS URL.';
+    });
+    setProfileFieldErrors(errors);
+    setProfileSaveError('');
+    setProfileSaveSuccess('');
+    if (Object.keys(errors).length) return;
+
+    setProfileSaveBusy(true);
+    try {
+      const result = await api('/auth/profile', {
+        method: 'PUT',
+        token: session.token,
+        body: JSON.stringify({ externalProfiles: studentProfile.externalProfiles }),
+      });
+      session.updateUser(result.user);
+      setStudentProfile((current) => ({
+        ...current,
+        externalProfiles: studentProfileForm(result.user.profile, result.user.name).externalProfiles,
+      }));
+      setProfileSaveSuccess('Your manually entered profiles have been saved.');
+    } catch (reason) {
+      if (reason.field) setProfileFieldErrors((current) => ({ ...current, [reason.field]: reason.message }));
+      setProfileSaveError(reason.message);
+    } finally {
+      setProfileSaveBusy(false);
+    }
+  };
+
+  const privacySettings = {
+    profileVisible: true,
+    externalProfilesVisible: true,
+    cpStatsVisible: true,
+    trainingVisible: true,
+    teamStatusVisible: true,
+    journeyVisible: true,
+    ...(session.user.profile?.privacy || {}),
+  };
+  const updatePrivacy = async (field, value) => {
+    setPrivacyBusy(true);
+    setPrivacyError('');
+    setPrivacySuccess('');
+    try {
+      const result = await api('/auth/privacy', {
+        method: 'PUT',
+        token: session.token,
+        body: JSON.stringify({ [field]: value }),
+      });
+      session.updateUser(result.user);
+      setPrivacySuccess('Privacy preference saved.');
+    } catch (reason) {
+      setPrivacyError(reason.message);
+    } finally {
+      setPrivacyBusy(false);
+    }
+  };
+
+  const notificationPreferences = {
+    contestAnnouncements: true,
+    icpcEvents: true,
+    ...(session.user.notificationPreferences || {}),
+  };
+  const updateNotificationPreference = async (field, value) => {
+    setNotificationPreferenceBusy(true);
+    setNotificationPreferenceError('');
+    setNotificationPreferenceSuccess('');
+    try {
+      const result = await api('/auth/notification-preferences', {
+        method: 'PUT',
+        token: session.token,
+        body: JSON.stringify({ [field]: value }),
+      });
+      session.updateUser(result.user);
+      setNotificationPreferenceSuccess('Notification preference saved.');
+    } catch (reason) {
+      setNotificationPreferenceError(reason.message);
+    } finally {
+      setNotificationPreferenceBusy(false);
+    }
+  };
+
   const logout = () => {
     session.signOut();
     navigate('/login', { replace: true });
   };
 
+  if (!['account', 'profile', 'privacy', 'appearance', 'connections'].includes(section)) {
+    return <Navigate to="/settings/account" replace />;
+  }
+
   return (
     <main className="page-wrap settings-page">
-      <div className="page-heading"><span className="eyebrow">YOUR ACCOUNT</span><h1>Account <span>settings.</span></h1><p>Manage your profile, appearance, and account security.</p></div>
-      <section className="settings-card settings-profile-card" aria-labelledby="settings-profile-title">
+      <div className="page-heading"><span className="eyebrow">YOUR COMMUNITY</span><h1>Settings<span>.</span></h1><p>Manage your account, profile, privacy, and preferences.</p></div>
+      <div className="settings-layout">
+        <nav className="settings-nav" aria-label="Settings sections">
+          {[
+            ['account', 'Account', UserRound],
+            ['profile', 'Profile', UserRound],
+            ['privacy', 'Privacy', Shield],
+            ['notifications', 'Notifications', Bell],
+            ['appearance', 'Appearance', Palette],
+            ['connections', 'Connections', Link2],
+          ].map(([path, label, Icon]) => <Link key={path} className={section === path ? 'settings-nav-link active' : 'settings-nav-link'} to={`/settings/${path}`} aria-current={section === path ? 'page' : undefined}><Icon size={17} />{label}</Link>)}
+        </nav>
+        <div className="settings-content">
+      {section === 'account' && <section className="settings-card settings-profile-card" aria-labelledby="settings-profile-title">
         <div className="settings-card-heading">
           <div className="profile-avatar settings-avatar" aria-hidden="true">{session.user.name.trim().charAt(0).toUpperCase()}</div>
-          <div><span className="eyebrow">PROFILE INFORMATION</span><h2 id="settings-profile-title">{session.user.name}</h2></div>
+          <div><span className="eyebrow">ACCOUNT</span><h2 id="settings-profile-title">{session.user.name}</h2></div>
         </div>
         <dl className="settings-profile-details">
-          <div><dt>University email</dt><dd>{session.user.email}</dd></div>
+          <div><dt>Username</dt><dd>{session.user.username || 'Not set'}</dd></div>
+          <div><dt>Email address</dt><dd>{session.user.email}</dd></div>
           <div><dt>Student ID</dt><dd>{session.user.studentId || 'Not provided yet'}</dd></div>
-          <div><dt>Academic year</dt><dd>{session.user.studentId ? session.user.studentId.slice(0, 4) : 'Not available'}</dd></div>
+          {session.user.createdAt && <div><dt>Account created</dt><dd>{new Date(session.user.createdAt).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}</dd></div>}
         </dl>
+        <form className="student-id-form" onSubmit={saveUsername}>
+          <label htmlFor="settings-username">Username<input id="settings-username" autoComplete="username" required minLength="3" maxLength="20" pattern="[A-Za-z0-9_]{3,20}" value={username} onChange={(event) => setUsername(event.target.value)} /></label>
+          {usernameError && <div className="notice error-notice" role="alert">{usernameError}</div>}
+          <button className="button button-dark" type="submit" disabled={usernameBusy}>{usernameBusy ? 'Saving...' : 'Save username'} <ArrowRight size={16} /></button>
+        </form>
         {!session.user.studentId && <form className="student-id-form" onSubmit={saveStudentId}>
-          <label htmlFor="settings-student-id">Add your student ID<input id="settings-student-id" autoComplete="off" inputMode="numeric" pattern="[0-9]{4,20}" title="Enter 4–20 digits. The first 4 digits determine your academic year." required maxLength="20" value={studentId} onChange={(event) => setStudentId(event.target.value)} /></label>
-          <p>Your academic year is read from the first four digits. Student ID can only be added once.</p>
+          <StudentIdField id="settings-student-id" label="Add your student ID" value={studentId} onChange={(event) => setStudentId(event.target.value)} />
+          <p>Student ID is optional and can only be added once.</p>
           {profileError && <div className="notice error-notice" role="alert">{profileError}</div>}
           <button className="button button-dark" type="submit" disabled={profileBusy}>{profileBusy ? 'Saving...' : 'Save student ID'} <ArrowRight size={16} /></button>
         </form>}
       </section>
-      <section className="settings-card settings-theme-card" aria-labelledby="settings-theme-title">
+      }
+      {section === 'profile' && <form className="settings-card profile-editor" onSubmit={saveStudentProfile}>
+        <span className="eyebrow">YOUR STUDENT PROFILE</span>
+        <h2>Edit your profile</h2>
+        <p>Your existing account name remains required; every other profile field is optional and can be updated later.</p>
+        <fieldset>
+          <legend>Basic information</legend>
+          <label>Full name<input required maxLength="80" value={studentProfile.name} onChange={(event) => updateStudentProfileField('name', event.target.value)} aria-invalid={Boolean(profileFieldErrors.name)} /></label>
+          {profileFieldErrors.name && <span className="field-error">{profileFieldErrors.name}</span>}
+          <label>Profile picture URL<input type="text" inputMode="url" maxLength="500" value={studentProfile.pictureUrl} onChange={(event) => updateStudentProfileField('pictureUrl', event.target.value)} aria-invalid={Boolean(profileFieldErrors.pictureUrl)} /></label>
+          {profileFieldErrors.pictureUrl && <span className="field-error">{profileFieldErrors.pictureUrl}</span>}
+          <label>University<input maxLength="120" value={studentProfile.university} onChange={(event) => updateStudentProfileField('university', event.target.value)} /></label>
+          <div className="profile-form-grid">
+            <label>Academic year<input maxLength="40" placeholder="e.g. 3rd year" value={studentProfile.academicYear} onChange={(event) => updateStudentProfileField('academicYear', event.target.value)} /></label>
+            <label>Graduation year<input type="number" min="1900" max="2200" value={studentProfile.graduationYear} onChange={(event) => updateStudentProfileField('graduationYear', event.target.value)} /></label>
+          </div>
+          <label>Short bio<textarea maxLength="500" rows="3" value={studentProfile.bio} onChange={(event) => updateStudentProfileField('bio', event.target.value)} /></label>
+          <label>Programming languages <span className="profile-field-hint">One per line</span><textarea rows="3" value={studentProfile.programmingLanguages.join('\n')} onChange={(event) => updateStudentProfileField('programmingLanguages', event.target.value.split('\n').map((item) => item.trim()).filter(Boolean))} aria-invalid={Boolean(profileFieldErrors.programmingLanguages)} /></label>
+          {profileFieldErrors.programmingLanguages && <span className="field-error">{profileFieldErrors.programmingLanguages}</span>}
+          <label>Technical interests <span className="profile-field-hint">One per line</span><textarea rows="3" value={studentProfile.technicalInterests.join('\n')} onChange={(event) => updateStudentProfileField('technicalInterests', event.target.value.split('\n').map((item) => item.trim()).filter(Boolean))} aria-invalid={Boolean(profileFieldErrors.technicalInterests)} /></label>
+          {profileFieldErrors.technicalInterests && <span className="field-error">{profileFieldErrors.technicalInterests}</span>}
+        </fieldset>
+        <fieldset>
+          <legend>Competitive programming</legend>
+          <p className="profile-field-hint">These values are self-reported and will be shown as unverified. No platform integration is connected.</p>
+          <div className="profile-form-grid">
+            <label>Platform<input maxLength="40" value={studentProfile.cpStats.platform} onChange={(event) => updateNestedProfileField('cpStats', 'platform', event.target.value)} /></label>
+            <label>Handle<input maxLength="80" value={studentProfile.cpStats.handle} onChange={(event) => updateNestedProfileField('cpStats', 'handle', event.target.value)} /></label>
+            {[
+              ['problemsSolved', 'Problems solved'],
+              ['contestsParticipated', 'Contests participated'],
+              ['currentRating', 'Current rating'],
+              ['highestRating', 'Highest rating'],
+              ].map(([field, label]) => <label key={field}>{label}<input type="number" min="0" step="1" value={studentProfile.cpStats[field]} onChange={(event) => updateNestedProfileField('cpStats', field, event.target.value)} aria-invalid={Boolean(profileFieldErrors[`cpStats.${field}`])} />{profileFieldErrors[`cpStats.${field}`] && <span className="field-error">{profileFieldErrors[`cpStats.${field}`]}</span>}</label>)}
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>ICPC journey <span className="profile-field-hint">Entries are user-provided and unverified</span></legend>
+          {studentProfile.icpcJourney.map((entry, index) => <div className="profile-journey-editor" key={`journey-${index}`}>
+            <div className="profile-form-grid">
+              {[
+                ['contestName', 'Contest name'],
+                ['season', 'Season'],
+                ['stage', 'Stage'],
+                ['result', 'Result'],
+                ['teamName', 'Team name'],
+                ['achievement', 'Achievement or award'],
+              ].map(([field, label]) => <label key={field}>{label}<input maxLength={field === 'contestName' ? 120 : 160} value={entry[field] || ''} onChange={(event) => setStudentProfile((current) => ({ ...current, icpcJourney: current.icpcJourney.map((item, itemIndex) => itemIndex === index ? { ...item, [field]: event.target.value } : item) }))} /></label>)}
+            </div>
+            <label>Teammates <span className="profile-field-hint">One per line</span><textarea rows="2" value={(entry.teammates || []).join('\n')} onChange={(event) => setStudentProfile((current) => ({ ...current, icpcJourney: current.icpcJourney.map((item, itemIndex) => itemIndex === index ? { ...item, teammates: event.target.value.split('\n').map((name) => name.trim()).filter(Boolean) } : item) }))} /></label>
+            <button className="profile-remove-button" type="button" onClick={() => setStudentProfile((current) => ({ ...current, icpcJourney: current.icpcJourney.filter((_, itemIndex) => itemIndex !== index) }))}><Trash2 size={15} /> Remove entry</button>
+          </div>)}
+          <button className="button button-outline profile-add-button" type="button" onClick={() => setStudentProfile((current) => ({ ...current, icpcJourney: [...current.icpcJourney, { contestName: '', season: '', stage: '', result: '', teamName: '', teammates: [], achievement: '' }] }))}><Plus size={16} /> Add ICPC entry</button>
+        </fieldset>
+        <fieldset>
+          <legend>Looking for a team</legend>
+          <label>Team status<select value={studentProfile.teamStatus} onChange={(event) => updateStudentProfileField('teamStatus', event.target.value)}><option value="">Not specified</option><option value="looking">Looking for a team</option><option value="in_team">Already in a team</option><option value="not_looking">Not currently looking</option></select></label>
+          {studentProfile.teamStatus === 'looking' && <div className="profile-form-grid">
+            <label>Preferred programming language<input maxLength="40" value={studentProfile.teamPreferences.preferredLanguage} onChange={(event) => updateNestedProfileField('teamPreferences', 'preferredLanguage', event.target.value)} /></label>
+            <label>Experience or approximate level<input maxLength="200" value={studentProfile.teamPreferences.experience} onChange={(event) => updateNestedProfileField('teamPreferences', 'experience', event.target.value)} /></label>
+            <label>Preferred training schedule<input maxLength="120" value={studentProfile.teamPreferences.schedule} onChange={(event) => updateNestedProfileField('teamPreferences', 'schedule', event.target.value)} /></label>
+            <label>Training preference<select value={studentProfile.teamPreferences.preference} onChange={(event) => updateNestedProfileField('teamPreferences', 'preference', event.target.value)}><option value="">Not specified</option><option value="online">Online</option><option value="offline">Offline</option><option value="either">Either</option></select></label>
+            <label className="profile-form-wide">Introduction for potential teammates<textarea maxLength="300" rows="3" value={studentProfile.teamPreferences.introduction} onChange={(event) => updateNestedProfileField('teamPreferences', 'introduction', event.target.value)} /></label>
+          </div>}
+        </fieldset>
+        <fieldset>
+          <legend>Training goals</legend>
+          {[
+            ['trainingGoals', 'Current learning goals'],
+            ['trainingTopics', 'Topics you are studying'],
+            ['milestones', 'Personal milestones'],
+          ].map(([field, label]) => <label key={field}>{label} <span className="profile-field-hint">One per line</span><textarea rows="3" value={studentProfile[field].join('\n')} onChange={(event) => updateStudentProfileField(field, event.target.value.split('\n').map((item) => item.trim()).filter(Boolean))} aria-invalid={Boolean(profileFieldErrors[field])} />{profileFieldErrors[field] && <span className="field-error">{profileFieldErrors[field]}</span>}</label>)}
+          <label>Training progress<input maxLength="300" value={studentProfile.trainingProgress} onChange={(event) => updateStudentProfileField('trainingProgress', event.target.value)} aria-invalid={Boolean(profileFieldErrors.trainingProgress)} />{profileFieldErrors.trainingProgress && <span className="field-error">{profileFieldErrors.trainingProgress}</span>}</label>
+        </fieldset>
+        {profileSaveError && <div className="notice error-notice" role="alert">{profileSaveError}</div>}
+        {profileSaveSuccess && <div className="notice success-notice" role="status">{profileSaveSuccess}</div>}
+        <div className="profile-form-actions"><button className="button button-outline" type="button" onClick={cancelStudentProfile} disabled={profileSaveBusy}>Cancel</button><button className="button button-dark" type="submit" disabled={profileSaveBusy}>{profileSaveBusy ? 'Saving profile...' : 'Save changes'} <ArrowRight size={16} /></button></div>
+      </form>}
+      {section === 'connections' && <form className="settings-card profile-editor" onSubmit={saveConnections}>
+        <span className="eyebrow">MANUALLY ENTERED PROFILES</span>
+        <h2>Public profile links</h2>
+        <p>These are public profile links and handles only. They are not authenticated account connections, and every field is optional.</p>
+        <fieldset>
+          <legend>Competitive and social profiles</legend>
+          {[
+            ['githubUrl', 'GitHub profile URL'],
+            ['linkedinUrl', 'LinkedIn profile URL'],
+            ['codeforcesUrl', 'Codeforces profile URL'],
+          ].map(([field, label]) => {
+            const key = `externalProfiles.${field}`;
+            return <div key={field}>
+              <label>{label}<input type="text" inputMode="url" maxLength="500" value={studentProfile.externalProfiles[field]} onChange={(event) => updateNestedProfileField('externalProfiles', field, event.target.value)} aria-invalid={Boolean(profileFieldErrors[key])} /></label>
+              {profileFieldErrors[key] && <span className="field-error">{profileFieldErrors[key]}</span>}
+            </div>;
+          })}
+          <label>Codeforces handle<input maxLength="40" value={studentProfile.externalProfiles.codeforcesHandle} onChange={(event) => updateNestedProfileField('externalProfiles', 'codeforcesHandle', event.target.value)} /></label>
+          {studentProfile.externalProfiles.otherProfiles.map((entry, index) => <div className="profile-form-grid profile-other-link" key={`other-profile-${index}`}>
+            <label>Platform<input maxLength="40" value={entry.platform} onChange={(event) => setStudentProfile((current) => ({ ...current, externalProfiles: { ...current.externalProfiles, otherProfiles: current.externalProfiles.otherProfiles.map((item, itemIndex) => itemIndex === index ? { ...item, platform: event.target.value } : item) } }))} /></label>
+            <label>Profile URL<input type="text" inputMode="url" maxLength="500" value={entry.url} onChange={(event) => setStudentProfile((current) => ({ ...current, externalProfiles: { ...current.externalProfiles, otherProfiles: current.externalProfiles.otherProfiles.map((item, itemIndex) => itemIndex === index ? { ...item, url: event.target.value } : item) } }))} aria-invalid={Boolean(profileFieldErrors[`externalProfiles.otherProfiles.${index}.url`])} /></label>
+          </div>)}
+          {studentProfile.externalProfiles.otherProfiles.map((entry, index) => profileFieldErrors[`externalProfiles.otherProfiles.${index}.url`] && <span className="field-error" key={`other-profile-error-${index}`}>{profileFieldErrors[`externalProfiles.otherProfiles.${index}.url`]}</span>)}
+          <button className="button button-outline profile-add-button" type="button" onClick={() => setStudentProfile((current) => ({ ...current, externalProfiles: { ...current.externalProfiles, otherProfiles: [...current.externalProfiles.otherProfiles, { platform: '', url: '' }] } }))}><Plus size={16} /> Add another profile</button>
+        </fieldset>
+        {profileSaveError && <div className="notice error-notice" role="alert">{profileSaveError}</div>}
+        {profileSaveSuccess && <div className="notice success-notice" role="status">{profileSaveSuccess}</div>}
+        <div className="profile-form-actions"><button className="button button-outline" type="button" onClick={cancelStudentProfile} disabled={profileSaveBusy}>Cancel</button><button className="button button-dark" type="submit" disabled={profileSaveBusy}>{profileSaveBusy ? 'Saving...' : 'Save changes'} <ArrowRight size={16} /></button></div>
+      </form>}
+      {section === 'appearance' && <section className="settings-card settings-theme-card" aria-labelledby="settings-theme-title">
         <div><span className="eyebrow">APPEARANCE</span><h2 id="settings-theme-title">Theme</h2><p>Choose how the community looks on this device.</p></div>
         <div className="theme-options" role="group" aria-label="Color theme">
           <button type="button" className={theme === 'light' ? 'theme-option selected' : 'theme-option'} aria-pressed={theme === 'light'} onClick={() => onThemeChange('light')}><Sun size={18} /> Light Mode</button>
           <button type="button" className={theme === 'dark' ? 'theme-option selected' : 'theme-option'} aria-pressed={theme === 'dark'} onClick={() => onThemeChange('dark')}><Moon size={18} /> Dark Mode</button>
         </div>
-      </section>
-      <form className="settings-card" onSubmit={submit}>
+      </section>}
+      {section === 'account' && <form className="settings-card" onSubmit={submit}>
         <span className="settings-icon"><KeyRound size={21} /></span>
         <span className="eyebrow">ACCOUNT SECURITY</span>
         <h2>Change password</h2>
@@ -447,7 +999,45 @@ function SettingsPage({ session, theme, onThemeChange }) {
         <div className="settings-signout-divider">
           <button className="button button-outline settings-logout" type="button" onClick={logout}><LogOut size={16} /> Logout</button>
         </div>
-      </form>
+      </form>}
+      {section === 'privacy' && <section className="settings-card settings-privacy-card" aria-labelledby="settings-privacy-title">
+        <span className="eyebrow">PUBLIC PROFILE</span>
+        <h2 id="settings-privacy-title">Privacy</h2>
+        <p>Choose which parts of your profile can be seen by people in the community. Your email and student ID are never shown publicly.</p>
+        <div className="privacy-options">
+          {[
+            ['profileVisible', 'Public profile', 'Show your public profile page and list your name on the community leaderboard.'],
+            ['externalProfilesVisible', 'External profile links', 'Show your manually entered GitHub, LinkedIn, Codeforces, and other profile links.'],
+            ['cpStatsVisible', 'Competitive programming stats', 'Show self-reported platform ratings and counts. Verified community leaderboard points remain visible.'],
+            ['trainingVisible', 'Training interests and goals', 'Show the topics, milestones, and training goals on your profile.'],
+            ['teamStatusVisible', 'Team status and preferences', 'Show whether you are looking for a team and any preferences you shared.'],
+            ['journeyVisible', 'ICPC journey and attendance history', 'Show self-reported ICPC journey entries and verified community event attendance.'],
+          ].map(([key, label, description]) => <label className="privacy-option" key={key}>
+            <span><strong>{label}</strong><small>{description}</small></span>
+            <input type="checkbox" checked={Boolean(privacySettings[key])} disabled={privacyBusy} onChange={(event) => updatePrivacy(key, event.target.checked)} aria-label={label} />
+          </label>)}
+        </div>
+        {privacyError && <div className="notice error-notice" role="alert">{privacyError}</div>}
+        {privacySuccess && <div className="notice success-notice" role="status">{privacySuccess}</div>}
+      </section>}
+        {section === 'notifications' && <section className="settings-card settings-privacy-card" aria-labelledby="settings-notification-title">
+          <span className="eyebrow">COMMUNITY UPDATES</span>
+          <h2 id="settings-notification-title">Notifications</h2>
+          <p>Choose which supported updates appear in your notification inbox. Essential account-security messages are not controlled here.</p>
+          <div className="privacy-options">
+            {[
+              ['contestAnnouncements', 'Contest announcements', 'Newly published contest and competition events.'],
+              ['icpcEvents', 'ICPC events', 'Newly published ICPC community events and important event updates.'],
+            ].map(([key, label, description]) => <label className="privacy-option" key={key}>
+              <span><strong>{label}</strong><small>{description}</small></span>
+              <input type="checkbox" checked={Boolean(notificationPreferences[key])} disabled={notificationPreferenceBusy} onChange={(event) => updateNotificationPreference(key, event.target.checked)} aria-label={label} />
+            </label>)}
+          </div>
+          {notificationPreferenceError && <div className="notice error-notice" role="alert">{notificationPreferenceError}</div>}
+          {notificationPreferenceSuccess && <div className="notice success-notice" role="status">{notificationPreferenceSuccess}</div>}
+        </section>}
+        </div>
+      </div>
     </main>
   );
 }
@@ -611,9 +1201,88 @@ function LeaderboardPage() {
     {error && <div className="notice error-notice">{error}</div>}
     {loading ? <div className="empty-state"><span className="loader" /> Loading the leaderboard...</div> : leaderboard.length
       ? <section className="leaderboard-card"><div className="leaderboard-head"><span>RANK</span><span>MEMBER</span><span>EVENTS</span><span>POINTS</span></div>
-        {leaderboard.map((member) => <div className="leaderboard-row" key={member.userId}><span className="leaderboard-rank">{String(member.rank).padStart(2, '0')}</span><Link className="leaderboard-member-link" to={`/users/${member.userId}`}>{member.name}</Link><span>{member.eventsAttended}</span><strong><Trophy size={16} /> {member.points}</strong></div>)}
+        {leaderboard.map((member) => <div className="leaderboard-row" key={member.userId}><span className="leaderboard-rank">{String(member.rank).padStart(2, '0')}</span>{member.username ? <Link className="leaderboard-member-link" to={`/users/${member.username}`}>{member.name}</Link> : <span>{member.name}</span>}<span>{member.eventsAttended}</span><strong><Trophy size={16} /> {member.points}</strong></div>)}
       </section>
       : <div className="empty-state"><span className="empty-icon"><Trophy size={24} /></span><h3>The first points are up for grabs.</h3><p>Check in at an event to get on the leaderboard.</p></div>}
+  </main>;
+}
+
+function NotificationsPage({ token }) {
+  const [filter, setFilter] = useState('all');
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+
+  const loadNotifications = useCallback(async () => {
+    setLoading(true);
+    try {
+      const query = filter === 'unread' ? '?filter=unread' : '';
+      const result = await api(`/notifications${query}`, { token });
+      setNotifications(result.notifications);
+      setUnreadCount(result.unreadCount);
+      setError('');
+    } catch (reason) {
+      setError(reason.message);
+    } finally {
+      setLoading(false);
+    }
+  }, [filter, token]);
+
+  useEffect(() => { loadNotifications(); }, [loadNotifications]);
+
+  const markRead = async (notificationId) => {
+    setBusy(true);
+    setError('');
+    try {
+      await api(`/notifications/${encodeURIComponent(notificationId)}/read`, { method: 'PATCH', token });
+      await loadNotifications();
+    } catch (reason) {
+      setError(reason.message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const markAllRead = async () => {
+    setBusy(true);
+    setError('');
+    try {
+      await api('/notifications/read-all', { method: 'POST', token });
+      await loadNotifications();
+    } catch (reason) {
+      setError(reason.message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const openNotification = async (notification) => {
+    if (!notification.readAt) await markRead(notification._id);
+    navigate(notification.link);
+  };
+
+  return <main className="page-wrap notifications-page">
+    <div className="page-heading"><span className="eyebrow">COMMUNITY UPDATES</span><h1>Notifications<span>.</span></h1><p>Contest announcements and ICPC community event updates.</p></div>
+    <div className="notifications-toolbar">
+      <div className="notification-filters" role="group" aria-label="Filter notifications">
+        <button type="button" className={filter === 'all' ? 'notification-filter active' : 'notification-filter'} aria-pressed={filter === 'all'} onClick={() => setFilter('all')}>All</button>
+        <button type="button" className={filter === 'unread' ? 'notification-filter active' : 'notification-filter'} aria-pressed={filter === 'unread'} onClick={() => setFilter('unread')}>Unread {unreadCount > 0 && <span>{unreadCount}</span>}</button>
+      </div>
+      {unreadCount > 0 && <button className="notification-mark-all" type="button" disabled={busy} onClick={markAllRead}>Mark all as read</button>}
+    </div>
+    {error && <div className="notice error-notice" role="alert">{error}</div>}
+    {loading ? <div className="empty-state"><span className="loader" /> Loading notifications...</div>
+      : notifications.length === 0 ? <div className="empty-state"><span className="empty-icon"><Bell size={24} /></span><h3>{filter === 'unread' ? 'You’re all caught up.' : 'No notifications yet.'}</h3><p>New contest and community event updates will show up here.</p></div>
+        : <section className="notifications-list" aria-label="Notifications">{notifications.map((notification) => <article className={notification.readAt ? 'notifications-page-item' : 'notifications-page-item unread'} key={notification._id}>
+          <div className="notifications-page-copy"><span className="notification-category-label">{notification.category === 'contest_announcement' ? 'Contest announcement' : 'ICPC event'}</span><h2>{notification.title}</h2><p>{notification.message}</p><time dateTime={notification.createdAt}>{new Date(notification.createdAt).toLocaleString()}</time></div>
+          <div className="notifications-page-actions">
+            {!notification.readAt && <button className="button button-outline notification-mark-read" type="button" disabled={busy} onClick={() => markRead(notification._id)}>Mark read</button>}
+            <button className="button button-dark notification-open" type="button" disabled={busy} onClick={() => openNotification(notification)}>Open <ArrowRight size={15} /></button>
+          </div>
+        </article>)}</section>}
   </main>;
 }
 
@@ -632,8 +1301,8 @@ function ResourcesPage() {
   );
 }
 
-function UserProfilePage() {
-  const { userId } = useParams();
+function UserProfilePage({ session }) {
+  const { username } = useParams();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -642,23 +1311,41 @@ function UserProfilePage() {
     let active = true;
     setLoading(true);
     setError('');
-    api(`/events/${encodeURIComponent(userId)}/profile`)
+    api(`/events/${encodeURIComponent(username)}/profile`)
       .then(({ profile: result }) => active && setProfile(result))
       .catch((reason) => active && setError(reason.message))
       .finally(() => active && setLoading(false));
     return () => { active = false; };
-  }, [userId]);
+  }, [username]);
 
   if (loading) return <main className="page-wrap"><div className="empty-state"><span className="loader" /> Loading member profile...</div></main>;
   if (error || !profile) return <main className="page-wrap"><div className="notice error-notice">{error || 'Member profile not found.'}</div><Link className="back-link" to="/leaderboard"><ChevronLeft size={16} /> Back to leaderboard</Link></main>;
+
+  const details = profile.profile || {};
+  const externalProfiles = details.externalProfiles || {};
+  const externalLinks = [
+    ['GitHub', externalProfiles.githubUrl],
+    ['LinkedIn', externalProfiles.linkedinUrl],
+    ['Codeforces', externalProfiles.codeforcesUrl],
+    ...(externalProfiles.otherProfiles || []).map((item) => [item.platform || 'Other profile', item.url]),
+  ].map(([label, value]) => ({ label, url: safeExternalUrl(value) })).filter((item) => item.label && item.url);
+  const cpStats = details.cpStats || {};
+  const visibleStats = [
+    ['Problems solved', cpStats.problemsSolved],
+    ['Contests participated', cpStats.contestsParticipated],
+    ['Current rating', cpStats.currentRating],
+    ['Highest rating', cpStats.highestRating],
+  ].filter(([, value]) => value !== null && value !== undefined && value !== '');
+  const isOwner = session.user?.username && session.user.username === profile.username;
 
   return (
     <main className="page-wrap profile-page">
       <Link className="back-link" to="/leaderboard"><ChevronLeft size={16} /> Back to leaderboard</Link>
       <section className="profile-card">
         <div className="profile-identity">
-          <div className="profile-avatar" aria-hidden="true">{profile.name.trim().charAt(0).toUpperCase()}</div>
-          <div><span className="eyebrow">PUA ICPC COMMUNITY MEMBER</span><h1>{profile.name}</h1><p>Member since {new Date(profile.joinedAt).toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}</p></div>
+          <div className="profile-avatar" aria-hidden="true">{profile.name.trim().charAt(0).toUpperCase()}{safeExternalUrl(details.pictureUrl) && <img src={safeExternalUrl(details.pictureUrl)} alt="" onError={(event) => event.currentTarget.remove()} />}</div>
+          <div className="profile-identity-copy"><span className="eyebrow">PUA ICPC COMMUNITY MEMBER</span><h1>{profile.name}</h1><p>{[details.university, details.academicYear, details.graduationYear ? `Class of ${details.graduationYear}` : ''].filter(Boolean).join(' · ') || `Member since ${new Date(profile.joinedAt).toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}`}</p>{details.teamStatus && <span className="team-status-badge">{details.teamStatus === 'looking' ? 'Looking for a Team' : details.teamStatus === 'in_team' ? 'Already in a Team' : 'Not Looking for a Team'}</span>}</div>
+          {isOwner && <Link className="button button-dark profile-edit-button" to="/settings/profile">Edit profile <ArrowRight size={15} /></Link>}
         </div>
         <div className="profile-stats">
           <div><small>LEADERBOARD RANK</small><strong>{profile.standing.rank ? `#${profile.standing.rank}` : '—'}</strong></div>
@@ -666,7 +1353,51 @@ function UserProfilePage() {
           <div><small>EVENTS ATTENDED</small><strong>{profile.standing.eventsAttended}</strong></div>
         </div>
       </section>
-      <section className="profile-history">
+      {(details.bio || details.programmingLanguages?.length || details.technicalInterests?.length) && <section className="profile-section">
+        <h2>About</h2>
+        {details.bio && <p className="profile-bio">{details.bio}</p>}
+        {details.programmingLanguages?.length > 0 && <div className="profile-detail-row"><strong>Languages</strong><div className="profile-chip-list">{details.programmingLanguages.map((language) => <span className="profile-chip" key={language}>{language}</span>)}</div></div>}
+        {details.technicalInterests?.length > 0 && <div className="profile-detail-row"><strong>Interests</strong><div className="profile-chip-list">{details.technicalInterests.map((interest) => <span className="profile-chip" key={interest}>{interest}</span>)}</div></div>}
+      </section>}
+      {externalLinks.length > 0 && <section className="profile-section">
+        <h2>External profiles</h2>
+        <div className="profile-external-links">{externalLinks.map(({ label, url }) => <a key={`${label}-${url}`} href={url} target="_blank" rel="noopener noreferrer">{label}<ExternalLink size={14} /></a>)}</div>
+        {externalProfiles.codeforcesHandle && <p className="profile-handle">Codeforces handle: <strong>{externalProfiles.codeforcesHandle}</strong></p>}
+      </section>}
+      {!externalLinks.length && externalProfiles.codeforcesHandle && <section className="profile-section"><h2>Competitive programming profile</h2><p className="profile-handle">Codeforces handle: <strong>{externalProfiles.codeforcesHandle}</strong></p></section>}
+      {(visibleStats.length > 0 || cpStats.platform || cpStats.handle) && <section className="profile-section">
+        <div className="profile-section-heading"><h2>Competitive programming</h2><span className="unverified-badge">Self-reported · Unverified</span></div>
+        {(cpStats.platform || cpStats.handle) && <p className="profile-handle">{[cpStats.platform, cpStats.handle].filter(Boolean).join(' · ')}</p>}
+        <div className="profile-cp-stats">{visibleStats.map(([label, value]) => <div key={label}><small>{label}</small><strong>{value}</strong></div>)}</div>
+      </section>}
+      {details.icpcJourney?.length > 0 && <section className="profile-section">
+        <div className="profile-section-heading"><h2>ICPC journey</h2><span className="unverified-badge">User-provided · Unverified</span></div>
+        <div className="profile-journey-list">{details.icpcJourney.map((entry, index) => <article className="profile-journey-card" key={`${entry.contestName || 'contest'}-${entry.season || index}-${index}`}>
+          <h3>{entry.contestName || 'ICPC participation'}</h3>
+          <p>{[entry.season, entry.stage, entry.result].filter(Boolean).join(' · ')}</p>
+          {entry.teamName && <p><strong>Team:</strong> {entry.teamName}</p>}
+          {entry.teammates?.length > 0 && <p><strong>Teammates:</strong> {entry.teammates.join(', ')}</p>}
+          {entry.achievement && <p><strong>Achievement:</strong> {entry.achievement}</p>}
+        </article>)}</div>
+      </section>}
+      {details.teamStatus === 'looking' && details.teamPreferences && Object.values(details.teamPreferences).some(Boolean) && <section className="profile-section">
+        <h2>Team preferences</h2>
+        <div className="profile-public-details">
+          {details.teamPreferences.preferredLanguage && <p><strong>Preferred language:</strong> {details.teamPreferences.preferredLanguage}</p>}
+          {details.teamPreferences.experience && <p><strong>Experience:</strong> {details.teamPreferences.experience}</p>}
+          {details.teamPreferences.schedule && <p><strong>Training schedule:</strong> {details.teamPreferences.schedule}</p>}
+          {details.teamPreferences.preference && <p><strong>Training preference:</strong> {details.teamPreferences.preference}</p>}
+          {details.teamPreferences.introduction && <p>{details.teamPreferences.introduction}</p>}
+        </div>
+      </section>}
+      {(details.trainingGoals?.length || details.trainingTopics?.length || details.milestones?.length || details.trainingProgress) && <section className="profile-section">
+        <h2>Training goals</h2>
+        {details.trainingGoals?.length > 0 && <div className="profile-detail-row"><strong>Goals</strong><div className="profile-chip-list">{details.trainingGoals.map((goal) => <span className="profile-chip" key={goal}>{goal}</span>)}</div></div>}
+        {details.trainingTopics?.length > 0 && <div className="profile-detail-row"><strong>Studying</strong><div className="profile-chip-list">{details.trainingTopics.map((topic) => <span className="profile-chip" key={topic}>{topic}</span>)}</div></div>}
+        {details.milestones?.length > 0 && <div className="profile-detail-row"><strong>Milestones</strong><div className="profile-chip-list">{details.milestones.map((milestone) => <span className="profile-chip" key={milestone}>{milestone}</span>)}</div></div>}
+        {details.trainingProgress && <p className="profile-bio">{details.trainingProgress}</p>}
+      </section>}
+      {profile.attendanceHistory && <section className="profile-history">
         <div className="profile-history-heading"><span className="eyebrow"><CalendarDays size={15} /> ATTENDANCE HISTORY</span></div>
         {profile.attendanceHistory.length ? profile.attendanceHistory.map((entry) => (
           <article className="profile-history-row" key={`${entry.event.id}-${entry.checkedInAt}`}>
@@ -674,7 +1405,7 @@ function UserProfilePage() {
             <strong><Trophy size={15} /> +{entry.pointsAwarded} pts</strong>
           </article>
         )) : <div className="profile-empty-history"><p>No event attendance recorded yet.</p><Link className="button button-dark" to="/">Explore events <ArrowRight size={16} /></Link></div>}
-      </section>
+      </section>}
     </main>
   );
 }
@@ -901,18 +1632,27 @@ export default function App() {
   }, [theme]);
   return (
     <div className="app-shell">
-      <Header user={session.user} onSignOut={session.signOut} />
+      <Header user={session.user} onSignOut={session.signOut} token={session.token} />
       <Routes>
         <Route path="/" element={<EventsPage />} />
         <Route path="/events/:eventId" element={<EventDetail token={session.token} user={session.user} />} />
+        <Route path="/roadmaps" element={<RoadmapsPage />} />
+        <Route path="/roadmaps/cycles/:cycleId" element={<RoadmapCyclePage token={session.token} user={session.user} />} />
+        <Route path="/roadmaps/check-in/:sessionId" element={<RequireUsername session={session}><RoadmapCheckInPage token={session.token} /></RequireUsername>} />
+        <Route path="/roadmaps/:slug" element={<RoadmapDetailsPage />} />
         <Route path="/check-in/:eventId" element={session.loading ? <div className="empty-state"><span className="loader" /> Loading your account...</div> : <CheckInPage token={session.token} user={session.user} />} />
         <Route path="/login" element={<AuthPage session={session} />} />
-        <Route path="/my-events" element={session.loading ? <div className="empty-state"><span className="loader" /> Loading your account...</div> : session.user ? <MyEvents token={session.token} /> : <Navigate to="/login" replace />} />
-        <Route path="/settings" element={session.loading ? <div className="empty-state"><span className="loader" /> Loading your account...</div> : session.user ? <SettingsPage session={session} theme={theme} onThemeChange={setTheme} /> : <Navigate to="/login" replace />} />
+        <Route path="/onboarding/username" element={session.loading ? <div className="empty-state"><span className="loader" /> Loading your account...</div> : session.user ? <UsernameSetupPage session={session} /> : <Navigate to="/login" replace />} />
+        <Route path="/my-events" element={<RequireUsername session={session}><MyEvents token={session.token} /></RequireUsername>} />
+        <Route path="/my-roadmaps" element={<RequireUsername session={session}><MyRoadmapsPage /></RequireUsername>} />
+        <Route path="/notifications" element={<RequireUsername session={session}><NotificationsPage token={session.token} /></RequireUsername>} />
+        <Route path="/settings" element={<RequireUsername session={session}><Navigate to="/settings/account" replace /></RequireUsername>} />
+        <Route path="/settings/:section" element={<RequireUsername session={session}><SettingsPage session={session} theme={theme} onThemeChange={setTheme} /></RequireUsername>} />
         <Route path="/resources" element={<ResourcesPage />} />
         <Route path="/leaderboard" element={<LeaderboardPage />} />
-        <Route path="/users/:userId" element={<UserProfilePage />} />
-        <Route path="/admin" element={session.loading ? <div className="empty-state"><span className="loader" /> Loading your account...</div> : session.user?.role === 'admin' ? <Admin token={session.token} /> : <Navigate to="/login" replace />} />
+        <Route path="/users/:username" element={<UserProfilePage session={session} />} />
+        <Route path="/admin" element={<RequireUsername session={session}>{session.user?.role === 'admin' ? <Admin token={session.token} /> : <Navigate to="/login" replace />}</RequireUsername>} />
+        <Route path="/admin/roadmaps" element={<RequireUsername session={session}>{session.user?.role === 'admin' ? <AdminRoadmapsPage token={session.token} /> : <Navigate to="/login" replace />}</RequireUsername>} />
         <Route path="*" element={<main className="page-wrap"><div className="empty-state"><h3>That page wandered off.</h3><Link className="button button-dark" to="/">Back to events</Link></div></main>} />
       </Routes>
       <Footer />

@@ -10,7 +10,7 @@ export async function requireAuth(req, res, next) {
 
   try {
     const payload = jwt.verify(authorization.slice(7), config.jwtSecret);
-    const user = await User.findById(payload.sub).select('name email role studentId');
+    const user = await User.findById(payload.sub).select('name email role username studentId profile createdAt notificationPreferences');
     if (!user) return res.status(401).json({ error: { message: 'Your session is no longer valid.' } });
     req.user = user;
     return next();
@@ -20,6 +20,18 @@ export async function requireAuth(req, res, next) {
     }
     return next(error);
   }
+}
+
+export function optionalAuth(req, res, next) {
+  if (!req.get('authorization')) return next();
+  return requireAuth(req, res, next);
+}
+
+export function requireUsername(req, res, next) {
+  if (!req.user?.username) {
+    return res.status(403).json({ error: { message: 'Choose a username to continue.' } });
+  }
+  return next();
 }
 
 export function requireAdmin(req, res, next) {

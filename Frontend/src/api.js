@@ -5,7 +5,11 @@ export async function api(path, { token, ...options } = {}) {
   if (token) headers.Authorization = `Bearer ${token}`;
   const response = await fetch(`${API_URL}${path}`, { ...options, headers });
   const data = response.status === 204 ? null : await response.json();
-  if (!response.ok) throw new Error(data?.error?.message || 'Something went wrong. Please try again.');
+  if (!response.ok) {
+    const error = new Error(data?.error?.message || 'Something went wrong. Please try again.');
+    error.field = data?.error?.field;
+    throw error;
+  }
   return data;
 }
 

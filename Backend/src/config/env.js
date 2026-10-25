@@ -15,3 +15,16 @@ export const config = {
   jwtSecret,
   clientOrigin: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
 };
+
+export function isAllowedClientOrigin(origin) {
+  if (typeof origin !== 'string') return false;
+  try {
+    const url = new URL(origin);
+    if (url.origin !== origin) return false;
+    if (url.origin === new URL(config.clientOrigin).origin) return true;
+    return url.protocol === 'http:'
+      && ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname);
+  } catch {
+    return false;
+  }
+}

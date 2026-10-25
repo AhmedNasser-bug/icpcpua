@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import Event from '../src/models/Event.js';
-import { slugify, validateEventInput, validatePasswordChangeInput, validateStudentId } from '../src/utils/validation.js';
+import { slugify, validateEventInput, validatePasswordChangeInput, validateStudentId, validateUsername } from '../src/utils/validation.js';
 
 test('event attendance points default to zero', () => {
   const event = new Event();
@@ -113,14 +113,28 @@ test('event input rejects invalid attendance points and check-in windows', () =>
 });
 
 test('student IDs are trimmed and restricted to 4–20 digits', () => {
+  assert.equal(validateStudentId(undefined), undefined);
+  assert.equal(validateStudentId(null), undefined);
+  assert.equal(validateStudentId(''), undefined);
   assert.equal(validateStudentId(' 20251234 '), '20251234');
   assert.throws(() => validateStudentId('123'), /4–20 digits/);
   assert.throws(() => validateStudentId('2024-1234'), /4–20 digits/);
-  assert.throws(() => validateStudentId(null), /4–20 digits/);
 });
 
 test('slugify creates a URL-safe event slug', () => {
   assert.equal(slugify('PUA ICPC: Contest Night!'), 'pua-icpc-contest-night');
+});
+
+test('username accepts valid values and normalizes case and spaces', () => {
+  assert.equal(validateUsername('  PUA_Dev  '), 'pua_dev');
+  assert.equal(validateUsername('coder_42'), 'coder_42');
+});
+
+test('username rejects invalid or duplicate-like formats', () => {
+  assert.throws(() => validateUsername('ab'), /3–20 characters/);
+  assert.throws(() => validateUsername('bad-name'), /letters, numbers, and underscores/);
+  assert.throws(() => validateUsername(''), /3–20 characters/);
+  assert.throws(() => validateUsername(null), /3–20 characters/);
 });
 
 test('password change input accepts current and new passwords', () => {

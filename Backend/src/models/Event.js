@@ -9,6 +9,7 @@ const eventSchema = new mongoose.Schema(
     startsAt: { type: Date, required: true, index: true },
     endsAt: { type: Date, required: true },
     registrationDeadline: { type: Date, default: null },
+    publishedAt: { type: Date, default: null },
     checkInOpensAt: { type: Date, default: null },
     checkInClosesAt: { type: Date, default: null },
     checkInTokenHash: { type: String, select: false, default: null },

@@ -1,13 +1,17 @@
-import mongoose from 'mongoose';
 import app from './app.js';
 import { config } from './config/env.js';
+import checkConnectionDB from './models/DBConnection.js';
 
-try {
-  await mongoose.connect(config.mongoUri);
-  app.listen(config.port,"0.0.0.0", () => {
-    console.log(`PUA ICPC Community API listening on port ${config.port}`);
+async function startServer() {
+  await checkConnectionDB();
+  await new Promise((resolve, reject) => {
+    const server = app.listen(config.port, '0.0.0.0', resolve);
+    server.once('error', reject);
   });
-} catch (error) {
+  console.log(`API listening on port ${config.port}.`);
+}
+
+startServer().catch((error) => {
   console.error('Could not connect to MongoDB or start the API.', error);
   process.exitCode = 1;
-}
+});
