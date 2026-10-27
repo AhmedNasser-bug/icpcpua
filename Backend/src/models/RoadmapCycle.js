@@ -5,6 +5,7 @@ const cycleSchema = new mongoose.Schema({
   order: { type: Number, required: true, min: 1 },
   title: { type: String, required: true, trim: true, maxlength: 120 },
   description: { type: String, required: true, trim: true, maxlength: 3000 },
+  location: { type: String, trim: true, maxlength: 200, default: '' },
   difficulty: { type: String, enum: ['beginner', 'intermediate', 'advanced'], required: true },
   objectives: [{ type: String, trim: true, maxlength: 160 }],
   prerequisites: { type: String, trim: true, maxlength: 1000, default: '' },

@@ -80,6 +80,8 @@ test('roadmap and cycle validators reject unsupported values and malformed URLs'
   assert.throws(() => validateRoadmapInput({ title: 'Path', description: 'Details', coverImageUrl: 'javascript:alert(1)' }), /valid HTTP or HTTPS URL/);
   assert.throws(() => validateCycleInput({ ...baseCycle, order: 1, title: 'Beginner', description: 'Details', difficulty: 'expert' }), /difficulty must be/);
   assert.throws(() => validateCycleInput({ ...baseCycle, order: 1, title: 'Beginner', description: 'Details', difficulty: 'beginner', trainingDays: [1] }), /must match sessionsPerWeek/);
+  assert.equal(validateCycleInput({ location: '  Room 204  ' }, { partial: true }).location, 'Room 204');
+  assert.throws(() => validateCycleInput({ location: 'x'.repeat(201) }, { partial: true }), /location must be 200 characters or fewer/);
 });
 
 test('enrollment and session attendance enforce unique student-cycle and student-session relationships', () => {

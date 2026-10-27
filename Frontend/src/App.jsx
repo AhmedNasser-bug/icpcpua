@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom';
-import { ArrowRight, Bell, BookOpen, CalendarDays, Check, ChevronDown, ChevronLeft, Clock3, Code2, ExternalLink, KeyRound, Link2, LogOut, MapPin, Menu, Moon, Palette, Plus, QrCode, Search, Shield, Sun, Ticket, Trash2, Trophy, UserRound, Users, X } from 'lucide-react';
+import { ArrowRight, Bell, CalendarDays, Check, ChevronDown, ChevronLeft, ChevronRight, Clock3, Code2, ExternalLink, KeyRound, Link2, LogOut, MapPin, Menu, Moon, Palette, Plus, QrCode, Search, Shield, Sun, Ticket, Trash2, Trophy, UserRound, Users, X } from 'lucide-react';
 import { api, eventDate } from './api.js';
-import { AdminRoadmapsPage, MyRoadmapsPage, RoadmapCheckInPage, RoadmapCyclePage, RoadmapDetailsPage, RoadmapsPage } from './Roadmaps.jsx';
+import { AdminDashboardLayout, AdminOverviewPage } from './AdminDashboard.jsx';
+import { AdminRoadmapsPage, MyRoadmapsSection, RoadmapCheckInPage, RoadmapCyclePage, RoadmapDetailsPage, RoadmapsPage } from './Roadmaps.jsx';
 
 const USERNAME_PATTERN = /^[a-z0-9_]{3,20}$/;
 
@@ -201,8 +202,10 @@ function Header({ user, onSignOut, token }) {
   }, [location.pathname]);
 
   const isActive = (path) => path === '/'
-    ? location.pathname === '/' || location.pathname.startsWith('/events/') || location.pathname.startsWith('/check-in/')
-    : location.pathname === path || location.pathname.startsWith(`${path}/`);
+    ? location.pathname === '/'
+    : path === '/events'
+      ? location.pathname === '/events' || location.pathname.startsWith('/events/') || location.pathname.startsWith('/check-in/')
+      : location.pathname === path || location.pathname.startsWith(`${path}/`);
   const profilePath = user?.role === 'user' && user.username ? `/users/${user.username}` : null;
   const accountActive = location.pathname.startsWith('/settings') || (profilePath && location.pathname === profilePath);
 
@@ -218,15 +221,11 @@ function Header({ user, onSignOut, token }) {
       <button className="icon-button menu-toggle" aria-label={menuOpen ? 'Close navigation' : 'Open navigation'} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
         {menuOpen ? <X size={22} /> : <Menu size={22} />}
       </button>
-      <nav className={menuOpen ? 'main-nav open' : 'main-nav'} onClick={(event) => { if (event.target.closest('a')) setMenuOpen(false); }}>
-        {navLink('/', 'Events')}
-        {user && navLink('/my-events', 'My Events')}
+      <nav className={menuOpen ? 'main-nav open' : 'main-nav'} aria-label="Main navigation" onClick={(event) => { if (event.target.closest('a')) setMenuOpen(false); }}>
+        {navLink('/', 'Home')}
         {navLink('/roadmaps', 'Roadmaps')}
-        {user && navLink('/my-roadmaps', 'My Roadmaps')}
-        {navLink('/resources', 'Resources')}
+        {navLink('/events', 'Events')}
         {navLink('/leaderboard', 'Leaderboard')}
-        {user?.role === 'admin' && navLink('/admin', 'Admin')}
-        {user?.role === 'admin' && navLink('/admin/roadmaps', 'Roadmap admin')}
         {user ? (
           <>
           <NotificationBellMenu token={token} />
@@ -237,8 +236,10 @@ function Header({ user, onSignOut, token }) {
               <ChevronDown className={accountOpen ? 'account-chevron open' : 'account-chevron'} size={15} aria-hidden="true" />
             </button>
             {accountOpen && <div className="account-dropdown" role="menu" aria-label="Account menu">
+              <Link className={location.pathname === '/my-activities' ? 'active' : ''} to="/my-activities" role="menuitem" aria-current={location.pathname === '/my-activities' ? 'page' : undefined} onClick={() => setAccountOpen(false)}>My Activities</Link>
               {profilePath && <Link className={location.pathname === profilePath ? 'active' : ''} to={profilePath} role="menuitem" aria-current={location.pathname === profilePath ? 'page' : undefined} onClick={() => setAccountOpen(false)}>My Profile</Link>}
               <Link className={location.pathname.startsWith('/settings') ? 'active' : ''} to="/settings/account" role="menuitem" aria-current={location.pathname.startsWith('/settings') ? 'page' : undefined} onClick={() => setAccountOpen(false)}>Settings</Link>
+              {user.role === 'admin' && <Link className={location.pathname.startsWith('/admin') ? 'active' : ''} to="/admin/overview" role="menuitem" aria-current={location.pathname.startsWith('/admin') ? 'page' : undefined} onClick={() => setAccountOpen(false)}>Admin Dashboard</Link>}
               <div className="account-menu-divider" role="separator" />
               <button className="account-signout" type="button" role="menuitem" onClick={() => { setAccountOpen(false); setMenuOpen(false); onSignOut(); navigate('/login', { replace: true }); }}>
                 <LogOut size={15} aria-hidden="true" /> Sign Out
@@ -247,7 +248,10 @@ function Header({ user, onSignOut, token }) {
           </div>
           </>
         ) : (
-          <Link className="button button-dark nav-join" to="/login">Join the community <ArrowRight size={16} /></Link>
+          <div className="nav-auth-actions">
+            {navLink('/login', 'Log in')}
+            <Link className="button button-dark nav-register" to="/login?mode=register">Register</Link>
+          </div>
         )}
       </nav>
     </header>
@@ -273,6 +277,231 @@ function EventCard({ event, index }) {
       </div>
     </article>
   );
+}
+
+function HomeEventCarouselCard({ event, index, now }) {
+  const startsAt = new Date(event.startsAt).getTime();
+  const endsAt = new Date(event.endsAt).getTime();
+  const isUpcoming = startsAt > now;
+  const isOngoing = startsAt <= now && endsAt > now;
+  const registrationOpen = isUpcoming &&
+    event.status === 'published' &&
+    (!event.registrationDeadline || new Date(event.registrationDeadline).getTime() > now) &&
+    (!event.capacity || event.registrationCount < event.capacity);
+
+  return (
+    <article className={`home-featured-event accent-${event.category.length % 4}`}>
+      <div className="home-event-banner" aria-label={`${event.category} event banner`}>
+        <span className="home-event-banner-category">{event.category}</span>
+        <Code2 size={52} aria-hidden="true" />
+        <span className="home-event-banner-mark" aria-hidden="true">{'{ }'}</span>
+      </div>
+      <div className="home-featured-event-content">
+        <div className="home-featured-event-kicker">
+          <span className="category-label">{event.category}</span>
+          <span className={isOngoing ? 'home-event-status ongoing' : isUpcoming ? 'home-event-status upcoming' : 'home-event-status past'}>
+            {isOngoing ? 'Ongoing' : isUpcoming ? 'Upcoming' : 'Past'}
+          </span>
+        </div>
+        <h3><Link to={`/events/${event.slug}`}>{event.title}</Link></h3>
+        <div className="home-featured-event-date"><CalendarDays size={17} /><span>{eventDate(event.startsAt)}</span></div>
+        <div className="home-featured-event-actions">
+          <Link className="text-link" to={`/events/${event.slug}`}>View details <ArrowRight size={16} /></Link>
+          {registrationOpen && <Link className="button button-dark" to={`/events/${event.slug}`}>Register <ArrowRight size={16} /></Link>}
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function AcpcCountdown() {
+  const configuredTarget = import.meta.env.VITE_ACPC_TARGET_DATE;
+  const targetValue = configuredTarget || '2027-08-01T00:00:00+03:00';
+  const targetTime = Date.parse(targetValue);
+  const [now, setNow] = useState(() => Date.now());
+  const targetLabel = Number.isFinite(targetTime) && configuredTarget
+    ? new Intl.DateTimeFormat(undefined, { month: 'long', year: 'numeric' }).format(targetTime)
+    : configuredTarget ? 'configured date' : 'August 2027';
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  if (!Number.isFinite(targetTime)) {
+    return <p className="acpc-countdown-unavailable" role="status">Countdown unavailable. Please check the ACPC target date configuration.</p>;
+  }
+  if (targetTime <= now) {
+    return <p className="acpc-countdown-unavailable" role="status">The configured target has arrived. Keep training for the next milestone.</p>;
+  }
+
+  const remainingSeconds = Math.floor((targetTime - now) / 1000);
+  const values = [
+    ['Days', Math.floor(remainingSeconds / 86400)],
+    ['Hours', Math.floor((remainingSeconds % 86400) / 3600)],
+    ['Minutes', Math.floor((remainingSeconds % 3600) / 60)],
+    ['Seconds', remainingSeconds % 60],
+  ];
+
+  return <>
+    <div className="acpc-countdown" aria-label={`Countdown to ${targetLabel}: ${values.map(([unit, value]) => `${value} ${unit}`).join(', ')}`}>
+      {values.map(([unit, value]) => <div className="acpc-countdown-unit" key={unit}><strong>{String(value).padStart(2, '0')}</strong><span>{unit}</span></div>)}
+    </div>
+    <p className="home-countdown-estimate">{configuredTarget ? `Configured target: ${targetLabel} · date and timezone are set in the frontend environment` : 'Estimated target: August 2027 · not an official competition date'}</p>
+  </>;
+}
+
+function HomePage() {
+  const [events, setEvents] = useState([]);
+  const [loadingEvents, setLoadingEvents] = useState(true);
+  const [eventsError, setEventsError] = useState('');
+  const [activeEventIndex, setActiveEventIndex] = useState(0);
+  const [now, setNow] = useState(() => Date.now());
+  const [carouselHovered, setCarouselHovered] = useState(false);
+  const touchStartX = useRef(null);
+  const eventsRef = useRef(events);
+  const activeEventIndexRef = useRef(activeEventIndex);
+  eventsRef.current = events;
+  activeEventIndexRef.current = activeEventIndex;
+
+  useEffect(() => {
+    let active = true;
+    let refreshing = false;
+    const refreshEvents = async (initial = false) => {
+      if (refreshing) return;
+      refreshing = true;
+      try {
+        const result = await api('/events?sort=latest', { cache: 'no-store' });
+        if (!active) return;
+        const currentTime = Date.now();
+        const latestEvents = [...new Map(result.events.map((event) => [event.id, event])).values()]
+          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+          .slice(0, 5);
+        const currentEventId = eventsRef.current[activeEventIndexRef.current]?.id;
+        const nextIndex = latestEvents.findIndex((event) => event.id === currentEventId);
+        setActiveEventIndex(nextIndex >= 0 ? nextIndex : 0);
+        setEvents(latestEvents);
+        setNow(currentTime);
+        setEventsError('');
+      } catch (reason) {
+        if (active) setEventsError(reason.message);
+      } finally {
+        refreshing = false;
+        if (active && initial) setLoadingEvents(false);
+      }
+    };
+    const refreshWhenVisible = () => {
+      if (document.visibilityState === 'visible') refreshEvents();
+    };
+
+    refreshEvents(true);
+    const refreshTimer = window.setInterval(() => refreshEvents(), 60_000);
+    window.addEventListener('focus', refreshWhenVisible);
+    document.addEventListener('visibilitychange', refreshWhenVisible);
+    return () => {
+      active = false;
+      window.clearInterval(refreshTimer);
+      window.removeEventListener('focus', refreshWhenVisible);
+      document.removeEventListener('visibilitychange', refreshWhenVisible);
+    };
+  }, []);
+
+  useEffect(() => {
+    setActiveEventIndex((index) => events.length ? index % events.length : 0);
+  }, [events.length]);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setNow(Date.now());
+      if (!carouselHovered && events.length > 1) setActiveEventIndex((index) => (index + 1) % events.length);
+    }, 5000);
+    return () => window.clearInterval(timer);
+  }, [carouselHovered, events.length]);
+
+  const goToEvent = (direction) => {
+    setActiveEventIndex((index) => (index + direction + events.length) % events.length);
+  };
+
+  const handleTouchStart = (event) => {
+    touchStartX.current = event.changedTouches[0].clientX;
+  };
+
+  const handleTouchEnd = (event) => {
+    if (touchStartX.current === null) return;
+    const delta = event.changedTouches[0].clientX - touchStartX.current;
+    touchStartX.current = null;
+    if (Math.abs(delta) >= 45 && events.length > 1) goToEvent(delta < 0 ? 1 : -1);
+  };
+
+  return <main className="home-page">
+    <section className="home-hero">
+      <div className="home-hero-inner">
+        <div className="home-hero-copy">
+          <span className="eyebrow"><span className="eyebrow-dot" /> PUA ICPC COMMUNITY · ROAD TO ACPC</span>
+          <h1>ICPC PUA — <span>Road to ACPC</span></h1>
+          <p className="home-hero-lead">Building the next generation of problem solvers, one challenge at a time.</p>
+          <p className="home-hero-mission">Our goal is to help PUA students build and prepare the first team from our university to qualify for ACPC.</p>
+          <div className="home-hero-actions">
+            <Link className="button button-dark" to="/roadmaps">Start your journey <ArrowRight size={17} /></Link>
+            <Link className="button button-outline" to="/events">Explore events <ArrowRight size={17} /></Link>
+          </div>
+        </div>
+        <aside className="home-countdown-panel" aria-label="Countdown to our estimated ACPC target">
+          <span className="eyebrow">THE ROAD AHEAD</span>
+          <h2>Every day brings us closer to ACPC.</h2>
+          <AcpcCountdown />
+        </aside>
+      </div>
+    </section>
+
+    <section className="home-events-section" aria-labelledby="home-events-title">
+      <div className="home-section-heading">
+        <div><span className="eyebrow">LEARN BY DOING</span><h2 id="home-events-title">Our <span>Events</span></h2><p>Meet the community, take on a challenge, and grow through competition.</p></div>
+        <div className="home-carousel-actions">
+          <button className="home-carousel-control" type="button" aria-label="Previous event" onClick={() => goToEvent(-1)} disabled={events.length < 2}><ChevronLeft size={20} /></button>
+          <button className="home-carousel-control" type="button" aria-label="Next event" onClick={() => goToEvent(1)} disabled={events.length < 2}><ChevronRight size={20} /></button>
+          <Link className="text-link" to="/events">All events <ArrowRight size={15} /></Link>
+        </div>
+      </div>
+      {eventsError && <div className="notice error-notice" role="alert">{eventsError} <Link className="text-link" to="/events">Browse events</Link></div>}
+      {loadingEvents ? <div className="empty-state"><span className="loader" /> Loading events...</div>
+        : events.length ? <>
+          <div className="home-carousel-viewport" onMouseEnter={() => setCarouselHovered(true)} onMouseLeave={() => setCarouselHovered(false)} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} aria-live="polite">
+            <HomeEventCarouselCard key={events[activeEventIndex].id} event={events[activeEventIndex]} index={activeEventIndex} now={now} />
+          </div>
+          <div className="home-carousel-pagination" role="group" aria-label="Choose an event">
+            {events.map((event, index) => <button key={event.id} className={activeEventIndex === index ? 'home-carousel-dot active' : 'home-carousel-dot'} type="button" aria-label={`Show event ${index + 1}: ${event.title}`} aria-current={activeEventIndex === index ? 'true' : undefined} onClick={() => setActiveEventIndex(index)} />)}
+          </div>
+        </> : !eventsError && <div className="home-empty-events"><CalendarDays size={22} /><p>No events are available to feature right now. Check back soon or explore the roadmaps.</p><Link className="text-link" to="/roadmaps">Explore roadmaps <ArrowRight size={15} /></Link></div>}
+    </section>
+
+    <section className="home-roadmap-section">
+      <div className="home-section-inner home-split-layout">
+        <div className="home-section-copy"><span className="eyebrow">A CLEAR PATH FORWARD</span><h2>Our <span>Roadmap</span></h2><p>Build problem-solving skills one step at a time with structured learning paths, focused cycles, and sessions that help you keep moving.</p><Link className="button button-dark" to="/roadmaps">Explore roadmaps <ArrowRight size={16} /></Link></div>
+        <div className="home-roadmap-visual" aria-hidden="true"><div className="home-roadmap-node"><span>01</span><b>Learn</b></div><div className="home-roadmap-node"><span>02</span><b>Practice</b></div><div className="home-roadmap-node"><span>03</span><b>Compete</b></div></div>
+      </div>
+    </section>
+
+    <section className="home-training-section">
+      <div className="home-section-inner home-split-layout home-training-layout">
+        <div className="home-training-visual" aria-hidden="true"><div className="home-training-board"><span>while (curious) {'{'}</span><b>solve();</b><span>{'}'}</span></div></div>
+        <div className="home-section-copy"><span className="eyebrow">PRACTICE WITH PURPOSE</span><h2>Our <span>Training</span></h2><p>Competitive programming is a team effort. Learn core techniques, practice consistently, and prepare alongside students who share your ambition.</p><Link className="button button-dark" to="/roadmaps">Find your training path <ArrowRight size={16} /></Link></div>
+      </div>
+    </section>
+
+    <section className="home-goal-section">
+      <div className="home-section-inner">
+        <div className="home-goal-heading"><span className="eyebrow">OUR SHARED AMBITION</span><h2>One University. One Goal. <span>ACPC.</span></h2><p>We are working toward our first PUA team qualifying for ACPC. Every practice session, solved problem, and competition is another step toward that goal.</p></div>
+        <ol className="home-goal-timeline">
+          <li><span>01</span><div><strong>Build the fundamentals</strong><p>Strengthen problem-solving foundations together.</p></div></li>
+          <li><span>02</span><div><strong>Practice consistently</strong><p>Turn learning into a regular habit.</p></div></li>
+          <li><span>03</span><div><strong>Grow as a team</strong><p>Develop collaboration and contest skills.</p></div></li>
+          <li><span>04</span><div><strong>Prepare for qualification</strong><p>Work toward PUA’s first ACPC-qualified team.</p></div></li>
+        </ol>
+        <p className="home-goal-note">These are milestones we are working toward—not completed achievements.</p>
+      </div>
+    </section>
+  </main>;
 }
 
 function EventsPage() {
@@ -304,26 +533,10 @@ function EventsPage() {
   }, [status, query, category]);
 
   return (
-    <>
-      <section className="hero">
-        <div className="hero-copy">
-          <span className="eyebrow"><span className="eyebrow-dot" /> PUA ICPC COMMUNITY</span>
-          <h1>Learn together.<br /><span>Compete together.</span></h1>
-          <p>Build your problem-solving skills, meet your people, and get ready for the next big contest.</p>
-          <Link className="button button-dark" to="/login">Join the community <ArrowRight size={17} /></Link>
-        </div>
-        <div className="hero-art" aria-hidden="true">
-          <div className="hero-orbit orbit-one" />
-          <div className="hero-orbit orbit-two" />
-          <div className="hero-sticker sticker-cyan"><Code2 size={34} /></div>
-          <div className="hero-sticker sticker-purple">IC<span>×</span>PC</div>
-          <div className="hero-sticker sticker-yellow">?</div>
-          <span className="hero-caption">PUA · ALEXANDRIA · 2024</span>
-        </div>
-      </section>
+    <main className="events-page">
       <section className="events-section" id="events">
         <div className="section-heading">
-          <div><span className="eyebrow">WHAT'S HAPPENING</span><h2>Find your next <span>challenge.</span></h2></div>
+          <div><span className="eyebrow">WHAT'S HAPPENING</span><h1>Our <span>Events</span></h1><p>Explore upcoming competitions, workshops, and community activities.</p></div>
           <div className="event-tabs" role="tablist">
             <button className={status === 'upcoming' ? 'tab active' : 'tab'} onClick={() => setStatus('upcoming')}>Upcoming</button>
             <button className={status === 'past' ? 'tab active' : 'tab'} onClick={() => setStatus('past')}>Past events</button>
@@ -342,7 +555,7 @@ function EventsPage() {
             <div className="empty-state"><span className="empty-icon"><CalendarDays size={24} /></span><h3>No events found</h3><p>Try a different search or check back soon for new events.</p></div>}
       </section>
       <section className="community-strip"><div className="strip-icon"><Users size={21} /></div><div><b>Better together.</b><span>New to competitive programming? This is your place to start.</span></div><Link to="/login">Meet the community <ArrowRight size={16} /></Link></section>
-    </>
+    </main>
   );
 }
 
@@ -376,7 +589,7 @@ function EventDetail({ token, user }) {
       await api(`/events/${event.id}/registrations`, { method: 'POST', token });
       setRegistered(true);
       await load();
-      setMessage('You’re registered! Your event is waiting in My events.');
+      setMessage('You’re registered! Your event is waiting in My Activities.');
     } catch (error) { setMessage(error.message); }
     finally { setBusy(false); }
   };
@@ -422,7 +635,7 @@ function EventDetail({ token, user }) {
           <div className="detail-actions">
             {registered ? <><span className="registered-badge"><Check size={17} /> You’re registered</span><button className="button button-outline" disabled={busy || closed} onClick={cancel}>Cancel registration</button></> :
               <button className="button button-dark" disabled={busy || closed} onClick={register}>{busy ? 'Please wait...' : closed ? 'Registration closed' : 'Register for this event'} <ArrowRight size={17} /></button>}
-            {user && <Link className="text-link" to="/my-events">My events</Link>}
+            {user && <Link className="text-link" to="/my-activities">My Activities</Link>}
           </div>
         </div>
       </article>
@@ -439,13 +652,18 @@ function StudentIdField({ id, label, value, onChange }) {
 }
 
 function AuthPage({ session }) {
-  const [mode, setMode] = useState('login');
+  const location = useLocation();
+  const [mode, setMode] = useState(() => new URLSearchParams(location.search).get('mode') === 'register' ? 'register' : 'login');
   const [form, setForm] = useState({ name: '', email: '', username: '', password: '' });
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation();
-  const from = location.state?.from || '/my-events';
+  const from = location.state?.from || '/my-activities';
+
+  useEffect(() => {
+    setMode(new URLSearchParams(location.search).get('mode') === 'register' ? 'register' : 'login');
+    setError('');
+  }, [location.search]);
 
   const submit = async (event) => {
     event.preventDefault();
@@ -481,7 +699,7 @@ function AuthPage({ session }) {
     } catch (reason) { setError(reason.message); }
     finally { setBusy(false); }
   };
-  if (session.user) return <Navigate to={session.user.username ? '/my-events' : '/onboarding/username'} replace />;
+  if (session.user) return <Navigate to={session.user.username ? '/my-activities' : '/onboarding/username'} replace />;
 
   return (
     <main className="auth-layout">
@@ -509,7 +727,7 @@ function UsernameSetupPage({ session }) {
   const [username, setUsername] = useState(session.user?.username || '');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
-  const from = location.state?.from || '/my-events';
+  const from = location.state?.from || '/my-activities';
 
   if (!session.user) return <Navigate to="/login" replace />;
   if (session.user.username) return <Navigate to={from} replace />;
@@ -829,7 +1047,7 @@ function SettingsPage({ session, theme, onThemeChange }) {
     navigate('/login', { replace: true });
   };
 
-  if (!['account', 'profile', 'privacy', 'appearance', 'connections'].includes(section)) {
+  if (!['account', 'profile', 'privacy', 'notifications', 'appearance', 'connections'].includes(section)) {
     return <Navigate to="/settings/account" replace />;
   }
 
@@ -1042,30 +1260,58 @@ function SettingsPage({ session, theme, onThemeChange }) {
   );
 }
 
-function MyEvents({ token }) {
+function MyActivitiesPage({ token }) {
   const [items, setItems] = useState([]);
   const [standing, setStanding] = useState({ rank: null, points: 0, eventsAttended: 0 });
   const [attendanceHistory, setAttendanceHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [leaderboardError, setLeaderboardError] = useState('');
+  const [reloadKey, setReloadKey] = useState(0);
   useEffect(() => {
-    Promise.all([api('/events/my', { token }), api('/events/leaderboard/me', { token })])
-      .then(([{ events }, personal]) => {
-        setItems(events);
-        setStanding(personal.standing);
-        setAttendanceHistory(personal.attendanceHistory);
+    let active = true;
+    setLoading(true);
+    setError('');
+    setLeaderboardError('');
+    Promise.allSettled([api('/events/my', { token }), api('/events/leaderboard/me', { token })])
+      .then(([eventsResult, leaderboardResult]) => {
+        if (!active) return;
+        if (eventsResult.status === 'fulfilled') setItems(eventsResult.value.events);
+        else setError(eventsResult.reason.message);
+        if (leaderboardResult.status === 'fulfilled') {
+          setStanding(leaderboardResult.value.standing);
+          setAttendanceHistory(leaderboardResult.value.attendanceHistory);
+        } else setLeaderboardError(leaderboardResult.reason.message);
       })
-      .catch((reason) => setError(reason.message))
-      .finally(() => setLoading(false));
-  }, [token]);
+      .finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
+  }, [reloadKey, token]);
 
   return (
     <main className="page-wrap">
-      <div className="page-heading"><span className="eyebrow">YOUR LINEUP</span><h1>My <span>events.</span></h1><p>Everything you’re signed up for, all in one place.</p></div>
-      {error && <div className="notice error-notice">{error}</div>}
-      {loading ? <div className="empty-state"><span className="loader" /> Loading your events...</div> : <>
-        <section className="personal-leaderboard">
-          <div className="personal-leaderboard-heading"><span className="eyebrow"><Trophy size={15} /> YOUR LEADERBOARD</span><Link to="/leaderboard">Global rankings <ArrowRight size={15} /></Link></div>
+      <div className="page-heading"><span className="eyebrow">YOUR COMMUNITY DASHBOARD</span><h1>My <span>Activities.</span></h1><p>Your registered events, joined roadmaps, and progress in one place.</p></div>
+      <section className="my-activities-section" aria-labelledby="my-events-heading">
+        <div className="my-activities-section-heading"><div><span className="eyebrow">YOUR LINEUP</span><h2 id="my-events-heading">My Events</h2></div><Link className="text-link" to="/">Explore events <ArrowRight size={15} /></Link></div>
+        {error && <div className="notice error-notice" role="alert">{error} <button className="text-link" type="button" onClick={() => setReloadKey((value) => value + 1)}>Try again</button></div>}
+        {loading ? <div className="empty-state"><span className="loader" /> Loading your events...</div> : error ? null : items.length ?
+          <div className="my-event-list">{items.map((item, index) =>
+            <article className="my-event-card" key={item.registrationId}>
+              <div className={`my-event-date accent-${index % 4}`}><b>{new Date(item.event.startsAt).toLocaleDateString(undefined, { day: '2-digit' })}</b><span>{new Date(item.event.startsAt).toLocaleDateString(undefined, { month: 'short' })}</span></div>
+              <div className="my-event-info"><span className="category-label">{item.event.category}</span><h3><Link to={`/events/${item.event.slug}`}>{item.event.title}</Link></h3><span>{eventDate(item.event.startsAt, { weekday: 'short', year: undefined })} · {item.event.mode === 'offline' ? item.event.location : 'Online'}</span></div>
+              <div className="ticket-list-action">
+                {item.checkedInAt
+                  ? <span className="registered-badge"><Check size={16} /> Checked in · +{item.pointsAwarded} pts</span>
+                  : <span className="check-status">Not checked in</span>}
+                <Link className="button button-outline" to={`/events/${item.event.slug}`}><Ticket size={16} /> Event details</Link>
+              </div>
+            </article>,
+          )}</div> :
+          <div className="empty-state"><span className="empty-icon"><Ticket size={24} /></span><h3>Your next adventure is waiting.</h3><p>You haven’t registered for an event yet.</p><Link className="button button-dark" to="/">Explore events <ArrowRight size={16} /></Link></div>}
+      </section>
+      {!loading && <section className="personal-leaderboard">
+        <div className="personal-leaderboard-heading"><span className="eyebrow"><Trophy size={15} /> YOUR CONTEST STATS</span><Link to="/leaderboard">Global rankings <ArrowRight size={15} /></Link></div>
+        {leaderboardError && <div className="notice error-notice" role="alert">{leaderboardError}</div>}
+        {!leaderboardError && <>
           <div className="personal-leaderboard-stats">
             <div><small>CURRENT RANK</small><strong>{standing.rank ? `#${standing.rank}` : '—'}</strong></div>
             <div><small>TOTAL POINTS</small><strong>{standing.points}</strong></div>
@@ -1073,27 +1319,14 @@ function MyEvents({ token }) {
           </div>
           <div className="personal-history">
             <h2>Attendance history</h2>
-            {attendanceHistory.length ? attendanceHistory.map((entry) => <div className="personal-history-row" key={`${entry.event.id}-${entry.checkedInAt}`}>
+            {attendanceHistory?.length ? attendanceHistory.map((entry) => <div className="personal-history-row" key={`${entry.event.id}-${entry.checkedInAt}`}>
               <span><b>{entry.event.title}</b><small>{eventDate(entry.checkedInAt)}</small></span>
               <strong>+{entry.pointsAwarded} pts</strong>
             </div>) : <p>You’ll see attended events and earned points here.</p>}
           </div>
-        </section>
-        {items.length ?
-        <div className="my-event-list">{items.map((item, index) =>
-          <article className="my-event-card" key={item.registrationId}>
-            <div className={`my-event-date accent-${index % 4}`}><b>{new Date(item.event.startsAt).toLocaleDateString(undefined, { day: '2-digit' })}</b><span>{new Date(item.event.startsAt).toLocaleDateString(undefined, { month: 'short' })}</span></div>
-            <div className="my-event-info"><span className="category-label">{item.event.category}</span><h3><Link to={`/events/${item.event.slug}`}>{item.event.title}</Link></h3><span>{eventDate(item.event.startsAt, { weekday: 'short', year: undefined })} · {item.event.mode === 'offline' ? item.event.location : 'Online'}</span></div>
-            <div className="ticket-list-action">
-              {item.checkedInAt
-                ? <span className="registered-badge"><Check size={16} /> Checked in · +{item.pointsAwarded} pts</span>
-                : <span className="check-status">Not checked in</span>}
-              <Link className="button button-outline" to={`/events/${item.event.slug}`}><Ticket size={16} /> Event details</Link>
-            </div>
-          </article>,
-        )}</div> :
-        <div className="empty-state"><span className="empty-icon"><Ticket size={24} /></span><h3>Your next adventure is waiting.</h3><p>You haven’t registered for an event yet.</p><Link className="button button-dark" to="/">Explore events <ArrowRight size={16} /></Link></div>}
-      </>}
+        </>}
+      </section>}
+      <MyRoadmapsSection token={token} />
     </main>
   );
 }
@@ -1153,7 +1386,7 @@ function CheckInPage({ token, user }) {
 
   return (
     <main className="page-wrap checkin-page">
-      <Link className="back-link" to={user ? '/my-events' : '/'}><ChevronLeft size={16} /> {user ? 'Back to my events' : 'All events'}</Link>
+      <Link className="back-link" to={user ? '/my-activities' : '/'}><ChevronLeft size={16} /> {user ? 'Back to My Activities' : 'All events'}</Link>
       {loading && <div className="empty-state"><span className="loader" /> Checking your event...</div>}
       {!loading && event && <article className="checkin-card">
         <div className="checkin-card-heading"><span className="eyebrow"><QrCode size={16} /> EVENT CHECK-IN</span><span className="category-label">{event.category}</span></div>
@@ -1176,7 +1409,7 @@ function CheckInPage({ token, user }) {
             {!user
               ? <Link className="button button-dark" to="/login" state={{ from: `${location.pathname}${location.search}` }}>Sign in to check in <ArrowRight size={17} /></Link>
               : attendance && !attendance.checkedInAt && <button className="button button-dark" disabled={busy || !checkInWindow?.isOpen} onClick={checkIn}>{busy ? 'Checking in...' : 'Confirm check-in'} <Check size={17} /></button>}
-            <Link className="button button-outline" to={user ? '/my-events' : `/events/${event.slug}`}>{user ? 'My events' : 'Event details'}</Link>
+            <Link className="button button-outline" to={user ? '/my-activities' : `/events/${event.slug}`}>{user ? 'My Activities' : 'Event details'}</Link>
           </div>
         </div>
       </article>}
@@ -1284,21 +1517,6 @@ function NotificationsPage({ token }) {
           </div>
         </article>)}</section>}
   </main>;
-}
-
-function ResourcesPage() {
-  return (
-    <main className="page-wrap resources-page">
-      <div className="resources-card">
-        <span className="resources-icon"><BookOpen size={30} /></span>
-        <span className="eyebrow">LEARN. PRACTICE. LEVEL UP.</span>
-        <h1>Resources <span>are coming soon.</span></h1>
-        <p>We’re putting together helpful materials for your competitive programming journey. Check back soon.</p>
-        <Link className="button button-dark" to="/">Explore events <ArrowRight size={16} /></Link>
-        <span className="resources-decoration" aria-hidden="true">{'{ }'}</span>
-      </div>
-    </main>
-  );
 }
 
 function UserProfilePage({ session }) {
@@ -1451,7 +1669,7 @@ function EventForm({ token, event, onSaved, onCancel }) {
       {form.mode === 'offline' && <label className="span-two">Location<input required value={form.location} onChange={(e) => update('location', e.target.value)} /></label>}
       <label>Registration deadline (optional)<input type="datetime-local" value={form.registrationDeadline} onChange={(e) => update('registrationDeadline', e.target.value)} /></label>
       <label>Capacity (optional)<input type="number" min="1" value={form.capacity} onChange={(e) => update('capacity', e.target.value)} /></label>
-      <label>Status<select value={form.status} onChange={(e) => update('status', e.target.value)}><option value="draft">Draft</option><option value="published">Published</option><option value="cancelled">Cancelled</option></select></label>
+      <label>Status<select value={form.status} onChange={(e) => update('status', e.target.value)}><option value="draft">Draft</option><option value="published">Published</option><option value="cancelled">Cancelled</option></select><small>Only published events appear on the homepage and public Events page.</small></label>
       <label className="span-two">Description<textarea required rows="4" value={form.description} onChange={(e) => update('description', e.target.value)} /></label>
     </div>
     {error && <div className="notice error-notice">{error}</div>}
@@ -1478,8 +1696,20 @@ function Admin({ token }) {
   const [qrLoadingId, setQrLoadingId] = useState('');
   const [qrError, setQrError] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
 
-  const loadEvents = useCallback(() => api('/admin/events', { token }).then(({ events: result }) => setEvents(result)).catch((reason) => setError(reason.message)), [token]);
+  const loadEvents = useCallback(async () => {
+    setLoading(true);
+    try {
+      const { events: result } = await api('/admin/events', { token });
+      setEvents(result);
+      setError('');
+    } catch (reason) {
+      setError(reason.message);
+    } finally {
+      setLoading(false);
+    }
+  }, [token]);
   useEffect(() => { loadEvents(); }, [loadEvents]);
   const loadAttendees = async (event) => {
     setSelected(event);
@@ -1532,11 +1762,11 @@ function Admin({ token }) {
   return (
     <main className="page-wrap admin-page">
       <div className="page-heading admin-heading"><div><span className="eyebrow">THE CONTROL ROOM</span><h1>Event <span>admin.</span></h1><p>Make good things happen.</p></div><button className="button button-dark" onClick={() => setEditing(null)}>+ Create event</button></div>
-      {error && <div className="notice error-notice">{error}</div>}
+      {error && <div className="notice error-notice" role="alert">{error}</div>}
       <div className="admin-grid">
         <section className="admin-panel"><h2>All events <span>{events.length}</span></h2>
-          {events.map((event) => <div className="admin-event-row" key={event.id}><div><b>{event.title}</b><span>{eventDate(event.startsAt)} · {event.attendanceCount || 0}/{event.registrationCount} attended · {event.totalPointsAwarded || 0} pts awarded · {event.attendancePoints ?? 0} pts per attendee</span></div><span className={`status-pill status-${event.status}`}>{event.status}</span><div className="admin-row-actions"><button className="small-button" disabled={event.status === 'deleted'} onClick={() => setEditing(event)}>Edit</button><button className="small-button" onClick={() => loadAttendees(event)}>Attendees</button><button className="small-button" disabled={event.status !== 'published' || qrLoadingId === event.id} onClick={() => generateEventQr(event)}>{qrLoadingId === event.id ? 'Generating...' : 'Event QR'}</button><button className="small-button delete-event-button" disabled={event.status === 'deleted'} onClick={() => { setEventToDelete(event); setConfirmationName(''); setDeleteError(''); }}>Delete</button></div></div>)}
-          {!events.length && <p className="muted">No events yet. Create your first event.</p>}
+          {loading ? <p className="muted">Loading events...</p> : events.map((event) => <div className="admin-event-row" key={event.id}><div><b>{event.title}</b><span>{eventDate(event.startsAt)} · {event.attendanceCount || 0}/{event.registrationCount} attended · {event.totalPointsAwarded || 0} pts awarded · {event.attendancePoints ?? 0} pts per attendee</span></div><span className={`status-pill status-${event.status}`}>{event.status}</span><div className="admin-row-actions"><button className="small-button" disabled={event.status === 'deleted'} onClick={() => setEditing(event)}>Edit</button><button className="small-button" onClick={() => loadAttendees(event)}>Attendees</button><button className="small-button" disabled={event.status !== 'published' || qrLoadingId === event.id} onClick={() => generateEventQr(event)}>{qrLoadingId === event.id ? 'Generating...' : 'Event QR'}</button><button className="small-button delete-event-button" disabled={event.status === 'deleted'} onClick={() => { setEventToDelete(event); setConfirmationName(''); setDeleteError(''); }}>Delete</button></div></div>)}
+          {!loading && !events.length && <p className="muted">No events yet. Create your first event.</p>}
           {qrError && <div className="notice error-notice">{qrError}</div>}
         </section>
         <section className="admin-panel">
@@ -1584,8 +1814,9 @@ function Footer() {
           </div>
           <nav className="footer-links" aria-label="Footer navigation">
             <b>Explore</b>
-            <Link to="/">Events</Link>
-            <Link to="/resources">Resources</Link>
+            <Link to="/">Home</Link>
+            <Link to="/events">Events</Link>
+            <Link to="/roadmaps">Roadmaps</Link>
             <Link to="/leaderboard">Leaderboard</Link>
             <Link to="/login">Join the community</Link>
           </nav>
@@ -1634,25 +1865,29 @@ export default function App() {
     <div className="app-shell">
       <Header user={session.user} onSignOut={session.signOut} token={session.token} />
       <Routes>
-        <Route path="/" element={<EventsPage />} />
+        <Route path="/" element={<HomePage />} />
+        <Route path="/events" element={<EventsPage />} />
         <Route path="/events/:eventId" element={<EventDetail token={session.token} user={session.user} />} />
         <Route path="/roadmaps" element={<RoadmapsPage />} />
         <Route path="/roadmaps/cycles/:cycleId" element={<RoadmapCyclePage token={session.token} user={session.user} />} />
         <Route path="/roadmaps/check-in/:sessionId" element={<RequireUsername session={session}><RoadmapCheckInPage token={session.token} /></RequireUsername>} />
-        <Route path="/roadmaps/:slug" element={<RoadmapDetailsPage />} />
+        <Route path="/roadmaps/:slug" element={<RoadmapDetailsPage token={session.token} user={session.user} />} />
         <Route path="/check-in/:eventId" element={session.loading ? <div className="empty-state"><span className="loader" /> Loading your account...</div> : <CheckInPage token={session.token} user={session.user} />} />
         <Route path="/login" element={<AuthPage session={session} />} />
         <Route path="/onboarding/username" element={session.loading ? <div className="empty-state"><span className="loader" /> Loading your account...</div> : session.user ? <UsernameSetupPage session={session} /> : <Navigate to="/login" replace />} />
-        <Route path="/my-events" element={<RequireUsername session={session}><MyEvents token={session.token} /></RequireUsername>} />
-        <Route path="/my-roadmaps" element={<RequireUsername session={session}><MyRoadmapsPage /></RequireUsername>} />
+        <Route path="/my-activities" element={<RequireUsername session={session}><MyActivitiesPage token={session.token} /></RequireUsername>} />
+        <Route path="/my-events" element={<Navigate to="/my-activities" replace />} />
+        <Route path="/my-roadmaps" element={<Navigate to="/my-activities" replace />} />
         <Route path="/notifications" element={<RequireUsername session={session}><NotificationsPage token={session.token} /></RequireUsername>} />
         <Route path="/settings" element={<RequireUsername session={session}><Navigate to="/settings/account" replace /></RequireUsername>} />
         <Route path="/settings/:section" element={<RequireUsername session={session}><SettingsPage session={session} theme={theme} onThemeChange={setTheme} /></RequireUsername>} />
-        <Route path="/resources" element={<ResourcesPage />} />
+        <Route path="/resources" element={<Navigate to="/" replace />} />
         <Route path="/leaderboard" element={<LeaderboardPage />} />
         <Route path="/users/:username" element={<UserProfilePage session={session} />} />
-        <Route path="/admin" element={<RequireUsername session={session}>{session.user?.role === 'admin' ? <Admin token={session.token} /> : <Navigate to="/login" replace />}</RequireUsername>} />
-        <Route path="/admin/roadmaps" element={<RequireUsername session={session}>{session.user?.role === 'admin' ? <AdminRoadmapsPage token={session.token} /> : <Navigate to="/login" replace />}</RequireUsername>} />
+        <Route path="/admin" element={<RequireUsername session={session}>{session.user?.role === 'admin' ? <AdminDashboardLayout activeSection="events"><Admin token={session.token} /></AdminDashboardLayout> : <Navigate to="/login" replace />}</RequireUsername>} />
+        <Route path="/admin/overview" element={<RequireUsername session={session}>{session.user?.role === 'admin' ? <AdminDashboardLayout activeSection="overview"><AdminOverviewPage token={session.token} /></AdminDashboardLayout> : <Navigate to="/login" replace />}</RequireUsername>} />
+        <Route path="/admin/events" element={<RequireUsername session={session}>{session.user?.role === 'admin' ? <AdminDashboardLayout activeSection="events"><Admin token={session.token} /></AdminDashboardLayout> : <Navigate to="/login" replace />}</RequireUsername>} />
+        <Route path="/admin/roadmaps/*" element={<RequireUsername session={session}>{session.user?.role === 'admin' ? <AdminDashboardLayout activeSection="roadmaps"><AdminRoadmapsPage token={session.token} /></AdminDashboardLayout> : <Navigate to="/login" replace />}</RequireUsername>} />
         <Route path="*" element={<main className="page-wrap"><div className="empty-state"><h3>That page wandered off.</h3><Link className="button button-dark" to="/">Back to events</Link></div></main>} />
       </Routes>
       <Footer />

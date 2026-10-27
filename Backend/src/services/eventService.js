@@ -28,8 +28,10 @@ import { getRoadmapPointsByStudent } from './roadmapService.js';
 export async function listEvents(filters) {
   const now = new Date();
   const query = { status: 'published' };
-  if (filters.status === 'past') query.endsAt = { $lt: now };
-  else query.endsAt = { $gte: now };
+  if (filters.sort !== 'latest') {
+    if (filters.status === 'past') query.endsAt = { $lt: now };
+    else query.endsAt = { $gte: now };
+  }
   if (typeof filters.category === 'string' && filters.category.trim()) {
     query.category = filters.category.trim();
   }
@@ -37,7 +39,9 @@ export async function listEvents(filters) {
     const escaped = filters.q.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     query.$or = [{ title: new RegExp(escaped, 'i') }, { description: new RegExp(escaped, 'i') }, { category: new RegExp(escaped, 'i') }];
   }
-  const sort = { startsAt: filters.status === 'past' ? -1 : 1 };
+  const sort = filters.sort === 'latest'
+    ? { createdAt: -1, _id: -1 }
+    : { startsAt: filters.status === 'past' ? -1 : 1 };
   return findPublicEvents(query, sort);
 }
 

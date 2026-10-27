@@ -68,7 +68,7 @@ export function validateRoadmapInput(input, { partial = false } = {}) {
 }
 
 const cycleFields = [
-  'order', 'title', 'description', 'difficulty', 'objectives', 'prerequisites',
+  'order', 'title', 'description', 'location', 'difficulty', 'objectives', 'prerequisites',
   'startDate', 'endDate', 'sessionsPerWeek', 'trainingDays', 'startTime',
   'sessionDurationMinutes', 'timeZone', 'registrationOpensAt',
   'registrationClosesAt', 'capacity', 'attendancePoints', 'status',
@@ -77,13 +77,13 @@ const cycleFields = [
 export function validateCycleInput(input, { partial = false } = {}) {
   objectInput(input, 'Cycle details');
   rejectUnknown(input, cycleFields);
-  const required = partial ? [] : cycleFields.filter((field) => !['objectives', 'prerequisites', 'capacity', 'attendancePoints', 'status'].includes(field));
+  const required = partial ? [] : cycleFields.filter((field) => !['location', 'objectives', 'prerequisites', 'capacity', 'attendancePoints', 'status'].includes(field));
   const included = validateFields(input, cycleFields, required);
   const output = {};
   for (const field of included) {
     const value = input[field];
-    if (['title', 'description', 'prerequisites', 'startDate', 'endDate', 'startTime', 'timeZone'].includes(field)) {
-      output[field] = text(value, field, { title: 120, description: 3000, prerequisites: 1000, startDate: 10, endDate: 10, startTime: 5, timeZone: 80 }[field], { required: ['title', 'description'].includes(field) });
+    if (['title', 'description', 'location', 'prerequisites', 'startDate', 'endDate', 'startTime', 'timeZone'].includes(field)) {
+      output[field] = text(value, field, { title: 120, description: 3000, location: 200, prerequisites: 1000, startDate: 10, endDate: 10, startTime: 5, timeZone: 80 }[field], { required: ['title', 'description'].includes(field) });
     } else if (field === 'difficulty') {
       if (!['beginner', 'intermediate', 'advanced'].includes(value)) invalid('difficulty must be beginner, intermediate, or advanced.', field);
       output[field] = value;
