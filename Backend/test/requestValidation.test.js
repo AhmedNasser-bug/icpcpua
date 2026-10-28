@@ -69,7 +69,9 @@ test('event schemas reject missing fields, unknown fields, invalid queries, and 
   assert.throws(() => adminValidation.eventCreate.body({ title: 'Missing fields' }), /description is required/);
   assert.throws(() => adminValidation.eventCreate.body({ ...validEvent, isAdmin: true }), /Unexpected field/);
   assert.throws(() => eventValidation.list.query({ status: 'future' }), /status must be upcoming or past/);
-  assert.throws(() => eventValidation.eventDetails.params({ eventId: 'not-an-id' }), /valid identifier/);
+  assert.equal(eventValidation.eventDetails.params({ eventId: 'icpc-orientation' }).eventId, 'icpc-orientation');
+  assert.throws(() => eventValidation.eventDetails.params({ eventId: 'invalid slug' }), /valid identifier or event slug/);
+  assert.throws(() => eventValidation.checkInDetails.params({ eventId: 'icpc-orientation' }), /valid identifier/);
 });
 
 test('auth schemas validate credentials, strict fields, aliases, and partial profile updates', () => {

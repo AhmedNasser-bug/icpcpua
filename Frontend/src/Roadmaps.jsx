@@ -972,7 +972,6 @@ export function RoadmapCyclePage({ token, user }) {
       {user?.role === 'user' && data.registrationOpen && <button className="button button-dark" type="button" disabled={busy} onClick={enroll}>{busy ? 'Enrolling...' : 'Enroll in cycle'} <ArrowRight size={16} /></button>}
       {!data.registrationOpen && <span className="check-status">Registration is currently closed.</span>}
     </section>}
-    {enrolled && <div className="notice success-notice"><Check size={17} /> You’re enrolled in this cycle.</div>}
     <section className="roadmap-content-section">
       <h2>Session schedule</h2>
       {sessions.length ? <div className="roadmap-calendar" aria-label={`${cycle.title} session calendar`}>

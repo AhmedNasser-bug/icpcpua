@@ -32,9 +32,23 @@ function eventParams(value) {
   return input;
 }
 
+function eventLookupParams(value) {
+  const input = object(value, 'params', ['eventId']);
+  const eventId = input.eventId;
+  if (
+    typeof eventId !== 'string'
+    || !eventId
+    || (eventId.length > 180)
+    || (!mongoose.isValidObjectId(eventId) && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/i.test(eventId))
+  ) {
+    invalid('eventId must be a valid identifier or event slug.', 'eventId');
+  }
+  return { eventId };
+}
+
 export const list = { query: eventsQuery };
 export const memberProfile = { params: memberParams };
-export const eventDetails = { params: eventParams };
+export const eventDetails = { params: eventLookupParams };
 export const checkInDetails = { params: eventParams, query: checkInQuery };
 export const checkInSubmit = { params: eventParams, body: checkInBody };
 export const eventAction = { params: eventParams, body: emptyBody };
