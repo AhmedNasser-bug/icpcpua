@@ -5,19 +5,29 @@ import {
   markNotificationRead,
 } from '../services/notificationService.js';
 
+function paramsInput(req) {
+  return req.validated?.params ?? req.params;
+}
+
+function queryInput(req) {
+  return req.validated?.query ?? req.query;
+}
+
 export async function list(req, res) {
-  const unreadOnly = req.query.filter === 'unread';
-  if (req.query.filter && !['all', 'unread'].includes(req.query.filter)) {
+  const { filter } = queryInput(req);
+  const unreadOnly = filter === 'unread';
+  if (filter && !['all', 'unread'].includes(filter)) {
     return res.status(400).json({ error: { message: 'filter must be all or unread.' } });
   }
   return res.json(await getNotificationsForUser(req.user.id, unreadOnly));
 }
 
 export async function markRead(req, res) {
-  if (!mongoose.isValidObjectId(req.params.notificationId)) {
+  const { notificationId } = paramsInput(req);
+  if (!mongoose.isValidObjectId(notificationId)) {
     return res.status(404).json({ error: { message: 'Notification not found.' } });
   }
-  const notification = await markNotificationRead(req.user.id, req.params.notificationId);
+  const notification = await markNotificationRead(req.user.id, notificationId);
   if (!notification) return res.status(404).json({ error: { message: 'Notification not found.' } });
   return res.json({ notification });
 }

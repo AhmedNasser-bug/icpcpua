@@ -4,6 +4,17 @@ export function notFound(req, res) {
 
 export function errorHandler(error, req, res, next) {
   if (res.headersSent) return next(error);
+  if (error.type === 'entity.parse.failed') {
+    return res.status(400).json({
+      error: {
+        message: 'Request body must be valid JSON.',
+        fields: [{ field: 'body', message: 'Request body must be valid JSON.' }],
+      },
+    });
+  }
+  if (error.type === 'entity.too.large') {
+    return res.status(413).json({ error: { message: 'Request body is too large.' } });
+  }
   if (error.code === 11000) {
     return res.status(409).json({ error: { message: 'A record with those details already exists.' } });
   }

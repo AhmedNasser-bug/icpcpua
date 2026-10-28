@@ -12,8 +12,20 @@ import {
   registerForEvent,
 } from '../services/eventService.js';
 
+function paramsInput(req) {
+  return req.validated?.params ?? req.params;
+}
+
+function queryInput(req) {
+  return req.validated?.query ?? req.query;
+}
+
+function bodyInput(req) {
+  return req.validated?.body ?? req.body;
+}
+
 export async function list(req, res) {
-  return res.json({ events: await listEvents(req.query) });
+  return res.json({ events: await listEvents(queryInput(req)) });
 }
 
 export async function leaderboard(req, res) {
@@ -26,7 +38,8 @@ export async function myLeaderboard(req, res) {
 }
 
 export async function memberProfile(req, res) {
-  const profile = await getMemberProfile(req.params.username);
+  const { username } = paramsInput(req);
+  const profile = await getMemberProfile(username);
   if (!profile) return res.status(404).json({ error: { message: 'Member profile not found.' } });
   return res.json({ profile });
 }
@@ -36,10 +49,12 @@ export async function myEvents(req, res) {
 }
 
 export async function checkInDetails(req, res) {
-  if (!mongoose.isValidObjectId(req.params.eventId)) {
+  const { eventId } = paramsInput(req);
+  const { token } = queryInput(req);
+  if (!mongoose.isValidObjectId(eventId)) {
     return res.status(404).json({ error: { message: 'This event check-in link is not valid.' } });
   }
-  const result = await getCheckInDetails(req.params.eventId, req.query.token, req.user.id);
+  const result = await getCheckInDetails(eventId, token, req.user.id);
   if (result.type === 'invalid') {
     return res.status(404).json({ error: { message: 'This event check-in link is invalid or has expired.' } });
   }
@@ -55,11 +70,12 @@ export async function checkInDetails(req, res) {
 }
 
 export async function submitCheckIn(req, res) {
-  if (!mongoose.isValidObjectId(req.params.eventId)) {
+  const { eventId } = paramsInput(req);
+  const body = bodyInput(req);
+  if (!mongoose.isValidObjectId(eventId)) {
     return res.status(404).json({ error: { message: 'This event check-in link is not valid.' } });
   }
-  const body = req.body && typeof req.body === 'object' && !Array.isArray(req.body) ? req.body : {};
-  const result = await checkIn(req.params.eventId, body.token, req.user.id);
+  const result = await checkIn(eventId, body.token, req.user.id);
   if (result.type === 'invalid') {
     return res.status(404).json({ error: { message: 'This event check-in link is invalid or has expired.' } });
   }
@@ -79,16 +95,18 @@ export async function submitCheckIn(req, res) {
 }
 
 export async function getById(req, res) {
-  const event = await getPublicEvent(req.params.eventId);
+  const { eventId } = paramsInput(req);
+  const event = await getPublicEvent(eventId);
   if (!event) return res.status(404).json({ error: { message: 'Event not found.' } });
   return res.json({ event });
 }
 
 export async function register(req, res) {
-  if (!mongoose.isValidObjectId(req.params.eventId)) {
+  const { eventId } = paramsInput(req);
+  if (!mongoose.isValidObjectId(eventId)) {
     return res.status(404).json({ error: { message: 'Event not found.' } });
   }
-  const result = await registerForEvent(req.params.eventId, req.user.id);
+  const result = await registerForEvent(eventId, req.user.id);
   if (result.type === 'unavailable') {
     return res.status(409).json({ error: { message: 'Registration is not available for this event.' } });
   }
@@ -102,10 +120,11 @@ export async function register(req, res) {
 }
 
 export async function cancel(req, res) {
-  if (!mongoose.isValidObjectId(req.params.eventId)) {
+  const { eventId } = paramsInput(req);
+  if (!mongoose.isValidObjectId(eventId)) {
     return res.status(404).json({ error: { message: 'Registration not found.' } });
   }
-  const result = await cancelRegistration(req.params.eventId, req.user.id);
+  const result = await cancelRegistration(eventId, req.user.id);
   if (result.type === 'event_not_found') {
     return res.status(404).json({ error: { message: 'Event not found.' } });
   }

@@ -163,7 +163,7 @@ test('profile update requires authentication', async () => {
     assert.equal(notifications.status, 401);
     for (const [path, method] of [
       ['/api/roadmaps/my', 'GET'],
-      ['/api/roadmaps/cycles/507f1f77bcf86cd799439011/enroll', 'POST'],
+      ['/api/roadmaps/intro-to-programming/cycles/507f1f77bcf86cd799439011/enroll', 'POST'],
       ['/api/admin/roadmaps', 'GET'],
     ]) {
       const response = await fetch(`http://127.0.0.1:${port}${path}`, { method });

@@ -14,18 +14,32 @@ import {
 } from '../services/roadmapService.js';
 import { validateRoadmapProgressInput } from '../utils/roadmapValidation.js';
 
+function paramsInput(req) {
+  return req.validated?.params ?? req.params;
+}
+
+function queryInput(req) {
+  return req.validated?.query ?? req.query;
+}
+
+function bodyInput(req) {
+  return req.validated?.body ?? req.body;
+}
+
 export async function list(req, res) {
   return res.json({ roadmaps: await listPublicRoadmaps() });
 }
 
 export async function getBySlug(req, res) {
-  const roadmap = await getPublicRoadmap(req.params.slug);
+  const { slug } = paramsInput(req);
+  const roadmap = await getPublicRoadmap(slug);
   if (!roadmap) return res.status(404).json({ error: { message: 'Roadmap not found.' } });
   return res.json({ roadmap });
 }
 
 export async function roadmapCycles(req, res) {
-  const result = await listStudentCycles(req.params.roadmapSlug, req.user.id);
+  const { roadmapSlug } = paramsInput(req);
+  const result = await listStudentCycles(roadmapSlug, req.user.id);
   if (result.type === 'not_found') return res.status(404).json({ error: { message: 'Roadmap not found.' } });
   res.set('Cache-Control', 'private, no-store');
   return res.json(result);
@@ -38,7 +52,8 @@ export async function allRoadmapCycles(req, res) {
 
 export async function roadmapProgress(req, res) {
   if (req.user.role !== 'user') return res.status(403).json({ error: { message: 'Only student accounts can track roadmap problems.' } });
-  const result = await getStudentRoadmapProgress(req.params.roadmapSlug, req.user.id);
+  const { roadmapSlug } = paramsInput(req);
+  const result = await getStudentRoadmapProgress(roadmapSlug, req.user.id);
   if (result.type === 'not_found') return res.status(404).json({ error: { message: 'Roadmap not found.' } });
   res.set('Cache-Control', 'private, no-store');
   return res.json({ solvedProblems: result.solvedProblems });
@@ -46,8 +61,9 @@ export async function roadmapProgress(req, res) {
 
 export async function updateRoadmapProgress(req, res) {
   if (req.user.role !== 'user') return res.status(403).json({ error: { message: 'Only student accounts can track roadmap problems.' } });
-  const progressInput = validateRoadmapProgressInput(req.body);
-  const result = await setStudentRoadmapProblemSolved(req.params.roadmapSlug, req.user.id, progressInput);
+  const { roadmapSlug } = paramsInput(req);
+  const progressInput = validateRoadmapProgressInput(bodyInput(req));
+  const result = await setStudentRoadmapProblemSolved(roadmapSlug, req.user.id, progressInput);
   if (result.type === 'not_found') return res.status(404).json({ error: { message: 'Roadmap not found.' } });
   if (result.type === 'invalid_problem') return res.status(404).json({ error: { message: 'Problem not found in this roadmap topic.' } });
   res.set('Cache-Control', 'private, no-store');
@@ -55,10 +71,11 @@ export async function updateRoadmapProgress(req, res) {
 }
 
 export async function cycleDetails(req, res) {
-  if (!mongoose.isValidObjectId(req.params.cycleId)) {
+  const { roadmapSlug, cycleId } = paramsInput(req);
+  if (!mongoose.isValidObjectId(cycleId)) {
     return res.status(404).json({ error: { message: 'Cycle not found.' } });
   }
-  const result = await getStudentCycle(req.params.roadmapSlug, req.params.cycleId, req.user.id);
+  const result = await getStudentCycle(roadmapSlug, cycleId, req.user.id);
   if (result.type === 'not_found') return res.status(404).json({ error: { message: 'Cycle not found.' } });
   res.set('Cache-Control', 'private, no-store');
   return res.json(result);
@@ -66,10 +83,11 @@ export async function cycleDetails(req, res) {
 
 export async function enroll(req, res) {
   if (req.user.role !== 'user') return res.status(403).json({ error: { message: 'Only student accounts can enroll in a cycle.' } });
-  if (!mongoose.isValidObjectId(req.params.cycleId)) {
+  const { roadmapSlug, cycleId } = paramsInput(req);
+  if (!mongoose.isValidObjectId(cycleId)) {
     return res.status(404).json({ error: { message: 'Cycle not found.' } });
   }
-  const result = await enrollInCycle(req.params.roadmapSlug, req.params.cycleId, req.user.id);
+  const result = await enrollInCycle(roadmapSlug, cycleId, req.user.id);
   if (result.type === 'not_found') return res.status(404).json({ error: { message: 'Cycle not found.' } });
   if (result.type === 'unavailable') return res.status(409).json({ error: { message: 'Enrollment is not available for this cycle.' } });
   if (result.type === 'already_enrolled') return res.status(409).json({ error: { message: 'You are already enrolled in this cycle.' } });
@@ -84,10 +102,12 @@ export async function mine(req, res) {
 
 export async function sessionCheckInDetails(req, res) {
   if (req.user.role !== 'user') return res.status(403).json({ error: { message: 'Only student accounts can check in to a roadmap session.' } });
-  if (!mongoose.isValidObjectId(req.params.sessionId)) {
+  const { sessionId } = paramsInput(req);
+  const { token } = queryInput(req);
+  if (!mongoose.isValidObjectId(sessionId)) {
     return res.status(404).json({ error: { message: 'This session check-in link is invalid or expired.' } });
   }
-  const result = await getStudentSessionCheckIn(req.params.sessionId, req.query.token, req.user.id);
+  const result = await getStudentSessionCheckIn(sessionId, token, req.user.id);
   if (result.type === 'invalid') return res.status(404).json({ error: { message: 'This session check-in link is invalid or expired.' } });
   if (result.type === 'not_enrolled') return res.status(403).json({ error: { message: 'You must be enrolled in the parent cycle to check in.' } });
   res.set('Cache-Control', 'no-store');
@@ -96,11 +116,12 @@ export async function sessionCheckInDetails(req, res) {
 
 export async function submitSessionCheckIn(req, res) {
   if (req.user.role !== 'user') return res.status(403).json({ error: { message: 'Only student accounts can check in to a roadmap session.' } });
-  if (!mongoose.isValidObjectId(req.params.sessionId)) {
+  const { sessionId } = paramsInput(req);
+  if (!mongoose.isValidObjectId(sessionId)) {
     return res.status(404).json({ error: { message: 'This session check-in link is invalid or expired.' } });
   }
-  const body = req.body && typeof req.body === 'object' && !Array.isArray(req.body) ? req.body : {};
-  const result = await checkInToSession(req.params.sessionId, body.token, req.user.id);
+  const body = bodyInput(req);
+  const result = await checkInToSession(sessionId, body.token, req.user.id);
   if (result.type === 'invalid') return res.status(404).json({ error: { message: 'This session check-in link is invalid or expired.' } });
   if (result.type === 'not_enrolled') return res.status(403).json({ error: { message: 'You must be enrolled in the parent cycle to check in.' } });
   if (result.type === 'outside_window') return res.status(409).json({ error: { message: 'Session check-in is outside the attendance window.' } });

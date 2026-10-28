@@ -12,12 +12,17 @@ import {
 } from '../services/authService.js';
 import { validateNotificationPreferencesInput, validatePasswordChangeInput, validateProfilePrivacyInput, validateStudentId, validateStudentProfileInput, validateUsername } from '../utils/validation.js';
 
+function bodyInput(req) {
+  return req.validated?.body ?? req.body;
+}
+
 export async function register(req, res) {
-  if (!req.body || typeof req.body !== 'object' || Array.isArray(req.body)) {
+  const body = bodyInput(req);
+  if (!body || typeof body !== 'object' || Array.isArray(body)) {
     return res.status(400).json({ error: { message: 'Provide account details as a JSON object.' } });
   }
-  const { name, email, password } = req.body;
-  const incomingUsername = Object.prototype.hasOwnProperty.call(req.body, 'username') ? req.body.username : req.body.userName;
+  const { name, email, password } = body;
+  const incomingUsername = Object.prototype.hasOwnProperty.call(body, 'username') ? body.username : body.userName;
   if (typeof name !== 'string' || !name.trim() || name.trim().length > 80) {
     return res.status(400).json({ error: { message: 'Enter a name of 1–80 characters.' } });
   }
@@ -37,7 +42,7 @@ export async function register(req, res) {
 
   let studentId;
   try {
-    studentId = validateStudentId(req.body.studentId);
+    studentId = validateStudentId(body.studentId);
   } catch (error) {
     return res.status(error.status || 400).json({ error: { message: error.message } });
   }
@@ -65,7 +70,8 @@ export async function register(req, res) {
 }
 
 export async function login(req, res) {
-  const body = req.body && typeof req.body === 'object' && !Array.isArray(req.body) ? req.body : {};
+  const input = bodyInput(req);
+  const body = input && typeof input === 'object' && !Array.isArray(input) ? input : {};
   const email = typeof body.email === 'string' ? body.email.toLowerCase().trim() : '';
   const password = typeof body.password === 'string' ? body.password : '';
   const user = await authenticateUser(email, password);
@@ -74,7 +80,7 @@ export async function login(req, res) {
 }
 
 export async function updatePassword(req, res) {
-  const { currentPassword, newPassword } = validatePasswordChangeInput(req.body);
+  const { currentPassword, newPassword } = validatePasswordChangeInput(bodyInput(req));
   const result = await changePassword(req.user.id, currentPassword, newPassword);
   if (result === 'incorrect') {
     return res.status(401).json({ error: { message: 'Your current password is incorrect.' } });
@@ -89,13 +95,14 @@ export async function updatePassword(req, res) {
 }
 
 export async function updateStudentId(req, res) {
-  if (!req.body || typeof req.body !== 'object' || Array.isArray(req.body) || Object.keys(req.body).some((key) => key !== 'studentId')) {
+  const body = bodyInput(req);
+  if (!body || typeof body !== 'object' || Array.isArray(body) || Object.keys(body).some((key) => key !== 'studentId')) {
     return res.status(400).json({ error: { message: 'Provide only a student ID.' } });
   }
 
   let studentId;
   try {
-    studentId = validateStudentId(req.body.studentId);
+    studentId = validateStudentId(body.studentId);
   } catch (error) {
     return res.status(error.status || 400).json({ error: { message: error.message } });
   }
@@ -113,17 +120,18 @@ export async function updateStudentId(req, res) {
 }
 
 export async function updateUsername(req, res) {
-  if (!req.body || typeof req.body !== 'object' || Array.isArray(req.body)) {
+  const body = bodyInput(req);
+  if (!body || typeof body !== 'object' || Array.isArray(body)) {
     return res.status(400).json({ error: { message: 'Provide a username object.' } });
   }
 
   const allowedKeys = new Set(['username', 'userName']);
-  const unexpected = Object.keys(req.body).find((key) => !allowedKeys.has(key));
+  const unexpected = Object.keys(body).find((key) => !allowedKeys.has(key));
   if (unexpected) {
     return res.status(400).json({ error: { message: 'Provide only a username.' } });
   }
 
-  const incomingUsername = Object.prototype.hasOwnProperty.call(req.body, 'username') ? req.body.username : req.body.userName;
+  const incomingUsername = Object.prototype.hasOwnProperty.call(body, 'username') ? body.username : body.userName;
 
   let username;
   try {
@@ -147,7 +155,7 @@ export async function updateUsername(req, res) {
 export async function updateProfile(req, res) {
   let profile;
   try {
-    profile = validateStudentProfileInput(req.body);
+    profile = validateStudentProfileInput(bodyInput(req));
   } catch (error) {
     return res.status(error.status || 400).json({ error: { message: error.message, field: error.field } });
   }
@@ -159,7 +167,7 @@ export async function updateProfile(req, res) {
 export async function updatePrivacy(req, res) {
   let privacy;
   try {
-    privacy = validateProfilePrivacyInput(req.body);
+    privacy = validateProfilePrivacyInput(bodyInput(req));
   } catch (error) {
     return res.status(error.status || 400).json({ error: { message: error.message, field: error.field } });
   }
@@ -171,7 +179,7 @@ export async function updatePrivacy(req, res) {
 export async function updateNotificationPreferences(req, res) {
   let preferences;
   try {
-    preferences = validateNotificationPreferencesInput(req.body);
+    preferences = validateNotificationPreferencesInput(bodyInput(req));
   } catch (error) {
     return res.status(error.status || 400).json({ error: { message: error.message } });
   }
