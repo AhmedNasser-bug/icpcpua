@@ -2,7 +2,7 @@ export function validateEventInput(input, { partial = false } = {}) {
   if (!input || typeof input !== 'object' || Array.isArray(input)) {
     throw Object.assign(new Error('Event details must be a JSON object.'), { status: 400 });
   }
-  const fields = ['title', 'description', 'category', 'startsAt', 'endsAt', 'registrationDeadline', 'checkInOpensAt', 'checkInClosesAt', 'attendancePoints', 'mode', 'location', 'capacity', 'status'];
+  const fields = ['title', 'description', 'coverImageUrl', 'category', 'startsAt', 'endsAt', 'registrationDeadline', 'checkInOpensAt', 'checkInClosesAt', 'attendancePoints', 'mode', 'location', 'capacity', 'status'];
   const allowed = new Set(fields);
   const unexpected = Object.keys(input).find((key) => !allowed.has(key));
   if (unexpected) throw Object.assign(new Error(`Unexpected field: ${unexpected}`), { status: 400 });
@@ -11,7 +11,26 @@ export function validateEventInput(input, { partial = false } = {}) {
   for (const key of fields) {
     if (!(key in input)) continue;
     const value = input[key];
-    if (['title', 'description', 'category', 'location'].includes(key)) {
+    if (key === 'coverImageUrl') {
+      if (typeof value !== 'string' || value.trim().length > 500) {
+        throw Object.assign(new Error('coverImageUrl must be a URL with 500 characters or fewer.'), { status: 400 });
+      }
+      const normalized = value.trim();
+      if (!normalized) {
+        output.coverImageUrl = '';
+      } else {
+        let url;
+        try {
+          url = new URL(normalized);
+        } catch {
+          throw Object.assign(new Error('coverImageUrl must be a valid HTTP or HTTPS URL.'), { status: 400 });
+        }
+        if (!['http:', 'https:'].includes(url.protocol) || !url.hostname || url.username || url.password) {
+          throw Object.assign(new Error('coverImageUrl must be a valid HTTP or HTTPS URL.'), { status: 400 });
+        }
+        output.coverImageUrl = url.toString();
+      }
+    } else if (['title', 'description', 'category', 'location'].includes(key)) {
       if (typeof value !== 'string' || (key !== 'location' && !value.trim())) {
         throw Object.assign(new Error(`${key} must be a non-empty string.`), { status: 400 });
       }

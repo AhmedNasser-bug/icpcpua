@@ -65,6 +65,10 @@ export function findCyclesForRoadmap(roadmapId, filter = {}) {
   return RoadmapCycle.find({ roadmap: roadmapId, ...filter }).sort({ order: 1 }).lean();
 }
 
+export function findCyclesForRoadmaps(roadmapIds, filter = {}) {
+  return RoadmapCycle.find({ roadmap: { $in: roadmapIds }, ...filter }).sort({ startDate: 1, order: 1 }).lean();
+}
+
 export function findCycleById(id) {
   return RoadmapCycle.findById(id).lean();
 }

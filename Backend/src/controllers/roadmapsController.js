@@ -7,6 +7,7 @@ import {
   getStudentCycle,
   getStudentRoadmaps,
   getStudentSessionCheckIn,
+  listAvailableStudentCycles,
   listStudentCycles,
   listPublicRoadmaps,
   setStudentRoadmapProblemSolved,
@@ -28,6 +29,11 @@ export async function roadmapCycles(req, res) {
   if (result.type === 'not_found') return res.status(404).json({ error: { message: 'Roadmap not found.' } });
   res.set('Cache-Control', 'private, no-store');
   return res.json(result);
+}
+
+export async function allRoadmapCycles(req, res) {
+  res.set('Cache-Control', 'private, no-store');
+  return res.json(await listAvailableStudentCycles(req.user.id));
 }
 
 export async function roadmapProgress(req, res) {

@@ -1,18 +1,19 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { ArrowRight, CalendarDays, Map, Shield, Trophy } from 'lucide-react';
+import { ArrowRight, BookOpen, CalendarDays, Map, Shield, Trophy } from 'lucide-react';
 import { api, eventDate } from './api.js';
 
 export function AdminDashboardLayout({ activeSection, children }) {
   return <div className="admin-dashboard-shell">
     <div className="admin-dashboard-heading">
       <span className="admin-dashboard-mark"><Shield size={20} /></span>
-      <div><span className="eyebrow">ICPC PUA · ADMIN</span><h1>Admin Dashboard</h1></div>
+      <div><h1>Admin Dashboard</h1></div>
     </div>
     <nav className="admin-dashboard-nav" aria-label="Admin dashboard sections">
       <NavLink end to="/admin/overview" className={activeSection === 'overview' ? 'admin-dashboard-nav-link active' : 'admin-dashboard-nav-link'}><Shield size={17} /> Overview</NavLink>
       <NavLink to="/admin/events" className={activeSection === 'events' ? 'admin-dashboard-nav-link active' : 'admin-dashboard-nav-link'}><CalendarDays size={17} /> Events</NavLink>
       <NavLink to="/admin/roadmaps" className={activeSection === 'roadmaps' ? 'admin-dashboard-nav-link active' : 'admin-dashboard-nav-link'}><Map size={17} /> Roadmaps</NavLink>
+      <NavLink to="/admin/cycles" className={activeSection === 'cycles' ? 'admin-dashboard-nav-link active' : 'admin-dashboard-nav-link'}><BookOpen size={17} /> Cycles</NavLink>
     </nav>
     <div className="admin-dashboard-content">{children}</div>
   </div>;
@@ -54,14 +55,14 @@ export function AdminOverviewPage({ token }) {
     .slice(0, 5);
 
   return <main className="page-wrap admin-overview-page">
-    <div className="page-heading"><span className="eyebrow">OVERVIEW</span><h2>Welcome to the <span>control room.</span></h2><p>Manage events and learning programs from one place.</p></div>
+    <div className="page-heading"><h2>Welcome to the <span>control room</span></h2></div>
     {error && <div className="notice error-notice" role="alert">{error}</div>}
     {loading ? <div className="empty-state"><span className="loader" /> Loading administration overview...</div> : !error && <>
       <section className="admin-overview-stats" aria-label="Administration statistics">
         <article className="admin-overview-stat"><span>All events</span><strong>{events.length}</strong></article>
         <article className="admin-overview-stat"><span>Upcoming events</span><strong>{upcomingEvents.length}</strong></article>
         <article className="admin-overview-stat"><span>Roadmaps</span><strong>{roadmaps.length}</strong></article>
-        <article className="admin-overview-stat"><span>Roadmap cycles</span><strong>{cycleCount}</strong></article>
+        <article className="admin-overview-stat"><span>Cycles</span><strong>{cycleCount}</strong></article>
       </section>
       <section className="admin-overview-activity">
         <div className="admin-overview-section-heading"><div><span className="eyebrow">CONTEST ACTIVITY</span><h3>Registration &amp; attendance</h3></div><Trophy size={20} /></div>
@@ -76,7 +77,8 @@ export function AdminOverviewPage({ token }) {
       </section>
       <section className="admin-overview-quick-links" aria-label="Management shortcuts">
         <Link className="button button-dark" to="/admin/events">Manage events <ArrowRight size={16} /></Link>
-        <Link className="button button-outline" to="/admin/roadmaps">Manage roadmaps and cycles <ArrowRight size={16} /></Link>
+        <Link className="button button-outline" to="/admin/roadmaps">Manage roadmaps <ArrowRight size={16} /></Link>
+        <Link className="button button-outline" to="/admin/cycles">Manage cycles <ArrowRight size={16} /></Link>
       </section>
     </>}
   </main>;

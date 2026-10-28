@@ -20,6 +20,7 @@ test.after(async () => {
 
 test('roadmap cycle lists, details, and enrollment reject unauthenticated requests', async () => {
   const requests = [
+    fetch(`${baseUrl}/roadmaps/cycles`),
     fetch(`${baseUrl}/roadmaps/public-roadmap/cycles`),
     fetch(`${baseUrl}/roadmaps/public-roadmap/cycles/64b000000000000000000001`),
     fetch(`${baseUrl}/roadmaps/public-roadmap/cycles/64b000000000000000000001/enroll`, { method: 'POST' }),
@@ -32,7 +33,7 @@ test('roadmap cycle lists, details, and enrollment reject unauthenticated reques
   ];
   const responses = await Promise.all(requests);
 
-  assert.deepEqual(responses.map(({ status }) => status), [401, 401, 401, 401, 401]);
+  assert.deepEqual(responses.map(({ status }) => status), [401, 401, 401, 401, 401, 401]);
   for (const response of responses) {
     const body = await response.json();
     assert.equal(body.error.message, 'Sign in to continue.');

@@ -5,6 +5,7 @@ const eventSchema = new mongoose.Schema(
     title: { type: String, required: true, trim: true, maxlength: 140 },
     slug: { type: String, required: true, unique: true, index: true },
     description: { type: String, required: true, trim: true, maxlength: 5000 },
+    coverImageUrl: { type: String, trim: true, maxlength: 500, default: '' },
     category: { type: String, required: true, trim: true, maxlength: 50 },
     startsAt: { type: Date, required: true, index: true },
     endsAt: { type: Date, required: true },

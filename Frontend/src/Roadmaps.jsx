@@ -654,7 +654,7 @@ function LearningPath({ nodes = [], token, user, roadmapSlug }) {
                 </Link>
               )) : <p>{roadmapSessions.length ? 'No sessions scheduled for this day.' : 'No enrolled cycle sessions yet.'}</p>}
             </div>
-            {!roadmapSessions.length && <Link className="learning-calendar-cycles-link" to={`/roadmaps/${encodeURIComponent(roadmapSlug)}/cycles`}>Explore training cycles <ArrowRight size={14} /></Link>}
+            {!roadmapSessions.length && <Link className="learning-calendar-cycles-link" to="/trainings">Explore Trainings <ArrowRight size={14} /></Link>}
           </>}
         </section>
       </aside>
@@ -751,7 +751,7 @@ export function RoadmapsPage() {
   useEffect(() => { load(); }, [load]);
 
   return <main className="page-wrap roadmaps-page">
-    <div className="page-heading"><span className="eyebrow">STRUCTURED PRACTICE</span><h1>Learning <span>roadmaps.</span></h1><p>Follow a structured path, enroll once in a cycle, and track your real attendance and progress.</p></div>
+    <div className="page-heading"><h1>Learning <span>roadmaps</span></h1><Link className="text-link" to="/trainings">Looking for a training cycle? Explore Trainings <ArrowRight size={15} /></Link></div>
     {error && <div className="notice error-notice" role="alert">{error} <button className="text-link" type="button" onClick={load}>Try again</button></div>}
     {loading ? <LoadingState /> : roadmaps.length
       ? <section className="roadmap-grid" aria-label="Published learning roadmaps">{roadmaps.map((roadmap, index) => <RoadmapCard key={roadmap._id} roadmap={roadmap} index={index} />)}</section>
@@ -761,7 +761,6 @@ export function RoadmapsPage() {
 
 export function RoadmapDetailsPage({ token, user }) {
   const { slug } = useParams();
-  const location = useLocation();
   const [roadmap, setRoadmap] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -780,15 +779,10 @@ export function RoadmapDetailsPage({ token, user }) {
   if (!roadmap) return null;
   return <main className="page-wrap roadmaps-page roadmap-details-page">
     <LearningPath nodes={roadmap.nodes || []} token={token} user={user} roadmapSlug={roadmap.slug} />
-    <section className="roadmap-explore-cycles">
-      <div><span className="eyebrow">LEARN WITH A COHORT</span><h2>Ready to train together?</h2><p>Explore scheduled cycles for this roadmap. Schedules and registration details are available to signed-in members.</p></div>
-      {user ? <Link className="button button-dark" to={`/roadmaps/${encodeURIComponent(slug)}/cycles`}>Explore training cycles <ArrowRight size={16} /></Link>
-        : <Link className="button button-dark" to="/login" state={{ from: `${location.pathname}/cycles` }}>Sign in to explore cycles <ArrowRight size={16} /></Link>}
-    </section>
   </main>;
 }
 
-function CycleCard({ cycle, roadmapSlug, token, user }) {
+function CycleCard({ cycle, roadmapSlug, roadmapTitle, token, user }) {
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -807,6 +801,7 @@ function CycleCard({ cycle, roadmapSlug, token, user }) {
   };
   return <article className="roadmap-cycle-card">
     <div className="roadmap-card-heading"><span className="category-label">{cycle.difficulty}</span><span>{cycle.sessionCount ?? cycle.sessionsPerWeek} {cycle.sessionCount === undefined ? 'sessions / week' : 'sessions'}</span></div>
+    {roadmapTitle && <Link className="roadmap-cycle-roadmap" to={`/roadmaps/${encodeURIComponent(roadmapSlug)}`}>{roadmapTitle}</Link>}
     <h3>{cycle.title}</h3><p>{cycle.description}</p>
     <p className="roadmap-cycle-dates"><CalendarDays size={15} /> {cycle.startDate} – {cycle.endDate}</p>
     <p className="roadmap-cycle-dates"><Clock3 size={15} /> {cycle.sessionsPerWeek} sessions / week · Registration closes {eventDate(cycle.registrationClosesAt, { weekday: undefined, year: undefined })}</p>
@@ -822,31 +817,32 @@ function CycleCard({ cycle, roadmapSlug, token, user }) {
   </article>;
 }
 
-export function RoadmapCyclesPage({ token, user }) {
-  const { slug } = useParams();
+export function TrainingsPage({ token, user }) {
   const location = useLocation();
-  const [data, setData] = useState(null);
+  const [cycles, setCycles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  useEffect(() => {
-    let active = true;
+  const load = useCallback(async () => {
     setLoading(true);
-    api(`/roadmaps/${encodeURIComponent(slug)}/cycles`, { token })
-      .then((result) => { if (active) setData(result); })
-      .catch((reason) => { if (active) setError(reason.message); })
-      .finally(() => { if (active) setLoading(false); });
-    return () => { active = false; };
-  }, [slug, token]);
+    try {
+      const result = await api('/roadmaps/cycles', { token });
+      setCycles(result.cycles);
+      setError('');
+    } catch (reason) {
+      setError(reason.message);
+    } finally {
+      setLoading(false);
+    }
+  }, [token]);
+  useEffect(() => { load(); }, [load]);
 
   if (!user || !token) return <Navigate to="/login" replace state={{ from: `${location.pathname}${location.search}` }} />;
-  if (loading) return <main className="page-wrap"><LoadingState>Loading training cycles...</LoadingState></main>;
-  if (error) return <main className="page-wrap"><div className="notice error-notice" role="alert">{error}</div></main>;
-  if (!data) return null;
-  return <main className="page-wrap roadmaps-page">
-    <Link className="text-link" to={`/roadmaps/${encodeURIComponent(slug)}`}>← {data.roadmap.title}</Link>
-    <div className="page-heading"><span className="eyebrow">PRIVATE TRAINING SCHEDULE</span><h1>Training <span>cycles.</span></h1><p>Schedules, capacity and registration are only available to signed-in members.</p></div>
-    {data.cycles.length ? <section className="roadmap-cycle-grid" aria-label="Training cycles">{data.cycles.map((cycle) => <CycleCard key={cycle._id} cycle={cycle} roadmapSlug={slug} token={token} user={user} />)}</section>
-      : <div className="empty-state"><h2>No cycles are available.</h2><p>Published training cycles for this roadmap will appear here.</p></div>}
+  return <main className="page-wrap roadmaps-page trainings-page">
+    <div className="page-heading"><h1>Trainings</h1><p>Join a structured training cycle | build your skills through guided sessions</p></div>
+    {error && <div className="notice error-notice" role="alert">{error} <button className="text-link" type="button" onClick={load}>Try again</button></div>}
+    {loading ? <LoadingState>Loading training cycles...</LoadingState> : cycles.length
+      ? <section className="roadmap-cycle-grid" aria-label="Available training cycles">{cycles.map((cycle) => <CycleCard key={cycle._id} cycle={cycle} roadmapSlug={cycle.roadmap.slug} roadmapTitle={cycle.roadmap.title} token={token} user={user} />)}</section>
+      : <div className="empty-state"><h2>No training cycles available yet.</h2><p>Published training cycles will appear here when they are available.</p></div>}
   </main>;
 }
 
@@ -955,7 +951,7 @@ export function RoadmapCyclePage({ token, user }) {
 
   return <main className="page-wrap roadmaps-page">
     <Link className="text-link" to={`/roadmaps/${roadmap.slug}/cycles`}>← {roadmap.title} cycles</Link>
-    <div className="roadmap-detail-header"><span className="eyebrow">{cycle.difficulty} CYCLE</span><h1>{cycle.title}<span>.</span></h1><p>{cycle.description}</p>
+    <div className="roadmap-detail-header"><span className="eyebrow">{cycle.difficulty} CYCLE</span><h1>{cycle.title}</h1><p>{cycle.description}</p>
       <div className="roadmap-facts"><span><CalendarDays size={16} /> {cycle.startDate} – {cycle.endDate}</span><span><Clock3 size={16} /> {cycle.sessionsPerWeek} days / week · {cycle.sessionDurationMinutes} minutes</span>{cycle.location && <span><MapPin size={16} /> {cycle.location}</span>}<span>{cycle.enrollmentCount}{cycle.capacity ? ` / ${cycle.capacity}` : ''} enrolled</span></div>
     </div>
     {cycle.objectives?.length > 0 && <section className="roadmap-content-section"><h2>Cycle objectives</h2><ul className="roadmap-objectives">{cycle.objectives.map((item) => <li key={item}>{item}</li>)}</ul></section>}
@@ -1320,6 +1316,70 @@ function AdminSession({ token, session, students, refresh }) {
       {!item.reversedAt && item.pointsAwarded > 0 && <button type="button" disabled={busy} onClick={() => reversePoints(item)}>Reverse points</button>}
     </div>) : <p>No attendance recorded yet.</p>}
   </details>;
+}
+
+export function AdminCyclesPage({ token }) {
+  const [roadmaps, setRoadmaps] = useState([]);
+  const [roadmapId, setRoadmapId] = useState('');
+  const [query, setQuery] = useState('');
+  const [status, setStatus] = useState('all');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  const loadRoadmaps = useCallback(async () => {
+    setLoading(true);
+    try {
+      const result = await api('/admin/roadmaps', { token });
+      setRoadmaps(result.roadmaps);
+      setRoadmapId((current) => current || result.roadmaps[0]?._id || '');
+      setError('');
+    } catch (reason) {
+      setError(reason.message);
+    } finally {
+      setLoading(false);
+    }
+  }, [token]);
+  useEffect(() => { loadRoadmaps(); }, [loadRoadmaps]);
+
+  const cycles = roadmaps.flatMap((roadmap) => (roadmap.cycles || []).map((cycle) => ({ ...cycle, roadmap })));
+  const filteredCycles = cycles.filter((cycle) => {
+    const matchesQuery = `${cycle.title} ${cycle.roadmap.title}`.toLowerCase().includes(query.trim().toLowerCase());
+    return matchesQuery && (status === 'all' || cycle.status === status);
+  });
+
+  return <main className="page-wrap admin-cycles-page">
+    <div className="page-heading roadmap-studio-heading">
+      <div><h1>Training cycles</h1></div>
+      <div className="admin-cycle-create">
+        <label htmlFor="admin-cycle-roadmap">Create cycle for</label>
+        <select id="admin-cycle-roadmap" value={roadmapId} onChange={(event) => setRoadmapId(event.target.value)} disabled={!roadmaps.length}>
+          {!roadmaps.length && <option value="">No roadmaps available</option>}
+          {roadmaps.map((roadmap) => <option key={roadmap._id} value={roadmap._id}>{roadmap.title}</option>)}
+        </select>
+        {roadmapId && <Link className="button button-dark" to={`/admin/roadmaps/${roadmapId}/cycles/new`}><Plus size={16} /> Create cycle</Link>}
+      </div>
+    </div>
+    {error && <div className="notice error-notice" role="alert">{error} <button className="text-link" type="button" onClick={loadRoadmaps}>Try again</button></div>}
+    <div className="roadmap-studio-filters admin-cycle-filters">
+      <label>Search cycles<input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Cycle or roadmap title" /></label>
+      <label>Status<select value={status} onChange={(event) => setStatus(event.target.value)}><option value="all">All statuses</option><option value="draft">Draft</option><option value="published">Published</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option><option value="archived">Archived</option></select></label>
+    </div>
+    {loading ? <LoadingState>Loading training cycles...</LoadingState> : filteredCycles.length ? <div className="admin-cycle-list">
+      {filteredCycles.map((cycle) => <article className="admin-cycle-row" key={cycle._id}>
+        <div className="admin-cycle-order">{cycle.order}</div>
+        <div className="admin-cycle-copy">
+          <span className={`roadmap-studio-status status-${cycle.status}`}>{cycle.difficulty} · {cycle.status}</span>
+          <h2>{cycle.title}</h2>
+          <p><Link to={`/admin/roadmaps/${cycle.roadmap._id}`}>{cycle.roadmap.title}</Link></p>
+          <small>{cycle.startDate} – {cycle.endDate} · {cycle.sessionsPerWeek} sessions / week · {cycle.enrollmentCount || 0}{cycle.capacity ? `/${cycle.capacity}` : ''} enrolled</small>
+        </div>
+        <div className="admin-cycle-actions">
+          {cycle.status !== 'archived' && <Link className="button button-outline" to={`/admin/roadmaps/${cycle.roadmap._id}/cycles/${cycle._id}/edit`}>Edit cycle</Link>}
+          <Link className="button button-dark" to={`/admin/roadmaps/${cycle.roadmap._id}/cycles/${cycle._id}/sessions`}>Manage sessions</Link>
+        </div>
+      </article>)}
+    </div> : <div className="empty-state"><h2>{cycles.length ? 'No cycles match these filters.' : 'No training cycles yet.'}</h2><p>{cycles.length ? 'Try another search or status.' : 'Create a cycle from a roadmap using the selector above.'}</p>{!cycles.length && !roadmaps.length && <Link className="button button-dark" to="/admin/roadmaps">Create a roadmap first <ArrowRight size={16} /></Link>}</div>}
+  </main>;
 }
 
 export function AdminRoadmapsPage({ token }) {
@@ -1699,8 +1759,8 @@ export function AdminRoadmapsPage({ token }) {
       {routeSection === 'create-roadmap' && <><span aria-hidden="true">/</span><span>Create</span></>}
     </div>
     <div className="page-heading roadmap-studio-heading">
-      <div><span className="eyebrow">ADMINISTRATION · ROADMAP STUDIO</span><h1>{pageTitle}<span>.</span></h1>
-        <p>{routeSection === 'list' ? 'Manage learning programs and their training cycles.' : selected ? `${selected.status} roadmap · ${selected.cycles.length} ${selected.cycles.length === 1 ? 'cycle' : 'cycles'}` : 'Create a learning program for the community.'}</p>
+      <div><h1>{pageTitle}</h1>
+        <p>{routeSection === 'list' ? 'Manage learning programs and learning paths' : selected ? `${selected.status} roadmap · ${selected.cycles.length} ${selected.cycles.length === 1 ? 'cycle' : 'cycles'}` : 'Create a learning program for the community'}</p>
       </div>
       {routeSection === 'list' && <button className="button button-dark" type="button" onClick={() => { setError(''); setMessage(''); setRoadmapForm({ title: '', description: '', coverImageUrl: '', difficulty: 'beginner', estimatedDuration: '', objectives: '', audience: '', prerequisites: '', status: 'draft' }); navigate('/admin/roadmaps/new'); }}><Plus size={16} /> Create roadmap</button>}
       {routeSection === 'cycles' && selected?.status !== 'archived' && <button className="button button-dark" type="button" onClick={() => { setEditingCycleId(''); setCycleForm(emptyCycleForm(Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC')); setError(''); setMessage(''); navigate(`/admin/roadmaps/${selectedRoadmap}/cycles/new`); }}><Plus size={16} /> Create cycle</button>}
@@ -1755,7 +1815,7 @@ export function AdminRoadmapsPage({ token }) {
       {message && routeSection !== 'sessions' && <div className="notice success-notice" role="status">{message}</div>}
 
       {routeSection === 'overview' && <section className="roadmap-admin-panel roadmap-studio-overview">
-        <div className="roadmap-studio-overview-heading"><div><span className={`roadmap-studio-status status-${selected.status}`}>{selected.status}</span><h2>{selected.title}</h2><p>{selected.description}</p></div><Link className="button button-dark" to={`/admin/roadmaps/${selected._id}/cycles`}>Manage cycles <ArrowRight size={15} /></Link></div>
+        <div className="roadmap-studio-overview-heading"><div><span className={`roadmap-studio-status status-${selected.status}`}>{selected.status}</span><h2>{selected.title}</h2><p>{selected.description}</p></div><Link className="button button-dark" to="/admin/cycles">Manage cycles <ArrowRight size={15} /></Link></div>
         <div className="roadmap-studio-facts"><div><strong>{selected.cycles.length}</strong><span>Cycles</span></div><div><strong>{selected.audience || '—'}</strong><span>Expected audience</span></div><div><strong>{selected.objectives?.length || 0}</strong><span>Learning objectives</span></div></div>
         {selected.prerequisites && <p><strong>Prerequisites:</strong> {selected.prerequisites}</p>}
         <div className="roadmap-admin-actions">
@@ -1850,7 +1910,7 @@ export function AdminRoadmapsPage({ token }) {
       </section>}
 
       {routeSection === 'cycles' && <section className="roadmap-admin-panel">
-        <div className="roadmap-studio-section-heading"><div><h2>Cycles</h2><p>Manage the roadmap’s ordered training cycles.</p></div></div>
+        <div className="roadmap-studio-section-heading"><div><h2>Cycles</h2></div></div>
         {selected.cycles?.length ? <div className="roadmap-studio-cycle-list">{selected.cycles.map((cycle) => <article className="roadmap-studio-cycle-row" key={cycle._id}>
           <div className="roadmap-studio-cycle-order">{cycle.order}</div>
           <div className="roadmap-studio-cycle-copy"><span className={`roadmap-studio-status status-${cycle.status}`}>{cycle.difficulty} · {cycle.status}</span><h3>{cycle.title}</h3><p>{cycle.startDate} – {cycle.endDate} · {cycle.sessionsPerWeek} sessions / week · {cycle.enrollmentCount}{cycle.capacity ? `/${cycle.capacity}` : ''} enrolled</p></div>

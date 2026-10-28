@@ -3,9 +3,10 @@ import assert from 'node:assert/strict';
 import Event from '../src/models/Event.js';
 import { slugify, validateEventInput, validatePasswordChangeInput, validateStudentId, validateUsername } from '../src/utils/validation.js';
 
-test('event attendance points default to zero', () => {
+test('event defaults attendance points and an empty cover image URL', () => {
   const event = new Event();
   assert.equal(event.attendancePoints, 0);
+  assert.equal(event.coverImageUrl, '');
 });
 
 test('event input accepts valid event fields and normalizes them', () => {
@@ -22,6 +23,47 @@ test('event input accepts valid event fields and normalizes them', () => {
   assert.equal(result.title, 'Contest Night');
   assert.equal(result.capacity, 30);
   assert.equal(result.startsAt instanceof Date, true);
+});
+
+test('event input accepts an optional HTTP cover image URL and empty values', () => {
+  const event = {
+    title: 'Contest Night',
+    description: 'Details',
+    category: 'Contest',
+    startsAt: '2027-01-01T10:00:00Z',
+    endsAt: '2027-01-01T12:00:00Z',
+    mode: 'online',
+  };
+  assert.equal(validateEventInput({ ...event, coverImageUrl: ' https://images.example.com/contest.jpg ' }).coverImageUrl, 'https://images.example.com/contest.jpg');
+  assert.equal(validateEventInput({ ...event, coverImageUrl: '' }).coverImageUrl, '');
+  assert.equal(validateEventInput(event).coverImageUrl, undefined);
+});
+
+test('event input rejects unsafe or malformed cover image URLs', () => {
+  const event = {
+    title: 'Contest Night',
+    description: 'Details',
+    category: 'Contest',
+    startsAt: '2027-01-01T10:00:00Z',
+    endsAt: '2027-01-01T12:00:00Z',
+    mode: 'online',
+  };
+  assert.throws(() => validateEventInput({ ...event, coverImageUrl: 'javascript:alert(1)' }), /valid HTTP or HTTPS URL/);
+  assert.throws(() => validateEventInput({ ...event, coverImageUrl: 'https://user:pass@example.com/image.png' }), /valid HTTP or HTTPS URL/);
+  assert.throws(() => validateEventInput({ ...event, coverImageUrl: `https://${'a'.repeat(500)}.com/image.png` }), /500 characters or fewer/);
+});
+
+test('event input rejects cover image URLs containing credentials', () => {
+  const credentials = ['https://', 'user', ':', 'pass', '@example.com/image.png'].join('');
+  assert.throws(() => validateEventInput({
+    title: 'Contest Night',
+    description: 'Details',
+    category: 'Contest',
+    startsAt: '2027-01-01T10:00:00Z',
+    endsAt: '2027-01-01T12:00:00Z',
+    mode: 'online',
+    coverImageUrl: credentials,
+  }), /valid HTTP or HTTPS URL/);
 });
 
 test('event input rejects invalid date ranges, event mode, and unknown fields', () => {

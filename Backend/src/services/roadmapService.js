@@ -16,6 +16,7 @@ import {
   findCycleById,
   findCycleEnrollments,
   findCyclesForRoadmap,
+  findCyclesForRoadmaps,
   findEnrollment,
   findRoadmap,
   findRoadmapNode,
@@ -165,6 +166,36 @@ export async function listStudentCycles(roadmapSlug, studentId) {
         ? null
         : Math.max(0, cycle.capacity - cycle.enrollmentCount),
     })),
+  };
+}
+
+export async function listAvailableStudentCycles(studentId) {
+  const roadmaps = await findRoadmaps({ status: { $in: ['published', 'completed'] } }, { title: 1 });
+  if (!roadmaps.length) return { cycles: [] };
+  const [cycles, enrollments] = await Promise.all([
+    findCyclesForRoadmaps(roadmaps.map(({ _id }) => _id), { status: { $in: ['published', 'completed'] } }),
+    findStudentEnrollments(studentId),
+  ]);
+  const roadmapsById = new Map(roadmaps.map((roadmap) => [roadmap._id.toString(), roadmap]));
+  const enrolledCycleIds = new Set(enrollments.map(({ cycle }) => cycle?._id?.toString()).filter(Boolean));
+  const now = new Date();
+  return {
+    cycles: cycles.flatMap((cycle) => {
+      const roadmap = roadmapsById.get(cycle.roadmap.toString());
+      if (!roadmap) return [];
+      return [{
+        ...cycle,
+        roadmap: { title: roadmap.title, slug: roadmap.slug },
+        enrolled: enrolledCycleIds.has(cycle._id.toString()),
+        registrationOpen: cycle.status === 'published'
+          && cycle.registrationOpensAt <= now
+          && cycle.registrationClosesAt >= now
+          && (cycle.capacity === null || cycle.capacity === undefined || cycle.enrollmentCount < cycle.capacity),
+        remainingCapacity: cycle.capacity === null || cycle.capacity === undefined
+          ? null
+          : Math.max(0, cycle.capacity - cycle.enrollmentCount),
+      }];
+    }),
   };
 }
 

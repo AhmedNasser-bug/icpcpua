@@ -3,7 +3,7 @@ import { Link, Navigate, Route, Routes, useLocation, useNavigate, useParams } fr
 import { ArrowRight, Bell, CalendarDays, Check, ChevronDown, ChevronLeft, ChevronRight, Clock3, Code2, ExternalLink, KeyRound, Link2, LogOut, MapPin, Menu, Moon, Palette, Plus, QrCode, Search, Shield, Sun, Ticket, Trash2, Trophy, UserRound, Users, X } from 'lucide-react';
 import { api, eventDate } from './api.js';
 import { AdminDashboardLayout, AdminOverviewPage } from './AdminDashboard.jsx';
-import { AdminRoadmapsPage, MyRoadmapsSection, RoadmapCheckInPage, RoadmapCyclePage, RoadmapCyclesPage, RoadmapDetailsPage, RoadmapsPage } from './Roadmaps.jsx';
+import { AdminCyclesPage, AdminRoadmapsPage, MyRoadmapsSection, RoadmapCheckInPage, RoadmapCyclePage, RoadmapDetailsPage, RoadmapsPage, TrainingsPage } from './Roadmaps.jsx';
 
 const USERNAME_PATTERN = /^[a-z0-9_]{3,20}$/;
 
@@ -104,6 +104,7 @@ function NotificationBellMenu({ token }) {
   const [unreadCount, setUnreadCount] = useState(0);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const notificationMenuRef = useRef(null);
   const navigate = useNavigate();
 
   const refresh = useCallback(async () => {
@@ -123,6 +124,22 @@ function NotificationBellMenu({ token }) {
     return () => window.clearInterval(interval);
   }, [refresh]);
 
+  useEffect(() => {
+    if (!open) return undefined;
+    const closeOnOutsidePointerDown = (event) => {
+      if (!notificationMenuRef.current?.contains(event.target)) setOpen(false);
+    };
+    const closeOnEscape = (event) => {
+      if (event.key === 'Escape') setOpen(false);
+    };
+    document.addEventListener('pointerdown', closeOnOutsidePointerDown);
+    document.addEventListener('keydown', closeOnEscape);
+    return () => {
+      document.removeEventListener('pointerdown', closeOnOutsidePointerDown);
+      document.removeEventListener('keydown', closeOnEscape);
+    };
+  }, [open]);
+
   const markRead = async (notification) => {
     if (notification.readAt) return;
     setBusy(true);
@@ -137,8 +154,8 @@ function NotificationBellMenu({ token }) {
   };
 
   const openNotification = async (notification) => {
-    await markRead(notification);
     setOpen(false);
+    await markRead(notification);
     navigate(notification.link);
   };
 
@@ -156,7 +173,7 @@ function NotificationBellMenu({ token }) {
     }
   };
 
-  return <div className="notification-menu">
+  return <div className="notification-menu" ref={notificationMenuRef}>
     <button className="notification-bell" type="button" aria-label={`Notifications${unreadCount ? `, ${unreadCount} unread` : ''}`} aria-expanded={open} onClick={() => setOpen((value) => !value)}>
       <Bell size={19} />
       {unreadCount > 0 && <span className="notification-count">{unreadCount > 99 ? '99+' : unreadCount}</span>}
@@ -216,7 +233,48 @@ function Header({ user, onSignOut, token }) {
   return (
     <header className="site-header">
       <Link className="brand" to="/" aria-label="PUA ICPC Community home" onClick={() => { setMenuOpen(false); setAccountOpen(false); }}>
-        <img className="brand-logo" src="/pua-icpc-logo.png" alt="" />
+        <svg className="brand-logo" viewBox="0 0 731 187" role="img" aria-label="PUA ICPC Training Community">
+          <defs>
+            <pattern id="brand-logo-dots" x="0" y="0" width="6" height="6" patternUnits="userSpaceOnUse">
+              <circle cx="3" cy="3" r="1.2" fill="var(--brand-logo-ink)" />
+            </pattern>
+            <clipPath id="brand-logo-card-clip">
+              <rect x="0" y="0" width="144" height="144" rx="12" />
+            </clipPath>
+          </defs>
+          <g transform="translate(10 10)">
+            <rect x="14" y="14" width="144" height="144" rx="12" fill="#0f0f0f" />
+            <g clipPath="url(#brand-logo-card-clip)">
+              <rect width="144" height="144" fill="var(--color-surface, #fff9e4)" stroke="var(--brand-logo-ink)" strokeWidth="3" />
+              <line x1="0" y1="36" x2="144" y2="88" stroke="var(--color-secondary, #17e5e6)" strokeWidth="4" strokeLinecap="round" />
+              <line x1="0" y1="88" x2="144" y2="36" stroke="var(--color-secondary, #17e5e6)" strokeWidth="4" strokeLinecap="round" />
+              <polygon points="72,42 42,0 58,0 72,42" fill="var(--brand-logo-yellow, #ffd600)" stroke="var(--brand-logo-ink)" strokeWidth="2" strokeLinejoin="round" />
+              <polygon points="72,42 86,0 102,0 72,42" fill="var(--brand-logo-yellow, #ffd600)" stroke="var(--brand-logo-ink)" strokeWidth="2" strokeLinejoin="round" />
+              <rect x="0" y="78" width="144" height="8" fill="var(--brand-logo-yellow, #ffd600)" stroke="var(--brand-logo-ink)" strokeWidth="2" />
+              <circle cx="72" cy="40" r="14" fill="var(--brand-logo-yellow, #ffd600)" stroke="var(--brand-logo-ink)" strokeWidth="2.5" />
+              <circle cx="68" cy="36" r="4" fill="#fff" opacity=".8" />
+              <rect x="58" y="58" width="28" height="8" rx="1" fill="var(--color-primary, #7b2cbf)" stroke="var(--brand-logo-ink)" strokeWidth="2" />
+              <rect x="60" y="66" width="24" height="20" fill="var(--color-surface, #fff9e4)" stroke="var(--brand-logo-ink)" strokeWidth="2" />
+              <rect x="60" y="66" width="24" height="20" fill="url(#brand-logo-dots)" />
+              <rect x="57" y="86" width="30" height="12" fill="var(--color-primary, #7b2cbf)" stroke="var(--brand-logo-ink)" strokeWidth="2" />
+              <rect x="55" y="98" width="34" height="16" fill="var(--color-surface, #fff9e4)" stroke="var(--brand-logo-ink)" strokeWidth="2" />
+              <path d="M67 114v-10a5 5 0 0 1 10 0v10Z" fill="var(--brand-logo-ink)" />
+              <rect x="53" y="114" width="38" height="12" fill="var(--color-primary, #7b2cbf)" stroke="var(--brand-logo-ink)" strokeWidth="2" />
+              <rect x="47" y="126" width="50" height="6" fill="var(--color-primary, #7b2cbf)" stroke="var(--brand-logo-ink)" strokeWidth="2" />
+              <rect x="38" y="128" width="12" height="6" fill="var(--color-primary, #7b2cbf)" stroke="var(--brand-logo-ink)" strokeWidth="2" />
+              <rect x="28" y="32" width="9" height="9" fill="var(--color-primary, #7b2cbf)" stroke="var(--brand-logo-ink)" strokeWidth="1.5" transform="rotate(15 28 32)" />
+              <rect x="118" y="62" width="8" height="8" fill="var(--color-primary, #7b2cbf)" stroke="var(--brand-logo-ink)" strokeWidth="1.5" transform="rotate(45 118 62)" />
+              <rect x="112" y="102" width="12" height="12" fill="var(--color-primary, #7b2cbf)" stroke="var(--brand-logo-ink)" strokeWidth="1.5" transform="rotate(12 112 102)" />
+              <rect x="38" y="136" width="7" height="7" fill="var(--color-primary, #7b2cbf)" stroke="var(--brand-logo-ink)" strokeWidth="1.5" />
+              <text x="18" y="94" className="brand-logo-code">{'{'}</text>
+              <text x="30" y="98" className="brand-logo-semi">;</text>
+              <text x="98" y="64" className="brand-logo-code">{'}'}</text>
+            </g>
+            <rect width="144" height="144" rx="12" fill="none" stroke="var(--brand-logo-ink)" strokeWidth="3" />
+          </g>
+          <text x="200" y="80" className="brand-logo-title">PUA ICPC</text>
+          <text x="202" y="136" className="brand-logo-subtitle">TRAINING COMMUNITY</text>
+        </svg>
       </Link>
       <button className="icon-button menu-toggle" aria-label={menuOpen ? 'Close navigation' : 'Open navigation'} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
         {menuOpen ? <X size={22} /> : <Menu size={22} />}
@@ -224,6 +282,7 @@ function Header({ user, onSignOut, token }) {
       <nav className={menuOpen ? 'main-nav open' : 'main-nav'} aria-label="Main navigation" onClick={(event) => { if (event.target.closest('a')) setMenuOpen(false); }}>
         {navLink('/', 'Home')}
         {navLink('/roadmaps', 'Roadmaps')}
+        {navLink('/trainings', 'Trainings')}
         {navLink('/events', 'Events')}
         {navLink('/leaderboard', 'Leaderboard')}
         {user ? (
@@ -249,7 +308,6 @@ function Header({ user, onSignOut, token }) {
           </>
         ) : (
           <div className="nav-auth-actions">
-            {navLink('/login', 'Log in')}
             <Link className="button button-dark nav-register" to="/login?mode=register">Register</Link>
           </div>
         )}
@@ -261,6 +319,7 @@ function Header({ user, onSignOut, token }) {
 function EventCard({ event, index }) {
   return (
     <article className={`event-card accent-${index % 4}`}>
+      {event.coverImageUrl && <img className="event-card-cover" src={event.coverImageUrl} alt="" onError={(e) => e.currentTarget.remove()} />}
       <div className="card-topline">
         <span className="category-label">{event.category}</span>
         <span className="event-mode">{event.mode === 'offline' ? 'IN PERSON' : 'ONLINE'}</span>
@@ -292,6 +351,7 @@ function HomeEventCarouselCard({ event, index, now }) {
   return (
     <article className={`home-featured-event accent-${event.category.length % 4}`}>
       <div className="home-event-banner" aria-label={`${event.category} event banner`}>
+        {event.coverImageUrl && <img className="home-event-banner-cover" src={event.coverImageUrl} alt="" onError={(e) => e.currentTarget.remove()} />}
         <span className="home-event-banner-category">{event.category}</span>
         <Code2 size={52} aria-hidden="true" />
         <span className="home-event-banner-mark" aria-hidden="true">{'{ }'}</span>
@@ -436,7 +496,6 @@ function HomePage() {
     <section className="home-hero">
       <div className="home-hero-inner">
         <div className="home-hero-copy">
-          <span className="eyebrow"><span className="eyebrow-dot" /> PUA ICPC COMMUNITY</span>
           <h1>ICPC PUA — <span>Road to ICPC</span></h1>
           <p className="home-hero-lead">Building the next generation of problem solvers</p>
           <p className="home-hero-mission">Our goal is to help the first team from our university qualify for the ACPC</p>
@@ -476,7 +535,7 @@ function HomePage() {
 
     <section className="home-roadmap-section">
       <div className="home-section-inner home-split-layout">
-        <div className="home-section-copy"><h2>Our <span>Roadmap</span></h2><p>Build problem-solving skills one step at a time with structured learning paths, focused cycles, and sessions that help you keep moving.</p><Link className="button button-dark" to="/roadmaps">Explore roadmaps <ArrowRight size={16} /></Link></div>
+        <div className="home-section-copy"><h2>Our <span>Roadmap</span></h2><p>Build problem-solving skills one step at a time with structured learning paths that help you keep moving.</p><Link className="button button-dark" to="/roadmaps">Explore roadmaps <ArrowRight size={16} /></Link></div>
         <div className="home-roadmap-visual" aria-hidden="true"><div className="home-roadmap-node"><span>01</span><b>Learn</b></div><div className="home-roadmap-node"><span>02</span><b>Practice</b></div><div className="home-roadmap-node"><span>03</span><b>Compete</b></div></div>
       </div>
     </section>
@@ -484,20 +543,19 @@ function HomePage() {
     <section className="home-training-section">
       <div className="home-section-inner home-split-layout home-training-layout">
         <div className="home-training-visual" aria-hidden="true"><div className="home-training-board"><span>while (curious) {'{'}</span><b>solve();</b><span>{'}'}</span></div></div>
-        <div className="home-section-copy"><h2>Our <span>Training</span></h2><p>Competitive programming is a team effort. Learn core techniques, practice consistently, and prepare alongside students who share your ambition.</p><Link className="button button-dark" to="/roadmaps">Find your training path <ArrowRight size={16} /></Link></div>
+        <div className="home-section-copy"><h2>Our <span>Training</span></h2><p>Competitive programming is a team effort. Join a guided cycle, practice with a cohort, and prepare alongside students who share your ambition.</p><Link className="button button-dark" to="/trainings">Explore Trainings <ArrowRight size={16} /></Link></div>
       </div>
     </section>
 
     <section className="home-goal-section">
       <div className="home-section-inner">
-        <div className="home-goal-heading"><span className="eyebrow">OUR SHARED AMBITION</span><h2>One University. One Goal. <span>ACPC.</span></h2><p>We are working toward our first PUA team qualifying for ACPC. Every practice session, solved problem, and competition is another step toward that goal.</p></div>
+        <div className="home-goal-heading"><h2>One University. One Goal. <span>ACPC</span></h2><p>We are working toward our first PUA team qualifying for ACPC. Every practice session, solved problem, and competition is another step toward that goal.</p></div>
         <ol className="home-goal-timeline">
           <li><span>01</span><div><strong>Build the fundamentals</strong><p>Strengthen problem-solving foundations together.</p></div></li>
           <li><span>02</span><div><strong>Practice consistently</strong><p>Turn learning into a regular habit.</p></div></li>
           <li><span>03</span><div><strong>Grow as a team</strong><p>Develop collaboration and contest skills.</p></div></li>
           <li><span>04</span><div><strong>Prepare for qualification</strong><p>Work toward PUA’s first ACPC-qualified team.</p></div></li>
         </ol>
-        <p className="home-goal-note">These are milestones we are working toward—not completed achievements.</p>
       </div>
     </section>
   </main>;
@@ -616,6 +674,7 @@ function EventDetail({ token, user }) {
       <Link className="back-link" to="/"><ChevronLeft size={16} /> All events</Link>
       <article className="detail-card">
         <div className={`detail-banner accent-${event.category.length % 4}`}>
+          {event.coverImageUrl && <img className="detail-banner-cover" src={event.coverImageUrl} alt="" onError={(e) => e.currentTarget.remove()} />}
           <span className="category-label">{event.category}</span>
           <span className="detail-decoration"><Code2 size={54} /></span>
         </div>
@@ -702,13 +761,12 @@ function AuthPage({ session }) {
 
   return (
     <main className="auth-layout">
-      <div className="auth-art"><span className="eyebrow">GOOD PEOPLE. HARD PROBLEMS.</span><h1>Your next<br />breakthrough<br /><span>starts here.</span></h1><div className="auth-symbol">{'{ }'}</div></div>
+      <div className="auth-art"><h1>Your next<br />breakthrough<br /><span>starts here</span></h1><div className="auth-symbol">{'{ }'}</div></div>
       <form className="auth-form" onSubmit={submit}>
-        <span className="eyebrow">{mode === 'login' ? 'WELCOME BACK' : 'JOIN THE CREW'}</span>
+        <span className="eyebrow">{mode === 'login' ? 'WELCOME BACK' : 'JOIN OUR FAMILY'}</span>
         <h2>{mode === 'login' ? 'Log in' : 'Create your account'}</h2>
-        <p>{mode === 'login' ? 'Pick up where you left off.' : 'Get into events, training, and everything ICPC.'}</p>
         {mode === 'register' && <label>Your name<input autoComplete="name" required maxLength="80" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></label>}
-        <label>{mode === 'register' ? 'University email address' : 'Email address'}<input autoComplete="email" type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></label>
+        <label>{mode === 'register' ? 'email' : 'Email address'}<input autoComplete="email" type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></label>
         {mode === 'register' && <label>Username<input autoComplete="username" required minLength="3" maxLength="20" pattern="[A-Za-z0-9_]{3,20}" value={form.username} onChange={(e) => setForm({ ...form, username: e.target.value })} /></label>}
         <label>Password<input autoComplete={mode === 'login' ? 'current-password' : 'new-password'} type="password" minLength="8" required value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} /></label>
         {mode === 'register' && <label>Confirm password<input autoComplete="new-password" type="password" minLength="8" required value={form.confirmPassword || ''} onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })} /></label>}
@@ -1054,7 +1112,7 @@ function SettingsPage({ session, theme, onThemeChange }) {
 
   return (
     <main className="page-wrap settings-page">
-      <div className="page-heading"><h1>Settings</h1><p>Manage your account, profile, privacy, and preferences.</p></div>
+      <div className="page-heading"><h1>Settings</h1></div>
       <div className="settings-layout">
         <nav className="settings-nav" aria-label="Settings sections">
           {[
@@ -1584,12 +1642,12 @@ function UserProfilePage({ session }) {
 
 function EventForm({ token, event, onSaved, onCancel }) {
   const [form, setForm] = useState(event ? {
-    title: event.title, description: event.description, category: event.category,
+    title: event.title, description: event.description, coverImageUrl: event.coverImageUrl || '', category: event.category,
     startsAt: dateTimeLocal(event.startsAt), endsAt: dateTimeLocal(event.endsAt),
     registrationDeadline: dateTimeLocal(event.registrationDeadline),
     attendancePoints: event.attendancePoints ?? 0,
     mode: event.mode, location: event.location || '', capacity: event.capacity ?? '', status: event.status,
-  } : { title: '', description: '', category: 'Training', startsAt: '', endsAt: '', registrationDeadline: '', attendancePoints: 0, mode: 'online', location: '', capacity: '', status: 'draft' });
+  } : { title: '', description: '', coverImageUrl: '', category: 'Training', startsAt: '', endsAt: '', registrationDeadline: '', attendancePoints: 0, mode: 'online', location: '', capacity: '', status: 'draft' });
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const update = (key, value) => setForm((current) => ({ ...current, [key]: value }));
@@ -1615,15 +1673,16 @@ function EventForm({ token, event, onSaved, onCancel }) {
     <h2>{event ? 'Edit event' : 'Create an event'}</h2>
     <div className="form-grid">
       <label className="span-two">Event title<input required maxLength="140" value={form.title} onChange={(e) => update('title', e.target.value)} /></label>
+      <label className="span-two">Cover image URL (optional)<input type="url" maxLength="500" placeholder="https://example.com/event-cover.jpg" value={form.coverImageUrl} onChange={(e) => update('coverImageUrl', e.target.value)} /><small>Use a publicly accessible HTTP or HTTPS image URL.</small>{safeExternalUrl(form.coverImageUrl) && <img className="event-cover-preview" src={safeExternalUrl(form.coverImageUrl)} alt="Event cover preview" onError={(e) => e.currentTarget.remove()} />}</label>
       <label>Category<input required value={form.category} onChange={(e) => update('category', e.target.value)} /></label>
       <label>Format<select value={form.mode} onChange={(e) => update('mode', e.target.value)}><option value="online">Online</option><option value="offline">In person</option></select></label>
       <label>Starts<input type="datetime-local" required value={form.startsAt} onChange={(e) => update('startsAt', e.target.value)} /></label>
       <label>Ends<input type="datetime-local" required value={form.endsAt} onChange={(e) => update('endsAt', e.target.value)} /></label>
-      <label>Attendance points<input type="number" min="0" step="any" required value={form.attendancePoints} onChange={(e) => update('attendancePoints', e.target.value)} /><small>Earned once after a verified check-in; past awards stay unchanged.</small></label>
+      <label>Attendance points<input type="number" min="0" step="any" required value={form.attendancePoints} onChange={(e) => update('attendancePoints', e.target.value)} /></label>
       {form.mode === 'offline' && <label className="span-two">Location<input required value={form.location} onChange={(e) => update('location', e.target.value)} /></label>}
       <label>Registration deadline (optional)<input type="datetime-local" value={form.registrationDeadline} onChange={(e) => update('registrationDeadline', e.target.value)} /></label>
       <label>Capacity (optional)<input type="number" min="1" value={form.capacity} onChange={(e) => update('capacity', e.target.value)} /></label>
-      <label>Status<select value={form.status} onChange={(e) => update('status', e.target.value)}><option value="draft">Draft</option><option value="published">Published</option><option value="cancelled">Cancelled</option></select><small>Only published events appear on the homepage and public Events page.</small></label>
+      <label>Status<select value={form.status} onChange={(e) => update('status', e.target.value)}><option value="draft">Draft</option><option value="published">Published</option><option value="cancelled">Cancelled</option></select></label>
       <label className="span-two">Description<textarea required rows="4" value={form.description} onChange={(e) => update('description', e.target.value)} /></label>
     </div>
     {error && <div className="notice error-notice">{error}</div>}
@@ -1715,7 +1774,7 @@ function Admin({ token }) {
 
   return (
     <main className="page-wrap admin-page">
-      <div className="page-heading admin-heading"><div><span className="eyebrow">THE CONTROL ROOM</span><h1>Event <span>admin.</span></h1><p>Make good things happen.</p></div><button className="button button-dark" onClick={() => setEditing(null)}>+ Create event</button></div>
+      <div className="page-heading admin-heading"><div><h1>Event <span>admin</span></h1></div><button className="button button-dark" onClick={() => setEditing(null)}>+ Create event</button></div>
       {error && <div className="notice error-notice" role="alert">{error}</div>}
       <div className="admin-grid">
         <section className="admin-panel"><h2>All events <span>{events.length}</span></h2>
@@ -1806,7 +1865,8 @@ export default function App() {
         <Route path="/events" element={<EventsPage />} />
         <Route path="/events/:eventId" element={<EventDetail token={session.token} user={session.user} />} />
         <Route path="/roadmaps" element={<RoadmapsPage />} />
-        <Route path="/roadmaps/:slug/cycles" element={<RequireUsername session={session}><RoadmapCyclesPage token={session.token} user={session.user} /></RequireUsername>} />
+        <Route path="/trainings" element={<RequireUsername session={session}><TrainingsPage token={session.token} user={session.user} /></RequireUsername>} />
+        <Route path="/roadmaps/:slug/cycles" element={<Navigate to="/trainings" replace />} />
         <Route path="/roadmaps/:slug/cycles/:cycleId" element={<RequireUsername session={session}><RoadmapCyclePage token={session.token} user={session.user} /></RequireUsername>} />
         <Route path="/roadmaps/check-in/:sessionId" element={<RequireUsername session={session}><RoadmapCheckInPage token={session.token} /></RequireUsername>} />
         <Route path="/roadmaps/:slug" element={<RoadmapDetailsPage token={session.token} user={session.user} />} />
@@ -1825,6 +1885,7 @@ export default function App() {
         <Route path="/admin" element={<RequireUsername session={session}>{session.user?.role === 'admin' ? <AdminDashboardLayout activeSection="events"><Admin token={session.token} /></AdminDashboardLayout> : <Navigate to="/login" replace />}</RequireUsername>} />
         <Route path="/admin/overview" element={<RequireUsername session={session}>{session.user?.role === 'admin' ? <AdminDashboardLayout activeSection="overview"><AdminOverviewPage token={session.token} /></AdminDashboardLayout> : <Navigate to="/login" replace />}</RequireUsername>} />
         <Route path="/admin/events" element={<RequireUsername session={session}>{session.user?.role === 'admin' ? <AdminDashboardLayout activeSection="events"><Admin token={session.token} /></AdminDashboardLayout> : <Navigate to="/login" replace />}</RequireUsername>} />
+        <Route path="/admin/cycles" element={<RequireUsername session={session}>{session.user?.role === 'admin' ? <AdminDashboardLayout activeSection="cycles"><AdminCyclesPage token={session.token} /></AdminDashboardLayout> : <Navigate to="/login" replace />}</RequireUsername>} />
         <Route path="/admin/roadmaps/*" element={<RequireUsername session={session}>{session.user?.role === 'admin' ? <AdminDashboardLayout activeSection="roadmaps"><AdminRoadmapsPage token={session.token} /></AdminDashboardLayout> : <Navigate to="/login" replace />}</RequireUsername>} />
         <Route path="*" element={<main className="page-wrap"><div className="empty-state"><h3>That page wandered off.</h3><Link className="button button-dark" to="/">Back to events</Link></div></main>} />
       </Routes>
