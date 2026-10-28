@@ -2312,7 +2312,7 @@ a { color: inherit; }
   width: min(var(--content-width), calc(100% - 48px));
 }
 .site-footer { width: 100%; }
-.site-header { min-height: 76px; height: auto; border-color: var(--color-border); }
+.site-header { position: sticky; top: 0; z-index: 1000; min-height: 76px; height: auto; border-color: var(--color-border); background: var(--color-canvas); }
 .brand-logo { width: 214px; height: auto; }
 .main-nav { gap: clamp(12px, 1.6vw, 22px); font-family: 'Noto Sans Arabic', 'Segoe UI', sans-serif; font-size: 16px; font-weight: 600; letter-spacing: 0; text-transform: none; }
 .nav-link { min-height: 44px; }
