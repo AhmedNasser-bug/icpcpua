@@ -928,6 +928,11 @@ export function RoadmapCyclePage({ token, user }) {
   if (error && !data) return <main className="page-wrap"><div className="notice error-notice" role="alert">{error}</div></main>;
   if (!data) return null;
   const { roadmap, cycle, enrolled, sessions } = data;
+  const cycleDescription = cycle.description?.trim();
+  const roadmapDescription = roadmap.title.trim().toLowerCase();
+  const showCycleDescription = cycleDescription &&
+    cycleDescription.toLowerCase() !== roadmapDescription &&
+    cycleDescription.toLowerCase() !== `roadmap ${roadmapDescription}`;
   const calendarYear = calendarMonth.getUTCFullYear();
   const calendarMonthIndex = calendarMonth.getUTCMonth();
   const daysInMonth = new Date(Date.UTC(calendarYear, calendarMonthIndex + 1, 0)).getUTCDate();
@@ -951,7 +956,7 @@ export function RoadmapCyclePage({ token, user }) {
 
   return <main className="page-wrap roadmaps-page">
     <Link className="text-link" to={`/roadmaps/${roadmap.slug}/cycles`}>← {roadmap.title} cycles</Link>
-    <div className="roadmap-detail-header"><span className="eyebrow">{cycle.difficulty} CYCLE</span><h1>{cycle.title}</h1><p>{cycle.description}</p>
+    <div className="roadmap-detail-header"><h1>{cycle.title}</h1>{showCycleDescription && <p>{cycleDescription}</p>}
       <div className="roadmap-facts"><span><CalendarDays size={16} /> {cycle.startDate} – {cycle.endDate}</span><span><Clock3 size={16} /> {cycle.sessionsPerWeek} days / week · {cycle.sessionDurationMinutes} minutes</span>{cycle.location && <span><MapPin size={16} /> {cycle.location}</span>}<span>{cycle.enrollmentCount}{cycle.capacity ? ` / ${cycle.capacity}` : ''} enrolled</span></div>
     </div>
     {cycle.objectives?.length > 0 && <section className="roadmap-content-section"><h2>Cycle objectives</h2><ul className="roadmap-objectives">{cycle.objectives.map((item) => <li key={item}>{item}</li>)}</ul></section>}

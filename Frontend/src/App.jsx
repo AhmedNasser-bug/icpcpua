@@ -231,7 +231,8 @@ function Header({ user, onSignOut, token }) {
   );
 
   return (
-    <header className="site-header">
+    <div className="site-header-shell">
+      <header className="site-header">
       <Link className="brand" to="/" aria-label="PUA ICPC Community home" onClick={() => { setMenuOpen(false); setAccountOpen(false); }}>
         <svg className="brand-logo" viewBox="0 0 731 187" role="img" aria-label="PUA ICPC Training Community">
           <defs>
@@ -313,6 +314,7 @@ function Header({ user, onSignOut, token }) {
         )}
       </nav>
     </header>
+    </div>
   );
 }
 
