@@ -14,13 +14,17 @@ import {
   cycleStudents,
   create as createRoadmap,
   createCycleForRoadmap,
+  createRoadmapNode,
+  deleteRoadmapNode,
   generateSchedule,
   list as listRoadmaps,
+  roadmapNodes,
   recordAttendance,
   reversePoints,
   schedulePreview,
   sessions as roadmapSessions,
   update as updateRoadmap,
+  updateRoadmapNode,
   updateCycle,
   updateSession,
 } from '../controllers/adminRoadmapsController.js';
@@ -37,6 +41,10 @@ router.get('/events/:eventId/registrations', registrations);
 router.get('/roadmaps', listRoadmaps);
 router.post('/roadmaps', createRoadmap);
 router.put('/roadmaps/:roadmapId', updateRoadmap);
+router.get('/roadmaps/:roadmapId/nodes', roadmapNodes);
+router.post('/roadmaps/:roadmapId/nodes', createRoadmapNode);
+router.put('/roadmaps/:roadmapId/nodes/:nodeId', updateRoadmapNode);
+router.delete('/roadmaps/:roadmapId/nodes/:nodeId', deleteRoadmapNode);
 router.post('/roadmaps/:roadmapId/cycles', createCycleForRoadmap);
 router.put('/roadmap-cycles/:cycleId', updateCycle);
 router.get('/roadmap-cycles/:cycleId/schedule/preview', schedulePreview);

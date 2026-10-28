@@ -82,7 +82,7 @@ export async function getMemberProfile(username) {
   if (!visibility) return null;
   const leaderboard = await getLeaderboard();
   const standing = leaderboard.find((entry) => entry.userId.toString() === user.id);
-  const history = visibility.journeyVisible ? await findAttendanceHistory(user.id) : [];
+  const history = visibility.attendanceHistoryVisible ? await findAttendanceHistory(user.id) : [];
   return {
     id: user.id,
     name: user.name,
@@ -90,7 +90,7 @@ export async function getMemberProfile(username) {
     joinedAt: user.createdAt,
     profile: visibility.profile,
     standing: presentStanding(standing),
-    attendanceHistory: visibility.journeyVisible ? presentHistory(history) : null,
+    attendanceHistory: visibility.attendanceHistoryVisible ? presentHistory(history) : null,
   };
 }
 

@@ -2,20 +2,24 @@ import mongoose from 'mongoose';
 import {
   createAdminCycle,
   createAdminRoadmap,
+  createAdminRoadmapNode,
+  deleteAdminRoadmapNode,
   generateCycleSchedule,
   generateSessionQr,
   getCycleSessions,
   getCycleStudents,
   listAdminRoadmaps,
+  listAdminRoadmapNodes,
   listSessionAttendance,
   manuallyRecordAttendance,
   previewCycleSchedule,
   revokeSessionPoints,
   updateAdminCycle,
   updateAdminRoadmap,
+  updateAdminRoadmapNode,
   updateAdminSession,
 } from '../services/roadmapService.js';
-import { validateCycleInput, validateRoadmapInput, validateSessionInput } from '../utils/roadmapValidation.js';
+import { validateCycleInput, validateRoadmapInput, validateRoadmapNodeInput, validateSessionInput } from '../utils/roadmapValidation.js';
 
 function invalidId(value, res, label) {
   if (mongoose.isValidObjectId(value)) return false;
@@ -40,6 +44,39 @@ export async function update(req, res) {
   return res.json({ roadmap: result.roadmap });
 }
 
+export async function roadmapNodes(req, res) {
+  if (invalidId(req.params.roadmapId, res, 'Roadmap')) return;
+  const result = await listAdminRoadmapNodes(req.params.roadmapId);
+  if (result.type === 'not_found') return res.status(404).json({ error: { message: 'Roadmap not found.' } });
+  return res.json({ nodes: result.nodes });
+}
+
+export async function createRoadmapNode(req, res) {
+  if (invalidId(req.params.roadmapId, res, 'Roadmap')) return;
+  const result = await createAdminRoadmapNode(req.params.roadmapId, validateRoadmapNodeInput(req.body));
+  if (result.type === 'not_found') return res.status(404).json({ error: { message: 'Roadmap not found.' } });
+  if (result.type === 'archived') return res.status(409).json({ error: { message: 'Archived roadmaps cannot be changed.' } });
+  if (result.type === 'invalid_dependencies') return res.status(400).json({ error: { message: 'Dependencies must be valid topics from this roadmap and cannot create a circular path.' } });
+  return res.status(201).json({ node: result.node });
+}
+
+export async function updateRoadmapNode(req, res) {
+  if (invalidId(req.params.roadmapId, res, 'Roadmap') || invalidId(req.params.nodeId, res, 'Learning topic')) return;
+  const result = await updateAdminRoadmapNode(req.params.roadmapId, req.params.nodeId, validateRoadmapNodeInput(req.body, { partial: true }));
+  if (result.type === 'not_found') return res.status(404).json({ error: { message: 'Learning topic not found in this roadmap.' } });
+  if (result.type === 'archived') return res.status(409).json({ error: { message: 'Archived roadmaps cannot be changed.' } });
+  if (result.type === 'invalid_dependencies') return res.status(400).json({ error: { message: 'Dependencies must be valid topics from this roadmap and cannot create a circular path.' } });
+  return res.json({ node: result.node });
+}
+
+export async function deleteRoadmapNode(req, res) {
+  if (invalidId(req.params.roadmapId, res, 'Roadmap') || invalidId(req.params.nodeId, res, 'Learning topic')) return;
+  const result = await deleteAdminRoadmapNode(req.params.roadmapId, req.params.nodeId);
+  if (result.type === 'not_found') return res.status(404).json({ error: { message: 'Learning topic not found in this roadmap.' } });
+  if (result.type === 'archived') return res.status(409).json({ error: { message: 'Archived roadmaps cannot be changed.' } });
+  return res.status(204).end();
+}
+
 export async function createCycleForRoadmap(req, res) {
   if (invalidId(req.params.roadmapId, res, 'Roadmap')) return;
   const result = await createAdminCycle(req.params.roadmapId, validateCycleInput(req.body));
@@ -53,6 +90,7 @@ export async function updateCycle(req, res) {
   if (invalidId(req.params.cycleId, res, 'Cycle')) return;
   const result = await updateAdminCycle(req.params.cycleId, validateCycleInput(req.body, { partial: true }));
   if (result.type === 'not_found') return res.status(404).json({ error: { message: 'Cycle not found.' } });
+  if (result.type === 'archived') return res.status(409).json({ error: { message: 'Archived cycles cannot be edited or republished.' } });
   if (result.type === 'capacity_below_enrollment') return res.status(409).json({ error: { message: 'Capacity cannot be lower than the number of enrolled students.' } });
   if (result.type === 'duplicate_order') return res.status(409).json({ error: { message: 'A cycle already uses this order in the roadmap.' } });
   if (result.type === 'roadmap_not_published') return res.status(409).json({ error: { message: 'Publish the roadmap before publishing its cycle.' } });

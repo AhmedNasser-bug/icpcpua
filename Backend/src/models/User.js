@@ -23,6 +23,7 @@ const profileSchema = new mongoose.Schema({
     trainingVisible: { type: Boolean, default: true },
     teamStatusVisible: { type: Boolean, default: true },
     journeyVisible: { type: Boolean, default: true },
+    attendanceHistoryVisible: { type: Boolean },
   },
   pictureUrl: { type: String, trim: true, maxlength: 500 },
   university: { type: String, trim: true, maxlength: 120 },

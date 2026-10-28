@@ -5,6 +5,8 @@ const roadmapSchema = new mongoose.Schema({
   slug: { type: String, required: true, unique: true, index: true },
   description: { type: String, required: true, trim: true, maxlength: 5000 },
   coverImageUrl: { type: String, trim: true, maxlength: 500, default: '' },
+  difficulty: { type: String, enum: ['beginner', 'intermediate', 'advanced'], default: 'beginner' },
+  estimatedDuration: { type: String, trim: true, maxlength: 80, default: '' },
   objectives: [{ type: String, trim: true, maxlength: 160 }],
   audience: { type: String, trim: true, maxlength: 500, default: '' },
   prerequisites: { type: String, trim: true, maxlength: 1000, default: '' },

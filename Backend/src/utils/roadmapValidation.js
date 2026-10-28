@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import { generateSessionSchedule } from './roadmapSchedule.js';
 
 function invalid(message, field) {
@@ -50,7 +51,7 @@ function validateFields(input, fields, required) {
 
 export function validateRoadmapInput(input, { partial = false } = {}) {
   objectInput(input, 'Roadmap details');
-  const fields = ['title', 'description', 'coverImageUrl', 'objectives', 'audience', 'prerequisites', 'status'];
+  const fields = ['title', 'description', 'coverImageUrl', 'difficulty', 'estimatedDuration', 'objectives', 'audience', 'prerequisites', 'status'];
   const required = partial ? [] : ['title', 'description'];
   const included = validateFields(input, fields, required);
   rejectUnknown(input, fields);
@@ -59,12 +60,60 @@ export function validateRoadmapInput(input, { partial = false } = {}) {
     const value = input[field];
     if (field === 'objectives') output[field] = textList(value, field, 30, 160);
     else if (field === 'coverImageUrl') output[field] = safeUrl(value, field);
-    else if (field === 'status') {
+    else if (field === 'difficulty') {
+      if (!['beginner', 'intermediate', 'advanced'].includes(value)) invalid('difficulty is not supported.', field);
+      output[field] = value;
+    } else if (field === 'status') {
       if (!['draft', 'published', 'completed', 'archived'].includes(value)) invalid('status is not supported.', field);
       output[field] = value;
-    } else output[field] = text(value, field, field === 'description' ? 5000 : field === 'prerequisites' ? 1000 : field === 'audience' ? 500 : 140, { required: ['title', 'description'].includes(field) });
+    } else output[field] = text(value, field, field === 'description' ? 5000 : field === 'prerequisites' ? 1000 : field === 'audience' ? 500 : field === 'estimatedDuration' ? 80 : 140, { required: ['title', 'description'].includes(field) });
   }
   return output;
+}
+
+export function validateRoadmapNodeInput(input, { partial = false } = {}) {
+  objectInput(input, 'Learning topic');
+  const fields = ['title', 'description', 'dependencies', 'position', 'estimatedHours', 'resources', 'problems', 'isRequired'];
+  rejectUnknown(input, fields);
+  const required = partial ? [] : ['title'];
+  const included = validateFields(input, fields, required);
+  const output = {};
+  for (const field of included) {
+    const value = input[field];
+    if (field === 'title') output.title = text(value, field, 140, { required: true });
+    else if (field === 'description') output.description = text(value, field, 3000);
+    else if (field === 'dependencies') {
+      if (!Array.isArray(value) || value.length > 100 || value.some((id) => !mongoose.isValidObjectId(id))) {
+        invalid('dependencies must contain valid learning topic IDs.', field);
+      }
+      output.dependencies = [...new Set(value.map(String))];
+    } else if (field === 'position') {
+      if (!Number.isInteger(value) || value < 0) invalid('position must be a non-negative whole number.', field);
+      output.position = value;
+    } else if (field === 'estimatedHours') {
+      if (value === null || value === '') output.estimatedHours = null;
+      else if (!Number.isFinite(Number(value)) || Number(value) < 0) invalid('estimatedHours must be a non-negative number or null.', field);
+      else output.estimatedHours = Number(value);
+    } else if (field === 'resources') output[field] = validateResources(value, field);
+    else if (field === 'problems') output[field] = validateProblems(value, field);
+    else if (field === 'isRequired') {
+      if (typeof value !== 'boolean') invalid('isRequired must be a boolean.', field);
+      output.isRequired = value;
+    }
+  }
+  return output;
+}
+
+export function validateRoadmapProgressInput(input) {
+  objectInput(input, 'Problem progress');
+  const fields = ['nodeId', 'problemUrl', 'solved'];
+  rejectUnknown(input, fields);
+  validateFields(input, fields, fields);
+  if (!mongoose.isValidObjectId(input.nodeId)) invalid('nodeId must be a valid learning topic ID.', 'nodeId');
+  const problemUrl = text(input.problemUrl, 'problemUrl', 500, { required: true });
+  safeUrl(problemUrl, 'problemUrl');
+  if (typeof input.solved !== 'boolean') invalid('solved must be a boolean.', 'solved');
+  return { nodeId: String(input.nodeId), problemUrl, solved: input.solved };
 }
 
 const cycleFields = [
@@ -139,6 +188,24 @@ function validateResources(value, field) {
     rejectUnknown(item, ['title', 'url']);
     if (!('title' in item) || !('url' in item)) invalid(`${field}.${index + 1} requires a title and URL.`, field);
     return { title: text(item.title, `${field}.${index + 1}.title`, 140, { required: true }), url: safeUrl(item.url, `${field}.${index + 1}.url`) };
+  });
+}
+
+function validateProblems(value, field) {
+  if (!Array.isArray(value) || value.length > 100) invalid(`${field} must contain up to 100 items.`, field);
+  return value.map((item, index) => {
+    objectInput(item, `${field}.${index + 1}`);
+    rejectUnknown(item, ['title', 'url', 'difficulty']);
+    if (!('title' in item) || !('url' in item)) invalid(`${field}.${index + 1} requires a title and URL.`, field);
+    const difficulty = item.difficulty ?? 'medium';
+    if (!['easy', 'medium', 'hard'].includes(difficulty)) {
+      invalid(`${field}.${index + 1}.difficulty must be easy, medium, or hard.`, field);
+    }
+    return {
+      title: text(item.title, `${field}.${index + 1}.title`, 140, { required: true }),
+      url: safeUrl(item.url, `${field}.${index + 1}.url`),
+      difficulty,
+    };
   });
 }
 

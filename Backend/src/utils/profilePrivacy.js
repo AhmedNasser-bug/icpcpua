@@ -1,4 +1,5 @@
 export function applyPublicProfilePrivacy(source = {}) {
+  const sourcePrivacy = source.privacy || {};
   const privacy = {
     profileVisible: true,
     externalProfilesVisible: true,
@@ -6,8 +7,11 @@ export function applyPublicProfilePrivacy(source = {}) {
     trainingVisible: true,
     teamStatusVisible: true,
     journeyVisible: true,
-    ...(source.privacy || {}),
+    ...sourcePrivacy,
   };
+  const attendanceHistoryVisible = sourcePrivacy.attendanceHistoryVisible
+    ?? sourcePrivacy.journeyVisible
+    ?? true;
   if (!privacy.profileVisible) return null;
   const profile = { ...source };
   delete profile.privacy;
@@ -24,5 +28,5 @@ export function applyPublicProfilePrivacy(source = {}) {
     delete profile.teamPreferences;
   }
   if (!privacy.journeyVisible) delete profile.icpcJourney;
-  return { profile, journeyVisible: privacy.journeyVisible };
+  return { profile, attendanceHistoryVisible };
 }

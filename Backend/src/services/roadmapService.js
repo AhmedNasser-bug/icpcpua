@@ -8,14 +8,19 @@ import {
   createCycle,
   createEnrollment,
   createRoadmap,
+  createRoadmapNode,
   createSessionAttendance,
   decrementCycleEnrollment,
+  deleteRoadmapNode,
   findAttendanceById,
   findCycleById,
   findCycleEnrollments,
   findCyclesForRoadmap,
   findEnrollment,
   findRoadmap,
+  findRoadmapNode,
+  findRoadmapNodes,
+  findRoadmapProgress,
   findRoadmaps,
   findSessionById,
   findSessionWithToken,
@@ -32,14 +37,53 @@ import {
   setSessionCheckInToken,
   updateCycle,
   updateRoadmap,
+  updateRoadmapNode,
+  updateRoadmapProblemProgress,
   updateSession,
 } from '../repositories/roadmapRepository.js';
 import { generateSessionSchedule } from '../utils/roadmapSchedule.js';
+import { hasValidRoadmapNodeDependencyGraph } from '../utils/roadmapGraph.js';
 import { createCheckInToken, hashCheckInToken, isWithinCheckInWindow } from '../utils/checkIn.js';
 import { slugify } from '../utils/validation.js';
 
 function objectId(value) {
   return mongoose.isValidObjectId(value);
+}
+
+export async function listAdminRoadmapNodes(roadmapId) {
+  if (!objectId(roadmapId)) return { type: 'not_found' };
+  const roadmap = await findRoadmap({ _id: roadmapId });
+  if (!roadmap) return { type: 'not_found' };
+  return { type: 'ok', nodes: await findRoadmapNodes(roadmap._id) };
+}
+
+export async function createAdminRoadmapNode(roadmapId, data) {
+  const roadmap = objectId(roadmapId) ? await findRoadmap({ _id: roadmapId }) : null;
+  if (!roadmap) return { type: 'not_found' };
+  if (roadmap.status === 'archived') return { type: 'archived' };
+  const nodes = await findRoadmapNodes(roadmap._id);
+  if (!hasValidRoadmapNodeDependencyGraph(nodes, null, data.dependencies || [])) return { type: 'invalid_dependencies' };
+  return { type: 'created', node: await createRoadmapNode({ ...data, roadmap: roadmap._id }) };
+}
+
+export async function updateAdminRoadmapNode(roadmapId, nodeId, data) {
+  if (!objectId(roadmapId) || !objectId(nodeId)) return { type: 'not_found' };
+  const roadmap = await findRoadmap({ _id: roadmapId });
+  const existing = await findRoadmapNode({ _id: nodeId, roadmap: roadmapId });
+  if (!roadmap || !existing) return { type: 'not_found' };
+  if (roadmap.status === 'archived') return { type: 'archived' };
+  const nodes = await findRoadmapNodes(roadmap._id);
+  const dependencies = data.dependencies || existing.dependencies || [];
+  if (!hasValidRoadmapNodeDependencyGraph(nodes, existing._id, dependencies)) return { type: 'invalid_dependencies' };
+  return { type: 'updated', node: await updateRoadmapNode(existing._id, data) };
+}
+
+export async function deleteAdminRoadmapNode(roadmapId, nodeId) {
+  if (!objectId(roadmapId) || !objectId(nodeId)) return { type: 'not_found' };
+  const roadmap = await findRoadmap({ _id: roadmapId });
+  if (!roadmap || roadmap.status === 'archived') return { type: roadmap ? 'archived' : 'not_found' };
+  const node = await deleteRoadmapNode(roadmap._id, nodeId);
+  return node ? { type: 'deleted' } : { type: 'not_found' };
 }
 
 function roadmapSlug(title) {
@@ -57,28 +101,69 @@ function withinSessionWindow(session, now = new Date()) {
 
 export async function listPublicRoadmaps() {
   const roadmaps = await findRoadmaps({ status: { $in: ['published', 'completed'] } }, { updatedAt: -1 });
-  return Promise.all(roadmaps.map(async (roadmap) => {
-    const { createdBy, ...publicRoadmap } = roadmap;
-    return {
-      ...publicRoadmap,
-      cycles: await findCyclesForRoadmap(roadmap._id, { status: { $in: ['published', 'completed'] } }),
-    };
-  }));
+  return roadmaps.map(({ createdBy, ...publicRoadmap }) => publicRoadmap);
 }
 
 export async function getPublicRoadmap(slug) {
   const roadmap = await findRoadmap({ slug, status: { $in: ['published', 'completed'] } });
   if (!roadmap) return null;
-  const cycles = await findCyclesForRoadmap(roadmap._id, { status: { $in: ['published', 'completed'] } });
-  const cycleIds = cycles.map((cycle) => cycle._id);
-  const sessions = cycleIds.length ? await findSessionsByCycleIds(cycleIds) : [];
+  const nodes = await findRoadmapNodes(roadmap._id);
   const publicRoadmap = { ...roadmap };
   delete publicRoadmap.createdBy;
+  return { ...publicRoadmap, nodes };
+}
+
+export async function getStudentRoadmapProgress(roadmapSlug, studentId) {
+  const roadmap = await findRoadmap({ slug: roadmapSlug, status: { $in: ['published', 'completed'] } });
+  if (!roadmap) return { type: 'not_found' };
+  const [nodes, progress] = await Promise.all([
+    findRoadmapNodes(roadmap._id),
+    findRoadmapProgress(roadmap._id, studentId),
+  ]);
+  const problemUrlsByNode = new Map(nodes.map((node) => [String(node._id), new Set((node.problems || []).map(({ url }) => url))]));
+  const solvedProblems = (progress?.solvedProblems || [])
+    .filter(({ node, problemUrl }) => problemUrlsByNode.get(String(node))?.has(problemUrl))
+    .map(({ node, problemUrl }) => ({ nodeId: String(node), problemUrl }));
+  return { type: 'ok', solvedProblems };
+}
+
+export async function setStudentRoadmapProblemSolved(roadmapSlug, studentId, { nodeId, problemUrl, solved }) {
+  const roadmap = await findRoadmap({ slug: roadmapSlug, status: { $in: ['published', 'completed'] } });
+  if (!roadmap) return { type: 'not_found' };
+  const node = await findRoadmapNode({ _id: nodeId, roadmap: roadmap._id });
+  if (!node || !(node.problems || []).some((problem) => problem.url === problemUrl)) {
+    return { type: 'invalid_problem' };
+  }
+  const progress = await updateRoadmapProblemProgress(roadmap._id, studentId, node._id, problemUrl, solved);
   return {
-    ...publicRoadmap,
+    type: 'ok',
+    solvedProblems: (progress?.solvedProblems || []).map(({ node: solvedNode, problemUrl: solvedUrl }) => ({
+      nodeId: String(solvedNode),
+      problemUrl: solvedUrl,
+    })),
+  };
+}
+
+export async function listStudentCycles(roadmapSlug, studentId) {
+  const roadmap = await findRoadmap({ slug: roadmapSlug, status: { $in: ['published', 'completed'] } });
+  if (!roadmap) return { type: 'not_found' };
+  const cycles = await findCyclesForRoadmap(roadmap._id, { status: { $in: ['published', 'completed'] } });
+  const enrollments = await findStudentEnrollments(studentId);
+  const enrolledCycleIds = new Set(enrollments.map(({ cycle }) => cycle?._id?.toString()).filter(Boolean));
+  const now = new Date();
+  return {
+    type: 'ok',
+    roadmap: { _id: roadmap._id, title: roadmap.title, slug: roadmap.slug },
     cycles: cycles.map((cycle) => ({
       ...cycle,
-      sessionCount: sessions.filter((session) => session.cycle.toString() === cycle._id.toString()).length,
+      enrolled: enrolledCycleIds.has(cycle._id.toString()),
+      registrationOpen: cycle.status === 'published'
+        && cycle.registrationOpensAt <= now
+        && cycle.registrationClosesAt >= now
+        && (cycle.capacity === null || cycle.capacity === undefined || cycle.enrollmentCount < cycle.capacity),
+      remainingCapacity: cycle.capacity === null || cycle.capacity === undefined
+        ? null
+        : Math.max(0, cycle.capacity - cycle.enrollmentCount),
     })),
   };
 }
@@ -120,6 +205,7 @@ export async function updateAdminCycle(cycleId, data) {
   if (!objectId(cycleId)) return { type: 'not_found' };
   const existing = await findCycleById(cycleId);
   if (!existing) return { type: 'not_found' };
+  if (existing.status === 'archived' && Object.keys(data).length) return { type: 'archived' };
   if (data.capacity !== undefined && data.capacity !== null && data.capacity < existing.enrollmentCount) {
     return { type: 'capacity_below_enrollment' };
   }
@@ -353,12 +439,13 @@ export async function revokeSessionPoints(sessionId, attendanceId, adminId, reas
   return result ? { type: 'reversed', attendance: result } : { type: 'already_reversed' };
 }
 
-export async function enrollInCycle(cycleId, studentId, now = new Date()) {
+export async function enrollInCycle(roadmapSlug, cycleId, studentId, now = new Date()) {
   if (!objectId(cycleId)) return { type: 'not_found' };
   const cycle = await findCycleById(cycleId);
   if (!cycle) return { type: 'not_found' };
   const roadmap = await findRoadmap({ _id: cycle.roadmap });
-  if (!roadmap || roadmap.status !== 'published') return { type: 'unavailable' };
+  if (!roadmap || roadmap.slug !== roadmapSlug) return { type: 'not_found' };
+  if (roadmap.status !== 'published') return { type: 'unavailable' };
   if (cycle.status !== 'published') return { type: 'unavailable' };
   if (await findEnrollment(cycle._id, studentId)) return { type: 'already_enrolled' };
   const reserved = await reserveCycleEnrollment(cycle._id, now);
@@ -401,16 +488,22 @@ export async function getStudentRoadmaps(studentId) {
       if (!cycle) return null;
       const cycleSessions = sessionsByCycle.get(cycle._id.toString()) || [];
       const eligible = cycleSessions.filter((session) => session.status !== 'cancelled');
-      const attendedCount = eligible.filter((session) => session.attended).length;
+      const completed = eligible.filter((session) => session.status === 'completed');
+      const attendedCount = completed.filter((session) => session.attended).length;
       const roadmap = cycle.roadmap;
       return {
         enrollment: { enrolledAt },
         roadmap,
-        cycle: { ...cycle, sessions: cycleSessions },
+        cycle: {
+          ...cycle,
+          sessions: cycleSessions.map(({ _id, title, startsAt, status, timeZone }) => ({ _id, title, startsAt, status, timeZone })),
+        },
         progress: {
+          completedSessions: completed.length,
           sessionsAttended: attendedCount,
           totalSessions: eligible.length,
-          attendancePercentage: eligible.length ? Math.round((attendedCount / eligible.length) * 100) : 0,
+          progressPercentage: eligible.length ? Math.round((completed.length / eligible.length) * 100) : 0,
+          attendancePercentage: completed.length ? Math.round((attendedCount / completed.length) * 100) : 0,
           points: attendance.filter((item) => cycleSessions.some((session) => session._id.toString() === item.session.toString()))
             .reduce((sum, item) => sum + item.pointsAwarded - (item.pointsReversed || 0), 0),
         },
@@ -419,12 +512,12 @@ export async function getStudentRoadmaps(studentId) {
   };
 }
 
-export async function getStudentCycle(cycleId, studentId) {
+export async function getStudentCycle(roadmapSlug, cycleId, studentId) {
   if (!objectId(cycleId)) return { type: 'not_found' };
   const cycle = await findCycleById(cycleId);
   if (!cycle) return { type: 'not_found' };
   const roadmap = await findRoadmap({ _id: cycle.roadmap });
-  if (!roadmap) return { type: 'not_found' };
+  if (!roadmap || roadmap.slug !== roadmapSlug) return { type: 'not_found' };
   const enrolled = studentId ? Boolean(await findEnrollment(cycle._id, studentId)) : false;
   if ((!['published', 'completed'].includes(roadmap.status) || !['published', 'completed'].includes(cycle.status)) && !enrolled) {
     return { type: 'not_found' };
@@ -439,6 +532,10 @@ export async function getStudentCycle(cycleId, studentId) {
     roadmap: publicRoadmap,
     cycle,
     enrolled,
+    registrationOpen: cycle.status === 'published'
+      && cycle.registrationOpensAt <= new Date()
+      && cycle.registrationClosesAt >= new Date()
+      && (cycle.capacity === null || cycle.capacity === undefined || cycle.enrollmentCount < cycle.capacity),
     sessions: sessions.map((session) => ({
       ...session,
       attended: attended.has(session._id.toString()),

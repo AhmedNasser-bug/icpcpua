@@ -69,9 +69,10 @@ test('profile input does not accept private account fields or user-claimed verif
 });
 
 test('privacy preferences are strictly boolean and only accept supported controls', () => {
-  assert.deepEqual(validateProfilePrivacyInput({ profileVisible: false, trainingVisible: true }), {
+  assert.deepEqual(validateProfilePrivacyInput({ profileVisible: false, trainingVisible: true, attendanceHistoryVisible: false }), {
     profileVisible: false,
     trainingVisible: true,
+    attendanceHistoryVisible: false,
   });
   assert.throws(() => validateProfilePrivacyInput({ cpStatsVisible: 'false' }), /must be true or false/);
   assert.throws(() => validateProfilePrivacyInput({ exposeEmail: false }), /Unexpected privacy setting/);
@@ -118,10 +119,20 @@ test('public profile privacy removes disabled sections and hides private profile
   assert.equal(result.profile.teamStatus, undefined);
   assert.equal(result.profile.teamPreferences, undefined);
   assert.equal(result.profile.icpcJourney, undefined);
+  assert.equal(result.attendanceHistoryVisible, false);
   assert.deepEqual(result.profile.cpStats, { problemsSolved: 100 });
   assert.equal(result.profile.privacy, undefined);
   assert.equal(applyPublicProfilePrivacy({ privacy: { profileVisible: false } }), null);
   assert.equal(applyPublicProfilePrivacy({ trainingGoals: ['Graphs'] }).profile.trainingGoals[0], 'Graphs');
+});
+
+test('attendance history privacy does not hide legacy ICPC journey profile data', () => {
+  const result = applyPublicProfilePrivacy({
+    icpcJourney: [{ contestName: 'Regional' }],
+    privacy: { attendanceHistoryVisible: false },
+  });
+  assert.deepEqual(result.profile.icpcJourney, [{ contestName: 'Regional' }]);
+  assert.equal(result.attendanceHistoryVisible, false);
 });
 
 test('private profiles are excluded from the public leaderboard aggregation', () => {

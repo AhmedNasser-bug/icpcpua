@@ -1,4 +1,6 @@
 import Roadmap from '../models/Roadmap.js';
+import RoadmapNode from '../models/RoadmapNode.js';
+import RoadmapProgress from '../models/RoadmapProgress.js';
 import RoadmapAttendance from '../models/RoadmapAttendance.js';
 import RoadmapCycle from '../models/RoadmapCycle.js';
 import RoadmapEnrollment from '../models/RoadmapEnrollment.js';
@@ -18,6 +20,45 @@ export function createRoadmap(data) {
 
 export function updateRoadmap(id, data) {
   return Roadmap.findByIdAndUpdate(id, { $set: data }, { new: true, runValidators: true }).lean();
+}
+
+export function findRoadmapNodes(roadmapId) {
+  return RoadmapNode.find({ roadmap: roadmapId }).sort({ position: 1, createdAt: 1 }).lean();
+}
+
+export function findRoadmapNode(filter) {
+  return RoadmapNode.findOne(filter).lean();
+}
+
+export function findRoadmapProgress(roadmapId, studentId) {
+  return RoadmapProgress.findOne({ roadmap: roadmapId, student: studentId }).lean();
+}
+
+export function updateRoadmapProblemProgress(roadmapId, studentId, nodeId, problemUrl, solved) {
+  const filter = { roadmap: roadmapId, student: studentId };
+  if (!solved) {
+    return RoadmapProgress.findOneAndUpdate(filter, {
+      $pull: { solvedProblems: { node: nodeId, problemUrl } },
+    }, { new: true }).lean();
+  }
+  return RoadmapProgress.findOneAndUpdate(filter, {
+    $addToSet: { solvedProblems: { node: nodeId, problemUrl } },
+  }, { new: true, upsert: true, setDefaultsOnInsert: true, runValidators: true }).lean();
+}
+
+export function createRoadmapNode(data) {
+  return RoadmapNode.create(data);
+}
+
+export function updateRoadmapNode(id, data) {
+  return RoadmapNode.findByIdAndUpdate(id, { $set: data }, { new: true, runValidators: true }).lean();
+}
+
+export async function deleteRoadmapNode(roadmapId, nodeId) {
+  const node = await RoadmapNode.findOne({ _id: nodeId, roadmap: roadmapId }).lean();
+  if (!node) return null;
+  await RoadmapNode.updateMany({ roadmap: roadmapId, dependencies: nodeId }, { $pull: { dependencies: nodeId } });
+  return RoadmapNode.findOneAndDelete({ _id: node._id, roadmap: roadmapId }).lean();
 }
 
 export function findCyclesForRoadmap(roadmapId, filter = {}) {

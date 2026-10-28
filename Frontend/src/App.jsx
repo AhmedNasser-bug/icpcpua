@@ -3,7 +3,7 @@ import { Link, Navigate, Route, Routes, useLocation, useNavigate, useParams } fr
 import { ArrowRight, Bell, CalendarDays, Check, ChevronDown, ChevronLeft, ChevronRight, Clock3, Code2, ExternalLink, KeyRound, Link2, LogOut, MapPin, Menu, Moon, Palette, Plus, QrCode, Search, Shield, Sun, Ticket, Trash2, Trophy, UserRound, Users, X } from 'lucide-react';
 import { api, eventDate } from './api.js';
 import { AdminDashboardLayout, AdminOverviewPage } from './AdminDashboard.jsx';
-import { AdminRoadmapsPage, MyRoadmapsSection, RoadmapCheckInPage, RoadmapCyclePage, RoadmapDetailsPage, RoadmapsPage } from './Roadmaps.jsx';
+import { AdminRoadmapsPage, MyRoadmapsSection, RoadmapCheckInPage, RoadmapCyclePage, RoadmapCyclesPage, RoadmapDetailsPage, RoadmapsPage } from './Roadmaps.jsx';
 
 const USERNAME_PATTERN = /^[a-z0-9_]{3,20}$/;
 
@@ -347,7 +347,6 @@ function AcpcCountdown() {
     <div className="acpc-countdown" aria-label={`Countdown to ${targetLabel}: ${values.map(([unit, value]) => `${value} ${unit}`).join(', ')}`}>
       {values.map(([unit, value]) => <div className="acpc-countdown-unit" key={unit}><strong>{String(value).padStart(2, '0')}</strong><span>{unit}</span></div>)}
     </div>
-    <p className="home-countdown-estimate">{configuredTarget ? `Configured target: ${targetLabel} · date and timezone are set in the frontend environment` : 'Estimated target: August 2027 · not an official competition date'}</p>
   </>;
 }
 
@@ -437,10 +436,10 @@ function HomePage() {
     <section className="home-hero">
       <div className="home-hero-inner">
         <div className="home-hero-copy">
-          <span className="eyebrow"><span className="eyebrow-dot" /> PUA ICPC COMMUNITY · ROAD TO ACPC</span>
-          <h1>ICPC PUA — <span>Road to ACPC</span></h1>
-          <p className="home-hero-lead">Building the next generation of problem solvers, one challenge at a time.</p>
-          <p className="home-hero-mission">Our goal is to help PUA students build and prepare the first team from our university to qualify for ACPC.</p>
+          <span className="eyebrow"><span className="eyebrow-dot" /> PUA ICPC COMMUNITY</span>
+          <h1>ICPC PUA — <span>Road to ICPC</span></h1>
+          <p className="home-hero-lead">Building the next generation of problem solvers</p>
+          <p className="home-hero-mission">Our goal is to help the first team from our university qualify for the ACPC</p>
           <div className="home-hero-actions">
             <Link className="button button-dark" to="/roadmaps">Start your journey <ArrowRight size={17} /></Link>
             <Link className="button button-outline" to="/events">Explore events <ArrowRight size={17} /></Link>
@@ -448,7 +447,7 @@ function HomePage() {
         </div>
         <aside className="home-countdown-panel" aria-label="Countdown to our estimated ACPC target">
           <span className="eyebrow">THE ROAD AHEAD</span>
-          <h2>Every day brings us closer to ACPC.</h2>
+          <h2>Every day brings us closer to ACPC</h2>
           <AcpcCountdown />
         </aside>
       </div>
@@ -456,7 +455,7 @@ function HomePage() {
 
     <section className="home-events-section" aria-labelledby="home-events-title">
       <div className="home-section-heading">
-        <div><span className="eyebrow">LEARN BY DOING</span><h2 id="home-events-title">Our <span>Events</span></h2><p>Meet the community, take on a challenge, and grow through competition.</p></div>
+        <div><h2 id="home-events-title">Our <span>Events</span></h2></div>
         <div className="home-carousel-actions">
           <button className="home-carousel-control" type="button" aria-label="Previous event" onClick={() => goToEvent(-1)} disabled={events.length < 2}><ChevronLeft size={20} /></button>
           <button className="home-carousel-control" type="button" aria-label="Next event" onClick={() => goToEvent(1)} disabled={events.length < 2}><ChevronRight size={20} /></button>
@@ -477,7 +476,7 @@ function HomePage() {
 
     <section className="home-roadmap-section">
       <div className="home-section-inner home-split-layout">
-        <div className="home-section-copy"><span className="eyebrow">A CLEAR PATH FORWARD</span><h2>Our <span>Roadmap</span></h2><p>Build problem-solving skills one step at a time with structured learning paths, focused cycles, and sessions that help you keep moving.</p><Link className="button button-dark" to="/roadmaps">Explore roadmaps <ArrowRight size={16} /></Link></div>
+        <div className="home-section-copy"><h2>Our <span>Roadmap</span></h2><p>Build problem-solving skills one step at a time with structured learning paths, focused cycles, and sessions that help you keep moving.</p><Link className="button button-dark" to="/roadmaps">Explore roadmaps <ArrowRight size={16} /></Link></div>
         <div className="home-roadmap-visual" aria-hidden="true"><div className="home-roadmap-node"><span>01</span><b>Learn</b></div><div className="home-roadmap-node"><span>02</span><b>Practice</b></div><div className="home-roadmap-node"><span>03</span><b>Compete</b></div></div>
       </div>
     </section>
@@ -485,7 +484,7 @@ function HomePage() {
     <section className="home-training-section">
       <div className="home-section-inner home-split-layout home-training-layout">
         <div className="home-training-visual" aria-hidden="true"><div className="home-training-board"><span>while (curious) {'{'}</span><b>solve();</b><span>{'}'}</span></div></div>
-        <div className="home-section-copy"><span className="eyebrow">PRACTICE WITH PURPOSE</span><h2>Our <span>Training</span></h2><p>Competitive programming is a team effort. Learn core techniques, practice consistently, and prepare alongside students who share your ambition.</p><Link className="button button-dark" to="/roadmaps">Find your training path <ArrowRight size={16} /></Link></div>
+        <div className="home-section-copy"><h2>Our <span>Training</span></h2><p>Competitive programming is a team effort. Learn core techniques, practice consistently, and prepare alongside students who share your ambition.</p><Link className="button button-dark" to="/roadmaps">Find your training path <ArrowRight size={16} /></Link></div>
       </div>
     </section>
 
@@ -536,7 +535,7 @@ function EventsPage() {
     <main className="events-page">
       <section className="events-section" id="events">
         <div className="section-heading">
-          <div><span className="eyebrow">WHAT'S HAPPENING</span><h1>Our <span>Events</span></h1><p>Explore upcoming competitions, workshops, and community activities.</p></div>
+          <div><h1>Our <span>Events</span></h1></div>
           <div className="event-tabs" role="tablist">
             <button className={status === 'upcoming' ? 'tab active' : 'tab'} onClick={() => setStatus('upcoming')}>Upcoming</button>
             <button className={status === 'past' ? 'tab active' : 'tab'} onClick={() => setStatus('past')}>Past events</button>
@@ -554,7 +553,7 @@ function EventsPage() {
           events.length ? <div className="event-grid">{events.map((event, index) => <EventCard key={event.id} event={event} index={index} />)}</div> :
             <div className="empty-state"><span className="empty-icon"><CalendarDays size={24} /></span><h3>No events found</h3><p>Try a different search or check back soon for new events.</p></div>}
       </section>
-      <section className="community-strip"><div className="strip-icon"><Users size={21} /></div><div><b>Better together.</b><span>New to competitive programming? This is your place to start.</span></div><Link to="/login">Meet the community <ArrowRight size={16} /></Link></section>
+      <section className="community-strip"><div className="strip-icon"><Users size={21} /></div><div><b>Better together</b><span>New to competitive programming? This is your place to start.</span></div><Link to="/login">Meet the community <ArrowRight size={16} /></Link></section>
     </main>
   );
 }
@@ -996,7 +995,9 @@ function SettingsPage({ session, theme, onThemeChange }) {
     cpStatsVisible: true,
     trainingVisible: true,
     teamStatusVisible: true,
-    journeyVisible: true,
+    attendanceHistoryVisible: session.user.profile?.privacy?.attendanceHistoryVisible
+      ?? session.user.profile?.privacy?.journeyVisible
+      ?? true,
     ...(session.user.profile?.privacy || {}),
   };
   const updatePrivacy = async (field, value) => {
@@ -1053,7 +1054,7 @@ function SettingsPage({ session, theme, onThemeChange }) {
 
   return (
     <main className="page-wrap settings-page">
-      <div className="page-heading"><span className="eyebrow">YOUR COMMUNITY</span><h1>Settings<span>.</span></h1><p>Manage your account, profile, privacy, and preferences.</p></div>
+      <div className="page-heading"><h1>Settings</h1><p>Manage your account, profile, privacy, and preferences.</p></div>
       <div className="settings-layout">
         <nav className="settings-nav" aria-label="Settings sections">
           {[
@@ -1126,24 +1127,6 @@ function SettingsPage({ session, theme, onThemeChange }) {
           </div>
         </fieldset>
         <fieldset>
-          <legend>ICPC journey <span className="profile-field-hint">Entries are user-provided and unverified</span></legend>
-          {studentProfile.icpcJourney.map((entry, index) => <div className="profile-journey-editor" key={`journey-${index}`}>
-            <div className="profile-form-grid">
-              {[
-                ['contestName', 'Contest name'],
-                ['season', 'Season'],
-                ['stage', 'Stage'],
-                ['result', 'Result'],
-                ['teamName', 'Team name'],
-                ['achievement', 'Achievement or award'],
-              ].map(([field, label]) => <label key={field}>{label}<input maxLength={field === 'contestName' ? 120 : 160} value={entry[field] || ''} onChange={(event) => setStudentProfile((current) => ({ ...current, icpcJourney: current.icpcJourney.map((item, itemIndex) => itemIndex === index ? { ...item, [field]: event.target.value } : item) }))} /></label>)}
-            </div>
-            <label>Teammates <span className="profile-field-hint">One per line</span><textarea rows="2" value={(entry.teammates || []).join('\n')} onChange={(event) => setStudentProfile((current) => ({ ...current, icpcJourney: current.icpcJourney.map((item, itemIndex) => itemIndex === index ? { ...item, teammates: event.target.value.split('\n').map((name) => name.trim()).filter(Boolean) } : item) }))} /></label>
-            <button className="profile-remove-button" type="button" onClick={() => setStudentProfile((current) => ({ ...current, icpcJourney: current.icpcJourney.filter((_, itemIndex) => itemIndex !== index) }))}><Trash2 size={15} /> Remove entry</button>
-          </div>)}
-          <button className="button button-outline profile-add-button" type="button" onClick={() => setStudentProfile((current) => ({ ...current, icpcJourney: [...current.icpcJourney, { contestName: '', season: '', stage: '', result: '', teamName: '', teammates: [], achievement: '' }] }))}><Plus size={16} /> Add ICPC entry</button>
-        </fieldset>
-        <fieldset>
           <legend>Looking for a team</legend>
           <label>Team status<select value={studentProfile.teamStatus} onChange={(event) => updateStudentProfileField('teamStatus', event.target.value)}><option value="">Not specified</option><option value="looking">Looking for a team</option><option value="in_team">Already in a team</option><option value="not_looking">Not currently looking</option></select></label>
           {studentProfile.teamStatus === 'looking' && <div className="profile-form-grid">
@@ -1156,12 +1139,7 @@ function SettingsPage({ session, theme, onThemeChange }) {
         </fieldset>
         <fieldset>
           <legend>Training goals</legend>
-          {[
-            ['trainingGoals', 'Current learning goals'],
-            ['trainingTopics', 'Topics you are studying'],
-            ['milestones', 'Personal milestones'],
-          ].map(([field, label]) => <label key={field}>{label} <span className="profile-field-hint">One per line</span><textarea rows="3" value={studentProfile[field].join('\n')} onChange={(event) => updateStudentProfileField(field, event.target.value.split('\n').map((item) => item.trim()).filter(Boolean))} aria-invalid={Boolean(profileFieldErrors[field])} />{profileFieldErrors[field] && <span className="field-error">{profileFieldErrors[field]}</span>}</label>)}
-          <label>Training progress<input maxLength="300" value={studentProfile.trainingProgress} onChange={(event) => updateStudentProfileField('trainingProgress', event.target.value)} aria-invalid={Boolean(profileFieldErrors.trainingProgress)} />{profileFieldErrors.trainingProgress && <span className="field-error">{profileFieldErrors.trainingProgress}</span>}</label>
+          <label>Current learning goals <span className="profile-field-hint">One per line</span><textarea rows="3" value={studentProfile.trainingGoals.join('\n')} onChange={(event) => updateStudentProfileField('trainingGoals', event.target.value.split('\n').map((item) => item.trim()).filter(Boolean))} aria-invalid={Boolean(profileFieldErrors.trainingGoals)} />{profileFieldErrors.trainingGoals && <span className="field-error">{profileFieldErrors.trainingGoals}</span>}</label>
         </fieldset>
         {profileSaveError && <div className="notice error-notice" role="alert">{profileSaveError}</div>}
         {profileSaveSuccess && <div className="notice success-notice" role="status">{profileSaveSuccess}</div>}
@@ -1229,7 +1207,7 @@ function SettingsPage({ session, theme, onThemeChange }) {
             ['cpStatsVisible', 'Competitive programming stats', 'Show self-reported platform ratings and counts. Verified community leaderboard points remain visible.'],
             ['trainingVisible', 'Training interests and goals', 'Show the topics, milestones, and training goals on your profile.'],
             ['teamStatusVisible', 'Team status and preferences', 'Show whether you are looking for a team and any preferences you shared.'],
-            ['journeyVisible', 'ICPC journey and attendance history', 'Show self-reported ICPC journey entries and verified community event attendance.'],
+            ['attendanceHistoryVisible', 'Attendance history', 'Show verified community event attendance on your public profile.'],
           ].map(([key, label, description]) => <label className="privacy-option" key={key}>
             <span><strong>{label}</strong><small>{description}</small></span>
             <input type="checkbox" checked={Boolean(privacySettings[key])} disabled={privacyBusy} onChange={(event) => updatePrivacy(key, event.target.checked)} aria-label={label} />
@@ -1241,7 +1219,7 @@ function SettingsPage({ session, theme, onThemeChange }) {
         {section === 'notifications' && <section className="settings-card settings-privacy-card" aria-labelledby="settings-notification-title">
           <span className="eyebrow">COMMUNITY UPDATES</span>
           <h2 id="settings-notification-title">Notifications</h2>
-          <p>Choose which supported updates appear in your notification inbox. Essential account-security messages are not controlled here.</p>
+          <p>Choose which supported updates you receive in the future. Existing notifications remain in your inbox. Essential account-security messages are not controlled here.</p>
           <div className="privacy-options">
             {[
               ['contestAnnouncements', 'Contest announcements', 'Newly published contest and competition events.'],
@@ -1261,53 +1239,29 @@ function SettingsPage({ session, theme, onThemeChange }) {
 }
 
 function MyActivitiesPage({ token }) {
-  const [items, setItems] = useState([]);
   const [standing, setStanding] = useState({ rank: null, points: 0, eventsAttended: 0 });
   const [attendanceHistory, setAttendanceHistory] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const [leaderboardError, setLeaderboardError] = useState('');
   const [reloadKey, setReloadKey] = useState(0);
   useEffect(() => {
     let active = true;
     setLoading(true);
-    setError('');
     setLeaderboardError('');
-    Promise.allSettled([api('/events/my', { token }), api('/events/leaderboard/me', { token })])
-      .then(([eventsResult, leaderboardResult]) => {
+    api('/events/leaderboard/me', { token })
+      .then((leaderboardResult) => {
         if (!active) return;
-        if (eventsResult.status === 'fulfilled') setItems(eventsResult.value.events);
-        else setError(eventsResult.reason.message);
-        if (leaderboardResult.status === 'fulfilled') {
-          setStanding(leaderboardResult.value.standing);
-          setAttendanceHistory(leaderboardResult.value.attendanceHistory);
-        } else setLeaderboardError(leaderboardResult.reason.message);
+        setStanding(leaderboardResult.standing);
+        setAttendanceHistory(leaderboardResult.attendanceHistory);
       })
+      .catch((reason) => { if (active) setLeaderboardError(reason.message); })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
   }, [reloadKey, token]);
 
   return (
     <main className="page-wrap">
-      <div className="page-heading"><span className="eyebrow">YOUR COMMUNITY DASHBOARD</span><h1>My <span>Activities.</span></h1><p>Your registered events, joined roadmaps, and progress in one place.</p></div>
-      <section className="my-activities-section" aria-labelledby="my-events-heading">
-        <div className="my-activities-section-heading"><div><span className="eyebrow">YOUR LINEUP</span><h2 id="my-events-heading">My Events</h2></div><Link className="text-link" to="/">Explore events <ArrowRight size={15} /></Link></div>
-        {error && <div className="notice error-notice" role="alert">{error} <button className="text-link" type="button" onClick={() => setReloadKey((value) => value + 1)}>Try again</button></div>}
-        {loading ? <div className="empty-state"><span className="loader" /> Loading your events...</div> : error ? null : items.length ?
-          <div className="my-event-list">{items.map((item, index) =>
-            <article className="my-event-card" key={item.registrationId}>
-              <div className={`my-event-date accent-${index % 4}`}><b>{new Date(item.event.startsAt).toLocaleDateString(undefined, { day: '2-digit' })}</b><span>{new Date(item.event.startsAt).toLocaleDateString(undefined, { month: 'short' })}</span></div>
-              <div className="my-event-info"><span className="category-label">{item.event.category}</span><h3><Link to={`/events/${item.event.slug}`}>{item.event.title}</Link></h3><span>{eventDate(item.event.startsAt, { weekday: 'short', year: undefined })} · {item.event.mode === 'offline' ? item.event.location : 'Online'}</span></div>
-              <div className="ticket-list-action">
-                {item.checkedInAt
-                  ? <span className="registered-badge"><Check size={16} /> Checked in · +{item.pointsAwarded} pts</span>
-                  : <span className="check-status">Not checked in</span>}
-                <Link className="button button-outline" to={`/events/${item.event.slug}`}><Ticket size={16} /> Event details</Link>
-              </div>
-            </article>,
-          )}</div> :
-          <div className="empty-state"><span className="empty-icon"><Ticket size={24} /></span><h3>Your next adventure is waiting.</h3><p>You haven’t registered for an event yet.</p><Link className="button button-dark" to="/">Explore events <ArrowRight size={16} /></Link></div>}
-      </section>
+      <div className="page-heading"><h1>My <span>Activities</span></h1></div>
       {!loading && <section className="personal-leaderboard">
         <div className="personal-leaderboard-heading"><span className="eyebrow"><Trophy size={15} /> YOUR CONTEST STATS</span><Link to="/leaderboard">Global rankings <ArrowRight size={15} /></Link></div>
         {leaderboardError && <div className="notice error-notice" role="alert">{leaderboardError}</div>}
@@ -1430,7 +1384,7 @@ function LeaderboardPage() {
   }, []);
 
   return <main className="page-wrap leaderboard-page">
-    <div className="page-heading"><span className="eyebrow">SHOW UP. LEVEL UP.</span><h1>Community <span>leaderboard.</span></h1><p>Points are awarded for verified event attendance.</p></div>
+    <div className="page-heading"><h1><span>leaderboard</span></h1></div>
     {error && <div className="notice error-notice">{error}</div>}
     {loading ? <div className="empty-state"><span className="loader" /> Loading the leaderboard...</div> : leaderboard.length
       ? <section className="leaderboard-card"><div className="leaderboard-head"><span>RANK</span><span>MEMBER</span><span>EVENTS</span><span>POINTS</span></div>
@@ -1837,23 +1791,6 @@ function Footer() {
   );
 }
 
-function WhatsAppButton() {
-  return (
-    <a
-      className="whatsapp-float"
-      href="https://chat.whatsapp.com/DYx4tz7Y2xnE8GJ1D8S6xn"
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label="Join the PUA ICPC Community WhatsApp group"
-      title="Join our WhatsApp community"
-    >
-      <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
-        <path d="M16.04 3.2A12.72 12.72 0 0 0 5.1 22.4L3.4 28.6l6.35-1.67A12.72 12.72 0 1 0 16.04 3.2Zm0 23.2c-2 0-3.96-.54-5.68-1.57l-.4-.24-3.77.99 1-3.67-.26-.42a10.45 10.45 0 1 1 9.1 4.91Zm5.74-7.83c-.31-.16-1.83-.9-2.11-1-.28-.1-.49-.15-.7.16-.2.31-.8 1-.98 1.2-.18.2-.36.23-.67.08-.31-.16-1.31-.49-2.49-1.54-.92-.82-1.54-1.83-1.72-2.14-.18-.31-.02-.48.14-.64.14-.14.31-.36.46-.54.15-.18.2-.31.3-.51.1-.2.05-.39-.03-.54-.08-.16-.7-1.69-.96-2.31-.25-.6-.51-.52-.7-.53l-.6-.01c-.2 0-.54.08-.82.39-.28.31-1.07 1.05-1.07 2.56 0 1.51 1.1 2.97 1.25 3.18.15.2 2.16 3.3 5.23 4.62.73.31 1.3.5 1.75.64.74.24 1.41.2 1.94.12.59-.09 1.83-.75 2.09-1.48.26-.73.26-1.36.18-1.49-.08-.13-.28-.2-.59-.36Z" fill="currentColor" />
-      </svg>
-    </a>
-  );
-}
-
 export default function App() {
   const session = useSession();
   const [theme, setTheme] = useState(() => localStorage.getItem('pua-theme') === 'dark' ? 'dark' : 'light');
@@ -1869,7 +1806,8 @@ export default function App() {
         <Route path="/events" element={<EventsPage />} />
         <Route path="/events/:eventId" element={<EventDetail token={session.token} user={session.user} />} />
         <Route path="/roadmaps" element={<RoadmapsPage />} />
-        <Route path="/roadmaps/cycles/:cycleId" element={<RoadmapCyclePage token={session.token} user={session.user} />} />
+        <Route path="/roadmaps/:slug/cycles" element={<RequireUsername session={session}><RoadmapCyclesPage token={session.token} user={session.user} /></RequireUsername>} />
+        <Route path="/roadmaps/:slug/cycles/:cycleId" element={<RequireUsername session={session}><RoadmapCyclePage token={session.token} user={session.user} /></RequireUsername>} />
         <Route path="/roadmaps/check-in/:sessionId" element={<RequireUsername session={session}><RoadmapCheckInPage token={session.token} /></RequireUsername>} />
         <Route path="/roadmaps/:slug" element={<RoadmapDetailsPage token={session.token} user={session.user} />} />
         <Route path="/check-in/:eventId" element={session.loading ? <div className="empty-state"><span className="loader" /> Loading your account...</div> : <CheckInPage token={session.token} user={session.user} />} />
@@ -1891,7 +1829,6 @@ export default function App() {
         <Route path="*" element={<main className="page-wrap"><div className="empty-state"><h3>That page wandered off.</h3><Link className="button button-dark" to="/">Back to events</Link></div></main>} />
       </Routes>
       <Footer />
-      <WhatsAppButton />
     </div>
   );
 }

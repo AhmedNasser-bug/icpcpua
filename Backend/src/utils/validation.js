@@ -274,6 +274,7 @@ export function validateProfilePrivacyInput(input) {
     'trainingVisible',
     'teamStatusVisible',
     'journeyVisible',
+    'attendanceHistoryVisible',
   ];
   if (!input || typeof input !== 'object' || Array.isArray(input)) {
     throw invalidProfile('Privacy preferences must be a JSON object.', 'privacy');

@@ -3,11 +3,15 @@ import {
   checkInToSession,
   enrollInCycle,
   getPublicRoadmap,
+  getStudentRoadmapProgress,
   getStudentCycle,
   getStudentRoadmaps,
   getStudentSessionCheckIn,
+  listStudentCycles,
   listPublicRoadmaps,
+  setStudentRoadmapProblemSolved,
 } from '../services/roadmapService.js';
+import { validateRoadmapProgressInput } from '../utils/roadmapValidation.js';
 
 export async function list(req, res) {
   return res.json({ roadmaps: await listPublicRoadmaps() });
@@ -19,12 +23,38 @@ export async function getBySlug(req, res) {
   return res.json({ roadmap });
 }
 
+export async function roadmapCycles(req, res) {
+  const result = await listStudentCycles(req.params.roadmapSlug, req.user.id);
+  if (result.type === 'not_found') return res.status(404).json({ error: { message: 'Roadmap not found.' } });
+  res.set('Cache-Control', 'private, no-store');
+  return res.json(result);
+}
+
+export async function roadmapProgress(req, res) {
+  if (req.user.role !== 'user') return res.status(403).json({ error: { message: 'Only student accounts can track roadmap problems.' } });
+  const result = await getStudentRoadmapProgress(req.params.roadmapSlug, req.user.id);
+  if (result.type === 'not_found') return res.status(404).json({ error: { message: 'Roadmap not found.' } });
+  res.set('Cache-Control', 'private, no-store');
+  return res.json({ solvedProblems: result.solvedProblems });
+}
+
+export async function updateRoadmapProgress(req, res) {
+  if (req.user.role !== 'user') return res.status(403).json({ error: { message: 'Only student accounts can track roadmap problems.' } });
+  const progressInput = validateRoadmapProgressInput(req.body);
+  const result = await setStudentRoadmapProblemSolved(req.params.roadmapSlug, req.user.id, progressInput);
+  if (result.type === 'not_found') return res.status(404).json({ error: { message: 'Roadmap not found.' } });
+  if (result.type === 'invalid_problem') return res.status(404).json({ error: { message: 'Problem not found in this roadmap topic.' } });
+  res.set('Cache-Control', 'private, no-store');
+  return res.json({ solvedProblems: result.solvedProblems });
+}
+
 export async function cycleDetails(req, res) {
   if (!mongoose.isValidObjectId(req.params.cycleId)) {
     return res.status(404).json({ error: { message: 'Cycle not found.' } });
   }
-  const result = await getStudentCycle(req.params.cycleId, req.user.id);
+  const result = await getStudentCycle(req.params.roadmapSlug, req.params.cycleId, req.user.id);
   if (result.type === 'not_found') return res.status(404).json({ error: { message: 'Cycle not found.' } });
+  res.set('Cache-Control', 'private, no-store');
   return res.json(result);
 }
 
@@ -33,7 +63,7 @@ export async function enroll(req, res) {
   if (!mongoose.isValidObjectId(req.params.cycleId)) {
     return res.status(404).json({ error: { message: 'Cycle not found.' } });
   }
-  const result = await enrollInCycle(req.params.cycleId, req.user.id);
+  const result = await enrollInCycle(req.params.roadmapSlug, req.params.cycleId, req.user.id);
   if (result.type === 'not_found') return res.status(404).json({ error: { message: 'Cycle not found.' } });
   if (result.type === 'unavailable') return res.status(409).json({ error: { message: 'Enrollment is not available for this cycle.' } });
   if (result.type === 'already_enrolled') return res.status(409).json({ error: { message: 'You are already enrolled in this cycle.' } });

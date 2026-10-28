@@ -79,6 +79,18 @@ All routes are prefixed by `/api`; protected routes use `Authorization: Bearer <
 | `GET` | `/events/:userId/profile` | Public | View a member's public profile, rank, points, and attendance history |
 | `GET` | `/events/:id/check-in?token=...` | User | Verify the event QR and the user's registration; return attendance status |
 | `POST` | `/events/:id/check-in` | User | Record attendance once during the configured event window |
+| `GET` | `/roadmaps` | Public | List published roadmaps without exposing training cycles |
+| `GET` | `/roadmaps/:slug` | Public | View a published roadmap and its learning path topics/resources |
+| `GET` | `/roadmaps/:roadmapSlug/progress` | Student | View the signed-in student's solved problems for this roadmap |
+| `PUT` | `/roadmaps/:roadmapSlug/progress` | Student | Save or clear a solved state for a problem in one of the roadmap topics |
+| `GET` | `/roadmaps/:slug/cycles` | User | List published cycles for the roadmap |
+| `GET` | `/roadmaps/:slug/cycles/:cycleId` | User | View a cycle and sessions after verifying it belongs to the roadmap |
+| `POST` | `/roadmaps/:slug/cycles/:cycleId/enroll` | Student | Enroll once while registration is open and capacity remains |
+| `GET` | `/roadmaps/my` | User | View enrolled cycles and separate session-progress/attendance summaries |
+| `GET` | `/admin/roadmaps/:roadmapId/nodes` | Admin | List learning path topics |
+| `POST` | `/admin/roadmaps/:roadmapId/nodes` | Admin | Add a learning topic and its resources |
+| `PUT` | `/admin/roadmaps/:roadmapId/nodes/:nodeId` | Admin | Edit a topic and dependencies |
+| `DELETE` | `/admin/roadmaps/:roadmapId/nodes/:nodeId` | Admin | Delete a topic and safely remove its prerequisite references |
 | `GET` | `/admin/events` | Admin | List all events |
 | `POST` | `/admin/events` | Admin | Create a draft or published event |
 | `PUT` | `/admin/events/:id` | Admin | Edit an event |
@@ -86,6 +98,8 @@ All routes are prefixed by `/api`; protected routes use `Authorization: Bearer <
 | `GET` | `/admin/events/:id/registrations` | Admin | View event attendees |
 
 Responses use JSON; errors have the shape `{ "error": { "message": "..." } }`. New accounts must provide a unique 4–20 digit student ID; existing accounts without one can set it once in Settings. The academic year shown in Settings is derived from the ID's first four digits. Student IDs are returned only by authenticated account endpoints, not public member profiles or the leaderboard. MongoDB unique indexes prevent duplicate account and event registrations. Each event QR contains a random token; only its SHA-256 hash is stored by the API. Regenerating the QR invalidates the previous code. Check-in opens at the event start and closes at the event end; the admin dashboard does not expose custom check-in window fields. Registration deadlines are optional. Attendance points default to `0`. An atomic update records the registered student's attendance and snapshots the points awarded on that registration record; the unique student/event registration is the auditable reward transaction and prevents duplicate awards, including concurrent requests. Later event point changes apply only to future check-ins and do not rewrite historical awards. The leaderboard derives totals only from verified student attendance records and uses dense ranking by total points (equal point totals share a rank); within a tie, display order is attendance count, name, then user ID. Logout clears the stateless JWT from the browser; it expires after seven days.
+
+Learning path topics open their practice set from the topic tree, grouped into Easy, Medium, and Hard. Signed-in students can check problems as solved; each student's progress is stored per roadmap in the database. In the admin topic editor, enter problems one per line as `title | difficulty | https://example.com`, where difficulty is `Easy`, `Medium`, or `Hard`. URL-only and older `title | URL` entries remain accepted and default to Medium.
 
 ## Tests and production build
 
