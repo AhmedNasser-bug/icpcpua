@@ -957,7 +957,12 @@ export function RoadmapCyclePage({ token, user }) {
   return <main className="page-wrap roadmaps-page">
     <Link className="text-link" to={`/roadmaps/${roadmap.slug}/cycles`}>← {roadmap.title} cycles</Link>
     <div className="roadmap-detail-header"><h1>{cycle.title}</h1>{showCycleDescription && <p>{cycleDescription}</p>}
-      <div className="roadmap-facts"><span><CalendarDays size={16} /> {cycle.startDate} – {cycle.endDate}</span><span><Clock3 size={16} /> {cycle.sessionsPerWeek} days / week · {cycle.sessionDurationMinutes} minutes</span>{cycle.location && <span><MapPin size={16} /> {cycle.location}</span>}<span>{cycle.enrollmentCount}{cycle.capacity ? ` / ${cycle.capacity}` : ''} enrolled</span></div>
+      <section className="roadmap-cycle-data-card" aria-label="Cycle details">
+        <div><CalendarDays size={17} /><span><small>Cycle dates</small><strong>{cycle.startDate} – {cycle.endDate}</strong></span></div>
+        <div><Clock3 size={17} /><span><small>Weekly schedule</small><strong>{cycle.sessionsPerWeek} days / week · {cycle.sessionDurationMinutes} minutes</strong></span></div>
+        {cycle.location && <div><MapPin size={17} /><span><small>Location</small><strong>{cycle.location}</strong></span></div>}
+        <div><BookOpen size={17} /><span><small>Enrollment</small><strong>{cycle.enrollmentCount}{cycle.capacity ? ` / ${cycle.capacity}` : ''} enrolled</strong></span></div>
+      </section>
     </div>
     {cycle.objectives?.length > 0 && <section className="roadmap-content-section"><h2>Cycle objectives</h2><ul className="roadmap-objectives">{cycle.objectives.map((item) => <li key={item}>{item}</li>)}</ul></section>}
     {error && <div className="notice error-notice" role="alert">{error}</div>}

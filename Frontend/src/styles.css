@@ -2000,6 +2000,12 @@ html[data-theme='dark'] .settings-card { border-color: var(--ink); }
 .roadmap-enroll-panel h2 { margin-bottom: 7px; font: 700 20px 'Noto Sans Arabic', sans-serif; }
 .roadmap-enroll-panel p, .roadmap-enroll-panel small { color: var(--muted); font-size: 12px; }
 .roadmap-facts { display: flex; flex-wrap: wrap; gap: 13px 25px; color: var(--muted); font-size: 12px; }
+.roadmap-cycle-data-card { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; margin-top: 22px; padding: 18px; border: 1px solid var(--color-border, var(--subtle-line, #d8d1c4)); border-radius: var(--radius-md, 8px); background: var(--color-surface, var(--surface, #fffdf8)); box-shadow: var(--shadow-sm, 2px 2px 0 rgb(23 23 20 / 10%)); }
+.roadmap-cycle-data-card > div { min-width: 0; display: flex; align-items: flex-start; gap: 10px; }
+.roadmap-cycle-data-card > div > svg { flex: 0 0 auto; margin-top: 2px; color: var(--color-primary, #824de0); }
+.roadmap-cycle-data-card > div > span { min-width: 0; display: grid; gap: 4px; }
+.roadmap-cycle-data-card small { color: var(--color-muted, var(--muted)); font-size: 11px; }
+.roadmap-cycle-data-card strong { color: var(--color-text, var(--ink)); font-size: 13px; font-weight: 600; overflow-wrap: anywhere; }
 .roadmap-session-list { display: grid; gap: 10px; }
 .roadmap-session-row { display: grid; grid-template-columns: minmax(190px, .4fr) 1fr; gap: 20px; padding: 17px; border: 1px solid var(--subtle-line, #d8d1c4); background: var(--surface, #fffdf8); }
 .roadmap-session-row.cancelled { opacity: .65; }
