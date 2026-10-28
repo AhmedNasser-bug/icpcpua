@@ -88,6 +88,4 @@ const userSchema = new mongoose.Schema(
   { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } },
 );
 
-userSchema.index({ username: 1 }, { unique: true, sparse: true });
-
 export default mongoose.model('User', userSchema);
