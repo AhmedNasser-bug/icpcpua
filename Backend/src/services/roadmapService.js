@@ -11,6 +11,7 @@ import {
   createRoadmapNode,
   createSessionAttendance,
   decrementCycleEnrollment,
+  deleteEnrollment,
   deleteRoadmapNode,
   findAttendanceById,
   findCycleById,
@@ -492,6 +493,23 @@ export async function enrollInCycle(roadmapSlug, cycleId, studentId, now = new D
     if (error.code === 11000) return { type: 'already_enrolled' };
     throw error;
   }
+}
+
+export async function leaveCycle(roadmapSlug, cycleId, studentId, now = new Date()) {
+  if (!objectId(cycleId)) return { type: 'not_found' };
+  const cycle = await findCycleById(cycleId);
+  if (!cycle) return { type: 'not_found' };
+  const roadmap = await findRoadmap({ _id: cycle.roadmap });
+  if (!roadmap || roadmap.slug !== roadmapSlug) return { type: 'not_found' };
+  if (cycle.startDate <= now.toISOString().slice(0, 10)) return { type: 'cycle_started' };
+  const enrollment = await deleteEnrollment(cycle._id, studentId);
+  if (!enrollment) return { type: 'not_enrolled' };
+  const countUpdate = await decrementCycleEnrollment(cycle._id);
+  if (!countUpdate.modifiedCount) {
+    await createEnrollment(cycle._id, studentId);
+    throw new Error('Could not update the cycle enrollment count after leaving.');
+  }
+  return { type: 'left' };
 }
 
 export async function getStudentRoadmaps(studentId) {

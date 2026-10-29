@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import {
   checkInToSession,
   enrollInCycle,
+  leaveCycle,
   getPublicRoadmap,
   getStudentRoadmapProgress,
   getStudentCycle,
@@ -94,6 +95,19 @@ export async function enroll(req, res) {
   if (result.type === 'full') return res.status(409).json({ error: { message: 'This cycle is full.' } });
   if (result.type === 'registration_closed') return res.status(409).json({ error: { message: 'The registration window for this cycle is closed.' } });
   return res.status(201).json({ enrollment: result.enrollment });
+}
+
+export async function leave(req, res) {
+  if (req.user.role !== 'user') return res.status(403).json({ error: { message: 'Only student accounts can leave a cycle.' } });
+  const { roadmapSlug, cycleId } = paramsInput(req);
+  if (!mongoose.isValidObjectId(cycleId)) {
+    return res.status(404).json({ error: { message: 'Cycle not found.' } });
+  }
+  const result = await leaveCycle(roadmapSlug, cycleId, req.user.id);
+  if (result.type === 'not_found') return res.status(404).json({ error: { message: 'Cycle not found.' } });
+  if (result.type === 'not_enrolled') return res.status(409).json({ error: { message: 'You are not enrolled in this cycle.' } });
+  if (result.type === 'cycle_started') return res.status(409).json({ error: { message: 'You can only leave this cycle before it starts.' } });
+  return res.json({ message: 'You have left this cycle.' });
 }
 
 export async function mine(req, res) {

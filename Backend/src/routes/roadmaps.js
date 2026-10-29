@@ -5,6 +5,7 @@ import * as roadmapValidation from '../validation/roadmaps.validation.js';
 import {
   cycleDetails,
   enroll,
+  leave,
   allRoadmapCycles,
   getBySlug,
   list,
@@ -25,6 +26,7 @@ router.get('/:roadmapSlug/progress', requireAuth, requireUsername, validate(road
 router.put('/:roadmapSlug/progress', requireAuth, requireUsername, validate(roadmapValidation.progressUpdate), updateRoadmapProgress);
 router.get('/:roadmapSlug/cycles', requireAuth, requireUsername, validate(roadmapValidation.roadmapSlug), roadmapCycles);
 router.post('/:roadmapSlug/cycles/:cycleId/enroll', requireAuth, requireUsername, validate(roadmapValidation.emptyAction), enroll);
+router.delete('/:roadmapSlug/cycles/:cycleId/enroll', requireAuth, requireUsername, validate(roadmapValidation.cycle), leave);
 router.get('/:roadmapSlug/cycles/:cycleId', requireAuth, requireUsername, validate(roadmapValidation.cycle), cycleDetails);
 router.get('/sessions/:sessionId/check-in', requireAuth, requireUsername, validate(roadmapValidation.sessionCheckInDetails), sessionCheckInDetails);
 router.post('/sessions/:sessionId/check-in', requireAuth, requireUsername, validate(roadmapValidation.sessionCheckInSubmit), submitSessionCheckIn);

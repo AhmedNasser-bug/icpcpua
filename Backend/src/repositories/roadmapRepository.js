@@ -107,6 +107,10 @@ export function findEnrollment(cycleId, studentId) {
   return RoadmapEnrollment.findOne({ cycle: cycleId, student: studentId }).lean();
 }
 
+export function deleteEnrollment(cycleId, studentId) {
+  return RoadmapEnrollment.findOneAndDelete({ cycle: cycleId, student: studentId }).lean();
+}
+
 export function findCycleEnrollments(cycleId) {
   return RoadmapEnrollment.find({ cycle: cycleId })
     .populate('student', 'name email username')

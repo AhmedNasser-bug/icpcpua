@@ -72,9 +72,20 @@ text requires 3:1. The selected text and action pairs below exceed 4.5:1.
 
 ## Component examples
 
-Use semantic HTML and the classes in `src/styles.css`. The examples illustrate
+Use semantic HTML and the classes in `src/shared/styles/global.css`. The examples illustrate
 patterns for future contest registration and standings screens; they do not imply
 new routes or backend behavior.
+
+### Learning roadmaps
+
+The Roadmaps page uses a centered, responsive card grid, difficulty filter buttons, and the
+Training cross-link. Cards use a fixed-height cover region with `object-fit: cover`, pill
+badges, a clamped description, and a full-width primary action. Signed-in students see a
+direct link when registration is open for a cycle; cycle availability without an open
+cycle is labeled accurately, anonymous users are prompted to sign in, and failed
+availability requests are shown rather than treated as an empty cycle list. Difficulty
+badges appear only for recognized data. Use the existing semantic color and spacing tokens
+instead of introducing page-specific utility frameworks.
 
 ### Header
 
