@@ -1,3 +1,6 @@
+import dns from "dns";
+dns.setServers(["1.1.1.1", "8.8.8.8"]);
+
 import app from './app.js';
 import { config } from './config/env.js';
 import checkConnectionDB from './models/DBConnection.js';
