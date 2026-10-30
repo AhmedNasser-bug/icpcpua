@@ -2,8 +2,8 @@ import dns from 'node:dns';
 dns.setServers(['1.1.1.1', '8.8.8.8']);
 
 import mongoose from 'mongoose';
-import app from '../app.js';
-import { config } from '../config/env.js';
+import app from '../src/app.js';
+import { config } from '../src/config/env.js';
 
 let connectionPromise;
 
