@@ -75,12 +75,13 @@ export function RoadmapsPage({ token }) {
   }, [load]);
   const visibleRoadmaps = activeFilter === 'all' ? roadmaps : roadmaps.filter(roadmap => roadmap.difficulty?.toLowerCase() === activeFilter);
   return <main className="page-wrap roadmaps-page roadmaps-index-page">
-    <header className="roadmaps-index-heading">
-      <div className="roadmaps-index-copy">
-        <h1>Learning roadmaps</h1>
-        <p>Master competitive programming topics step-by-step.</p>
+    <header className="roadmap-page-hero">
+      <div className="roadmap-page-hero-copy">
+        <span className="roadmap-page-hero-label">ROADMAP CATALOG</span>
+        <h1>Learning <span>roadmaps</span></h1>
+        <p>Master competitive programming topics step-by-step</p>
       </div>
-      <Link className="roadmaps-training-crosslink" to="/training"><Zap size={16} aria-hidden="true" /> Active Training Cycles <ArrowRight size={16} aria-hidden="true" /></Link>
+      <Link className="roadmap-page-hero-action" to="/training"><Zap size={16} aria-hidden="true" /> Active Training Cycles <ArrowRight size={16} aria-hidden="true" /></Link>
     </header>
     {error && <div className="notice error-notice" role="alert">{error} <button className="text-link" type="button" onClick={load}>Try again</button></div>}
     {cycleError && <div className="notice error-notice roadmap-cycle-fetch-error" role="alert">Live cycle availability could not be loaded: {cycleError} <button className="text-link" type="button" onClick={load}>Try again</button></div>}
@@ -109,12 +110,12 @@ export function RoadmapDetailsPage({
   const [roadmap, setRoadmap] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [roadmapRetry, setRoadmapRetry] = useState(0);
   useEffect(() => {
     let active = true;
     setLoading(true);
-    api(`/roadmaps/${encodeURIComponent(slug)}`).then(({
-      roadmap: result
-    }) => {
+    setError('');
+    api(`/roadmaps/${encodeURIComponent(slug)}`).then(({ roadmap: result }) => {
       if (active) setRoadmap(result);
     }).catch(reason => {
       if (active) setError(reason.message);
@@ -124,11 +125,20 @@ export function RoadmapDetailsPage({
     return () => {
       active = false;
     };
-  }, [slug]);
+  }, [roadmapRetry, slug]);
   if (loading) return <main className="page-wrap"><LoadingState /></main>;
-  if (error) return <main className="page-wrap"><div className="notice error-notice" role="alert">{error}</div></main>;
-  if (!roadmap) return null;
+  if (error) return <main className="page-wrap"><div className="notice error-notice" role="alert">{error} <button className="text-link" type="button" onClick={() => setRoadmapRetry(current => current + 1)}>Try again</button></div></main>;
+  if (!roadmap) return <main className="page-wrap"><div className="empty-state"><h2>Roadmap unavailable</h2><p>This roadmap could not be found or is no longer available.</p><Link className="button button-outline" to="/roadmaps">Back to Roadmaps</Link></div></main>;
+  const roadmapCategory = roadmap.level || roadmap.category || roadmap.difficulty;
   return <main className="page-wrap roadmaps-page roadmap-details-page">
+    <header className="student-roadmap-header">
+      <div className="student-roadmap-topbar">
+        <Link className="student-roadmap-back" to="/roadmaps"><ChevronLeft size={17} aria-hidden="true" /> Back to Roadmaps</Link>
+        {roadmapCategory && <span className="student-roadmap-category">{roadmapCategory}</span>}
+        <h1>{roadmap.title}</h1>
+      </div>
+      {roadmap.description && <p>{roadmap.description}</p>}
+    </header>
     <LearningPath nodes={roadmap.nodes || []} token={token} user={user} roadmapSlug={roadmap.slug} />
   </main>;
 }
@@ -261,7 +271,14 @@ export function TrainingPage({
   };
   const visibleCycles = cycleGroups[activeFilter];
   return <main className="page-wrap roadmaps-page training-page">
-    <div className="page-heading"><h1>Training</h1><p><span className="training-description-full">Join a structured training cycle <span aria-hidden="true">•</span> Build your skills through guided sessions.</span><span className="training-description-mobile">Explore guided sessions and build your skills.</span></p></div>
+    <header className="roadmap-page-hero training-page-hero">
+      <div className="roadmap-page-hero-copy">
+        <span className="roadmap-page-hero-label">TRAINING CYCLES</span>
+        <h1>Training <span>cycles</span></h1>
+        <p><span className="training-description-full">Join a structured training cycle <span aria-hidden="true">•</span> Build your skills through guided sessions</span><span className="training-description-mobile">Explore guided sessions and build your skills.</span></p>
+      </div>
+      <Link className="roadmap-page-hero-action" to="/roadmaps"><BookOpen size={16} aria-hidden="true" /> Browse Roadmaps <ArrowRight size={16} aria-hidden="true" /></Link>
+    </header>
     {error && <div className="notice error-notice" role="alert">{error} <button className="text-link" type="button" onClick={load}>Try again</button></div>}
     {loading ? <LoadingState>Loading training cycles...</LoadingState> : cycles.length ? <>
       <div className="training-cycle-filters" role="group" aria-label="Filter training cycles">
@@ -271,7 +288,7 @@ export function TrainingPage({
       </div>
       {visibleCycles.length ? <section className={`roadmap-cycle-grid training-cycle-grid${visibleCycles.length === 1 ? ' is-featured' : ''}`} aria-label={`${activeFilter} training cycles`}>
         {visibleCycles.map(cycle => <CycleCard key={cycle._id} cycle={cycle} roadmapSlug={cycle.roadmap.slug} />)}
-      </section> : <div className="training-cycle-empty" role="status"><h2>No {activeFilter} cycles right now.</h2><p>Choose another filter to see more training opportunities.</p></div>}
+      </section> : <div className="training-cycle-empty" role="status"><h2>No {activeFilter} cycles right now.</h2><p>Choose another filter to see more training opportunities</p></div>}
     </> : <div className="empty-state"><h2>No training cycles available yet.</h2><p>Published training cycles will appear here when they are available.</p></div>}
   </main>;
 }

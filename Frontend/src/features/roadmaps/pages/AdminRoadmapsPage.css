@@ -1,0 +1,96 @@
+.roadmaps-admin-page .roadmap-import-input {
+  display: none;
+}
+
+.roadmaps-admin-page .roadmap-admin-toolbar {
+  display: flex;
+  flex: 0 1 auto;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.roadmaps-admin-page .roadmap-import-preview {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin: 0 0 20px;
+  padding: 18px;
+  border: 1px solid var(--subtle-line, #d8d1c4);
+  border-radius: 12px;
+  background: var(--surface, #fffdf8);
+}
+
+.roadmaps-admin-page .roadmap-import-preview h2 {
+  margin: 6px 0;
+  font-size: 17px;
+}
+
+.roadmaps-admin-page .roadmap-import-preview p,
+.roadmaps-admin-page .roadmap-import-preview small {
+  display: block;
+  margin: 5px 0 0;
+  color: var(--muted, #777);
+  overflow-wrap: anywhere;
+}
+
+.roadmaps-admin-page .roadmap-import-kicker {
+  color: var(--accent, #8b5a2b);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.roadmaps-admin-page .roadmap-import-preview .roadmap-admin-actions {
+  flex: 0 0 auto;
+}
+
+.roadmaps-admin-page .roadmap-import-notice {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  margin-bottom: 16px;
+}
+
+.roadmaps-admin-page .roadmap-import-notice a {
+  font-weight: 700;
+}
+
+.roadmaps-admin-page .roadmap-admin-capabilities {
+  padding: 12px 15px;
+  border-inline-start: 3px solid var(--accent, #8b5a2b);
+  background: var(--surface, #fffdf8);
+  color: var(--muted, #666);
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.roadmaps-admin-page .roadmap-admin-capabilities p {
+  margin: 0;
+}
+
+.roadmaps-admin-page .roadmap-admin-capabilities p + p {
+  margin-top: 5px;
+}
+
+.roadmaps-admin-page .roadmap-admin-capabilities strong {
+  color: var(--text, #25231f);
+}
+
+@media (max-width: 760px) {
+  .roadmaps-admin-page .roadmap-admin-toolbar {
+    justify-content: flex-start;
+  }
+
+  .roadmaps-admin-page .roadmap-import-preview {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .roadmaps-admin-page .roadmap-import-preview .roadmap-admin-actions {
+    flex-wrap: wrap;
+  }
+}

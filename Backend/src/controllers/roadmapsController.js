@@ -67,6 +67,9 @@ export async function updateRoadmapProgress(req, res) {
   const result = await setStudentRoadmapProblemSolved(roadmapSlug, req.user.id, progressInput);
   if (result.type === 'not_found') return res.status(404).json({ error: { message: 'Roadmap not found.' } });
   if (result.type === 'invalid_problem') return res.status(404).json({ error: { message: 'Problem not found in this roadmap topic.' } });
+  if (result.type === 'prerequisites_incomplete') return res.status(409).json({
+    error: { message: 'Complete every prerequisite topic before marking this problem solved.' },
+  });
   res.set('Cache-Control', 'private, no-store');
   return res.json({ solvedProblems: result.solvedProblems });
 }
@@ -111,6 +114,7 @@ export async function leave(req, res) {
 }
 
 export async function mine(req, res) {
+  res.set('Cache-Control', 'private, no-store');
   return res.json(await getStudentRoadmaps(req.user.id));
 }
 

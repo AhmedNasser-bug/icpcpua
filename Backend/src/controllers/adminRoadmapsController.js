@@ -41,7 +41,11 @@ export async function list(req, res) {
 
 export async function create(req, res) {
   const data = validateRoadmapInput(bodyInput(req));
-  return res.status(201).json({ roadmap: await createAdminRoadmap(data, req.user.id) });
+  const result = await createAdminRoadmap(data, req.user.id);
+  if (result.type === 'invalid_publication') return res.status(400).json({
+    error: { message: 'Save the roadmap as a draft and add valid learning topics before publishing.', fields: result.errors },
+  });
+  return res.status(201).json({ roadmap: result });
 }
 
 export async function update(req, res) {
@@ -50,6 +54,9 @@ export async function update(req, res) {
   const result = await updateAdminRoadmap(roadmapId, validateRoadmapInput(bodyInput(req), { partial: true }));
   if (result.type === 'not_found') return res.status(404).json({ error: { message: 'Roadmap not found.' } });
   if (result.type === 'archived') return res.status(409).json({ error: { message: 'Archived roadmaps cannot be republished or edited.' } });
+  if (result.type === 'invalid_publication') return res.status(400).json({
+    error: { message: 'Roadmap cannot be published until its required details and learning topics are valid.', fields: result.errors },
+  });
   return res.json({ roadmap: result.roadmap });
 }
 
@@ -68,6 +75,9 @@ export async function createRoadmapNode(req, res) {
   if (result.type === 'not_found') return res.status(404).json({ error: { message: 'Roadmap not found.' } });
   if (result.type === 'archived') return res.status(409).json({ error: { message: 'Archived roadmaps cannot be changed.' } });
   if (result.type === 'invalid_dependencies') return res.status(400).json({ error: { message: 'Dependencies must be valid topics from this roadmap and cannot create a circular path.' } });
+  if (result.type === 'invalid_publication') return res.status(400).json({
+    error: { message: 'Update the published roadmap only after correcting its required details and learning topics.', fields: result.errors },
+  });
   return res.status(201).json({ node: result.node });
 }
 
@@ -78,6 +88,12 @@ export async function updateRoadmapNode(req, res) {
   if (result.type === 'not_found') return res.status(404).json({ error: { message: 'Learning topic not found in this roadmap.' } });
   if (result.type === 'archived') return res.status(409).json({ error: { message: 'Archived roadmaps cannot be changed.' } });
   if (result.type === 'invalid_dependencies') return res.status(400).json({ error: { message: 'Dependencies must be valid topics from this roadmap and cannot create a circular path.' } });
+  if (result.type === 'progress_conflict') return res.status(409).json({
+    error: { message: 'This topic contains completed student problems that must remain available.' },
+  });
+  if (result.type === 'invalid_publication') return res.status(400).json({
+    error: { message: 'Update the published roadmap only after correcting its required details and learning topics.', fields: result.errors },
+  });
   return res.json({ node: result.node });
 }
 
@@ -87,6 +103,12 @@ export async function deleteRoadmapNode(req, res) {
   const result = await deleteAdminRoadmapNode(roadmapId, nodeId);
   if (result.type === 'not_found') return res.status(404).json({ error: { message: 'Learning topic not found in this roadmap.' } });
   if (result.type === 'archived') return res.status(409).json({ error: { message: 'Archived roadmaps cannot be changed.' } });
+  if (result.type === 'progress_conflict') return res.status(409).json({
+    error: { message: 'This topic has completed student progress and cannot be deleted.' },
+  });
+  if (result.type === 'invalid_publication') return res.status(409).json({
+    error: { message: 'This topic cannot be deleted because it would leave the published roadmap incomplete.', fields: result.errors },
+  });
   return res.status(204).end();
 }
 

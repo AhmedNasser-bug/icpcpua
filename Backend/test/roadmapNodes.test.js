@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import RoadmapNode from '../src/models/RoadmapNode.js';
-import { validateRoadmapNodeInput } from '../src/utils/roadmapValidation.js';
+import { getRoadmapPublicationErrors, validateRoadmapNodeInput } from '../src/utils/roadmapValidation.js';
 import { hasValidRoadmapNodeDependencyGraph } from '../src/utils/roadmapGraph.js';
 
 const first = '64b000000000000000000001';
@@ -55,6 +55,40 @@ test('learning topic dependency graph permits branches but rejects self, foreign
   assert.equal(hasValidRoadmapNodeDependencyGraph(nodes, first, [first]), false);
   assert.equal(hasValidRoadmapNodeDependencyGraph(nodes, first, [third]), false);
   assert.equal(hasValidRoadmapNodeDependencyGraph(nodes, third, ['64b000000000000000000004']), false);
+  assert.equal(hasValidRoadmapNodeDependencyGraph([
+    { _id: first, dependencies: ['64b000000000000000000004'] },
+  ], null, []), false);
+  assert.equal(hasValidRoadmapNodeDependencyGraph([
+    { _id: first, dependencies: [second, second] },
+    { _id: second, dependencies: [] },
+  ], null, []), false);
+});
+
+test('roadmap publication requires valid fields, topics, content, and prerequisite references', () => {
+  const roadmap = { title: 'Roadmap', description: 'Learn core concepts' };
+  assert.deepEqual(getRoadmapPublicationErrors(roadmap, []), [
+    { field: 'nodes', message: 'Add at least one learning topic before publishing.' },
+  ]);
+  assert.deepEqual(getRoadmapPublicationErrors(roadmap, [
+    { _id: first, title: 'Basics', dependencies: [], resources: [], problems: [] },
+    { _id: second, title: 'Practice', dependencies: [first], resources: [], problems: [] },
+  ]), []);
+  const errors = getRoadmapPublicationErrors({ title: ' ', description: '' }, [
+    { _id: first, title: 'Basics', dependencies: [], resources: [{ title: 'Broken', url: 'javascript:alert(1)' }], problems: [] },
+    { _id: second, title: '', dependencies: [third], resources: [], problems: [] },
+  ]);
+  assert.ok(errors.some(({ field }) => field === 'title'));
+  assert.ok(errors.some(({ field }) => field === 'description'));
+  assert.ok(errors.some(({ field }) => field === 'nodes.2.title'));
+  assert.ok(errors.some(({ field }) => field.startsWith('nodes.1.resources')));
+  assert.ok(errors.some(({ field }) => field === 'dependencies'));
+  assert.ok(getRoadmapPublicationErrors(roadmap, [
+    { _id: first, title: 'Basics', dependencies: [], resources: [], problems: [{ title: 'Unsafe', url: 'javascript:alert(1)' }] },
+  ]).some(({ field }) => field.startsWith('nodes.1.problems')));
+  assert.ok(getRoadmapPublicationErrors(roadmap, [
+    { _id: first, title: 'Basics', dependencies: [second], resources: [], problems: [] },
+    { _id: second, title: 'Advanced', dependencies: [first], resources: [], problems: [] },
+  ]).some(({ field }) => field === 'dependencies'));
 });
 
 test('learning topic model indexes roadmap ordering for path rendering', () => {

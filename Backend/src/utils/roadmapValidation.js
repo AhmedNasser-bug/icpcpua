@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import { generateSessionSchedule } from './roadmapSchedule.js';
+import { hasValidRoadmapNodeDependencyGraph } from './roadmapGraph.js';
 
 function invalid(message, field) {
   throw Object.assign(new Error(message), { status: 400, field });
@@ -102,6 +103,61 @@ export function validateRoadmapNodeInput(input, { partial = false } = {}) {
     }
   }
   return output;
+}
+
+export function getRoadmapPublicationErrors(roadmap, nodes) {
+  const errors = [];
+  for (const field of ['title', 'description']) {
+    if (typeof roadmap?.[field] !== 'string' || !roadmap[field].trim()) {
+      errors.push({ field, message: `${field} is required before publishing.` });
+    }
+  }
+  if (!Array.isArray(nodes) || nodes.length === 0) {
+    errors.push({ field: 'nodes', message: 'Add at least one learning topic before publishing.' });
+    return errors;
+  }
+
+  const nodeIds = new Set();
+  const normalizedNodes = [];
+  nodes.forEach((node, index) => {
+    const prefix = `nodes.${index + 1}`;
+    if (!mongoose.isValidObjectId(node?._id)) {
+      errors.push({ field: `${prefix}.id`, message: 'Each learning topic must have a valid identifier.' });
+    } else if (nodeIds.has(String(node._id))) {
+      errors.push({ field: `${prefix}.id`, message: 'Learning topic identifiers must be unique.' });
+    } else {
+      nodeIds.add(String(node._id));
+    }
+
+    try {
+      const dependencies = node?.dependencies === undefined ? [] : node.dependencies;
+      const validated = validateRoadmapNodeInput({
+        title: node?.title,
+        description: node?.description ?? '',
+        dependencies,
+        resources: node?.resources === undefined ? [] : node.resources,
+        problems: node?.problems === undefined ? [] : node.problems,
+      });
+      if (new Set(validated.dependencies).size !== dependencies.length) {
+        errors.push({ field: `${prefix}.dependencies`, message: 'Prerequisites must not contain duplicate learning topics.' });
+      }
+      normalizedNodes.push({ _id: node._id, dependencies: validated.dependencies });
+    } catch (error) {
+      errors.push({
+        field: `${prefix}${error.field ? `.${error.field}` : ''}`,
+        message: error.message,
+      });
+      normalizedNodes.push({ _id: node?._id, dependencies: node?.dependencies ?? [] });
+    }
+  });
+
+  if (!hasValidRoadmapNodeDependencyGraph(normalizedNodes, null, [])) {
+    errors.push({
+      field: 'dependencies',
+      message: 'Prerequisites must refer to topics in this roadmap and cannot contain circular or duplicate links.',
+    });
+  }
+  return errors;
 }
 
 export function validateRoadmapProgressInput(input) {

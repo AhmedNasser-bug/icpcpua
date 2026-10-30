@@ -34,6 +34,13 @@ export function findRoadmapProgress(roadmapId, studentId) {
   return RoadmapProgress.findOne({ roadmap: roadmapId, student: studentId }).lean();
 }
 
+export function findRoadmapProgressForNode(roadmapId, nodeId) {
+  return RoadmapProgress.find({
+    roadmap: roadmapId,
+    'solvedProblems.node': nodeId,
+  }).select('solvedProblems').lean();
+}
+
 export function updateRoadmapProblemProgress(roadmapId, studentId, nodeId, problemUrl, solved) {
   const filter = { roadmap: roadmapId, student: studentId };
   if (!solved) {

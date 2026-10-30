@@ -45,6 +45,7 @@ export async function memberProfile(req, res) {
 }
 
 export async function myEvents(req, res) {
+  res.set('Cache-Control', 'private, no-store');
   return res.json({ events: await getMyEvents(req.user.id) });
 }
 

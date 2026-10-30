@@ -23,6 +23,7 @@ import {
   findRoadmapNode,
   findRoadmapNodes,
   findRoadmapProgress,
+  findRoadmapProgressForNode,
   findRoadmaps,
   findSessionById,
   findSessionWithToken,
@@ -44,9 +45,15 @@ import {
   updateSession,
 } from '../repositories/roadmapRepository.js';
 import { generateSessionSchedule } from '../utils/roadmapSchedule.js';
-import { hasValidRoadmapNodeDependencyGraph } from '../utils/roadmapGraph.js';
+import {
+  areRoadmapPrerequisitesComplete,
+  hasSolvedRoadmapProgressForNode,
+  hasValidRoadmapNodeDependencyGraph,
+  removesSolvedRoadmapProblems,
+} from '../utils/roadmapGraph.js';
 import { createCheckInToken, hashCheckInToken, isWithinCheckInWindow } from '../utils/checkIn.js';
 import { slugify } from '../utils/validation.js';
+import { getRoadmapPublicationErrors } from '../utils/roadmapValidation.js';
 
 function objectId(value) {
   return mongoose.isValidObjectId(value);
@@ -65,6 +72,11 @@ export async function createAdminRoadmapNode(roadmapId, data) {
   if (roadmap.status === 'archived') return { type: 'archived' };
   const nodes = await findRoadmapNodes(roadmap._id);
   if (!hasValidRoadmapNodeDependencyGraph(nodes, null, data.dependencies || [])) return { type: 'invalid_dependencies' };
+  if (['published', 'completed'].includes(roadmap.status)) {
+    const newNode = { ...data, _id: new mongoose.Types.ObjectId(), dependencies: data.dependencies || [] };
+    const errors = getRoadmapPublicationErrors(roadmap, [...nodes, newNode]);
+    if (errors.length) return { type: 'invalid_publication', errors };
+  }
   return { type: 'created', node: await createRoadmapNode({ ...data, roadmap: roadmap._id }) };
 }
 
@@ -77,6 +89,19 @@ export async function updateAdminRoadmapNode(roadmapId, nodeId, data) {
   const nodes = await findRoadmapNodes(roadmap._id);
   const dependencies = data.dependencies || existing.dependencies || [];
   if (!hasValidRoadmapNodeDependencyGraph(nodes, existing._id, dependencies)) return { type: 'invalid_dependencies' };
+  if (data.problems) {
+    const progressRecords = await findRoadmapProgressForNode(roadmap._id, existing._id);
+    if (removesSolvedRoadmapProblems(progressRecords, existing._id, data.problems)) return { type: 'progress_conflict' };
+  }
+  if (['published', 'completed'].includes(roadmap.status)) {
+    const nextNodes = nodes.map((node) => (
+      node._id.toString() === existing._id.toString()
+        ? { ...node, ...data, dependencies }
+        : node
+    ));
+    const errors = getRoadmapPublicationErrors(roadmap, nextNodes);
+    if (errors.length) return { type: 'invalid_publication', errors };
+  }
   return { type: 'updated', node: await updateRoadmapNode(existing._id, data) };
 }
 
@@ -84,6 +109,23 @@ export async function deleteAdminRoadmapNode(roadmapId, nodeId) {
   if (!objectId(roadmapId) || !objectId(nodeId)) return { type: 'not_found' };
   const roadmap = await findRoadmap({ _id: roadmapId });
   if (!roadmap || roadmap.status === 'archived') return { type: roadmap ? 'archived' : 'not_found' };
+  const existing = await findRoadmapNode({ _id: nodeId, roadmap: roadmap._id });
+  if (!existing) return { type: 'not_found' };
+  const nodeProgress = await findRoadmapProgressForNode(roadmap._id, nodeId);
+  if (hasSolvedRoadmapProgressForNode(nodeProgress, nodeId)) {
+    return { type: 'progress_conflict' };
+  }
+  if (['published', 'completed'].includes(roadmap.status)) {
+    const nodes = await findRoadmapNodes(roadmap._id);
+    const remainingNodes = nodes
+      .filter((node) => node._id.toString() !== nodeId.toString())
+      .map((node) => ({
+        ...node,
+        dependencies: (node.dependencies || []).filter((dependency) => dependency.toString() !== nodeId.toString()),
+      }));
+    const errors = getRoadmapPublicationErrors(roadmap, remainingNodes);
+    if (errors.length) return { type: 'invalid_publication', errors };
+  }
   const node = await deleteRoadmapNode(roadmap._id, nodeId);
   return node ? { type: 'deleted' } : { type: 'not_found' };
 }
@@ -132,14 +174,26 @@ export async function getStudentRoadmapProgress(roadmapSlug, studentId) {
 export async function setStudentRoadmapProblemSolved(roadmapSlug, studentId, { nodeId, problemUrl, solved }) {
   const roadmap = await findRoadmap({ slug: roadmapSlug, status: { $in: ['published', 'completed'] } });
   if (!roadmap) return { type: 'not_found' };
-  const node = await findRoadmapNode({ _id: nodeId, roadmap: roadmap._id });
-  if (!node || !(node.problems || []).some((problem) => problem.url === problemUrl)) {
+  const [nodes, studentProgress] = await Promise.all([
+    findRoadmapNodes(roadmap._id),
+    findRoadmapProgress(roadmap._id, studentId),
+  ]);
+  const node = nodes.find(({ _id }) => _id.toString() === nodeId.toString());
+  if (!node || !Array.isArray(node.problems) || !node.problems.some((problem) => problem.url === problemUrl)) {
     return { type: 'invalid_problem' };
   }
-  const progress = await updateRoadmapProblemProgress(roadmap._id, studentId, node._id, problemUrl, solved);
+  if (solved) {
+    const solvedProblems = new Set((studentProgress?.solvedProblems || []).map(({ node: solvedNode, problemUrl: solvedUrl }) => (
+      `${solvedNode.toString()}\u0000${solvedUrl}`
+    )));
+    if (!areRoadmapPrerequisitesComplete(node, nodes, solvedProblems)) {
+      return { type: 'prerequisites_incomplete' };
+    }
+  }
+  const updatedProgress = await updateRoadmapProblemProgress(roadmap._id, studentId, node._id, problemUrl, solved);
   return {
     type: 'ok',
-    solvedProblems: (progress?.solvedProblems || []).map(({ node: solvedNode, problemUrl: solvedUrl }) => ({
+    solvedProblems: (updatedProgress?.solvedProblems || []).map(({ node: solvedNode, problemUrl: solvedUrl }) => ({
       nodeId: String(solvedNode),
       problemUrl: solvedUrl,
     })),
@@ -209,6 +263,12 @@ export async function listAdminRoadmaps() {
 }
 
 export async function createAdminRoadmap(data, adminId) {
+  if (['published', 'completed'].includes(data.status)) {
+    return {
+      type: 'invalid_publication',
+      errors: [{ field: 'nodes', message: 'Save the roadmap as a draft, add at least one learning topic, then publish it.' }],
+    };
+  }
   return createRoadmap({ ...data, slug: roadmapSlug(data.title), createdBy: adminId });
 }
 
@@ -217,6 +277,11 @@ export async function updateAdminRoadmap(roadmapId, data) {
   const existing = await findRoadmap({ _id: roadmapId });
   if (!existing) return { type: 'not_found' };
   if (existing.status === 'archived' && Object.keys(data).length) return { type: 'archived' };
+  const next = { ...existing, ...data };
+  if (['published', 'completed'].includes(next.status)) {
+    const errors = getRoadmapPublicationErrors(next, await findRoadmapNodes(existing._id));
+    if (errors.length) return { type: 'invalid_publication', errors };
+  }
   return { type: 'updated', roadmap: await updateRoadmap(roadmapId, data) };
 }
 
@@ -545,7 +610,16 @@ export async function getStudentRoadmaps(studentId) {
         roadmap,
         cycle: {
           ...cycle,
-          sessions: cycleSessions.map(({ _id, title, startsAt, status, timeZone }) => ({ _id, title, startsAt, status, timeZone })),
+          sessions: cycleSessions.map(({ _id, title, startsAt, status, timeZone, attended, checkedInAt, pointsAwarded }) => ({
+            _id,
+            title,
+            startsAt,
+            status,
+            timeZone,
+            attended,
+            checkedInAt,
+            pointsAwarded,
+          })),
         },
         progress: {
           completedSessions: completed.length,

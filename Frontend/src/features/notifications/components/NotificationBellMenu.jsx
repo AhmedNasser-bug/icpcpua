@@ -88,7 +88,7 @@ export function NotificationBellMenu({
     {open && <div className="notification-dropdown" role="dialog" aria-label="Recent notifications">
       <div className="notification-dropdown-heading"><strong>Notifications</strong>{unreadCount > 0 && <button type="button" disabled={busy} onClick={markAllRead}>Mark all read</button>}</div>
       {error && <div className="notification-inline-error" role="alert">{error}</div>}
-      {notifications.length === 0 ? <p className="notification-empty">No notifications yet.</p> : notifications.slice(0, 5).map(notification => <button className={notification.readAt ? 'notification-item' : 'notification-item unread'} type="button" key={notification._id} onClick={() => openNotification(notification)}>
+      {notifications.length === 0 ? <p className="notification-empty">No notifications yet</p> : notifications.slice(0, 5).map(notification => <button className={notification.readAt ? 'notification-item' : 'notification-item unread'} type="button" key={notification._id} onClick={() => openNotification(notification)}>
         <span className="notification-item-title">{notification.title}</span>
         <span className="notification-item-message">{notification.message}</span>
         <time dateTime={notification.createdAt}>{new Date(notification.createdAt).toLocaleString()}</time>

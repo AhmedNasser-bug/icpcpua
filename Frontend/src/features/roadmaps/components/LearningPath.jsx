@@ -1,8 +1,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, CalendarDays, ChevronLeft, ChevronRight, ExternalLink, Maximize2, RotateCcw, X, ZoomIn, ZoomOut } from "lucide-react";
+import { ArrowRight, BookOpen, CalendarDays, Check, ChevronLeft, ChevronRight, ExternalLink, FileText, LockKeyhole, Maximize2, PlayCircle, RotateCcw, X, ZoomIn, ZoomOut } from "lucide-react";
 import { api } from "../../../shared/services/api.js";
 import { weekdays, sessionDateKey, formatCalendarMonth, formatCalendarDay, problemProgressKey, clampGraphView } from '../utils/roadmapUtils.js';
+function safeExternalUrl(value) {
+  try {
+    const url = new URL(value);
+    return ['http:', 'https:'].includes(url.protocol) ? url.href : '';
+  } catch {
+    return '';
+  }
+}
 export function LearningPath({
   nodes = [],
   token,
@@ -11,6 +19,8 @@ export function LearningPath({
 }) {
   const viewportRef = useRef(null);
   const dialogCloseRef = useRef(null);
+  const nodeButtonRefs = useRef(new Map());
+  const lastFocusedNode = useRef('');
   const activePointers = useRef(new Map());
   const gesture = useRef(null);
   const suppressClick = useRef(false);
@@ -41,6 +51,7 @@ export function LearningPath({
   const [scheduleStatus, setScheduleStatus] = useState(user?.role === 'user' && token ? 'loading' : 'unavailable');
   const [scheduleError, setScheduleError] = useState('');
   const [scheduleRetry, setScheduleRetry] = useState(0);
+  const [calendarCollapsed, setCalendarCollapsed] = useState(false);
   const graph = useMemo(() => {
     const nodeById = new Map(nodes.map(node => [String(node._id), node]));
     const levels = new Map();
@@ -61,7 +72,7 @@ export function LearningPath({
       return groups;
     }, []).map(level => level.sort((left, right) => left.position - right.position || left.title.localeCompare(right.title)));
     const nodeWidth = 260;
-    const nodeHeight = 82;
+    const nodeHeight = 94;
     const horizontalGap = 66;
     const verticalGap = 82;
     const padding = 44;
@@ -87,6 +98,8 @@ export function LearningPath({
       const curve = Math.max(30, (endY - startY) / 2);
       return {
         id: `${dependency}-${node._id}`,
+        from: dependency,
+        to: String(node._id),
         path: `M ${startX} ${startY} C ${startX} ${startY + curve}, ${endX} ${endY - curve}, ${endX} ${endY}`
       };
     }));
@@ -120,14 +133,14 @@ export function LearningPath({
         solved: 0
       };
       for (const problem of node.problems || []) {
-        const difficulty = ['easy', 'medium', 'hard'].includes(problem.difficulty) ? problem.difficulty : 'medium';
+        const difficulty = ['easy', 'medium', 'hard'].includes(problem.difficulty?.toLowerCase()) ? problem.difficulty.toLowerCase() : null;
         const solved = solvedKeys.has(problemProgressKey(node._id, problem.url));
-        counts[difficulty] += 1;
         counts.total += 1;
         topic.total += 1;
+        if (difficulty) counts[difficulty] += 1;
         if (solved) {
           counts.solved += 1;
-          counts[`${difficulty}Solved`] += 1;
+          if (difficulty) counts[`${difficulty}Solved`] += 1;
           topic.solved += 1;
         }
       }
@@ -138,6 +151,27 @@ export function LearningPath({
       byTopic
     };
   }, [nodes, solvedKeys]);
+  const topicStates = useMemo(() => {
+    const states = new Map();
+    for (const node of nodes) {
+      const id = String(node._id);
+      const progress = problemCounts.byTopic.get(id) || { total: 0, solved: 0 };
+      const completed = progressStatus === 'ready' && progress.total > 0 && progress.solved === progress.total;
+      const dependencyIds = (node.dependencies || []).map(String);
+      const unmetDependencies = dependencyIds.filter(dependencyId => {
+        const dependency = graph.nodeById.get(dependencyId);
+        if (!dependency || progressStatus !== 'ready') return true;
+        const dependencyProgress = problemCounts.byTopic.get(dependencyId) || { total: 0, solved: 0 };
+        return dependencyProgress.total === 0 || dependencyProgress.solved !== dependencyProgress.total;
+      });
+      states.set(id, {
+        completed,
+        unlocked: dependencyIds.length === 0 || unmetDependencies.length === 0,
+        unmetDependencies
+      });
+    }
+    return states;
+  }, [graph.nodeById, nodes, problemCounts.byTopic, progressStatus]);
   const fitView = useCallback(() => {
     if (!viewport.width || !viewport.height || !graph.width || !graph.height) return;
     const padding = 24;
@@ -316,9 +350,12 @@ export function LearningPath({
     total: 0,
     solved: 0
   };
-  const selectedDependencies = (selectedNode?.dependencies || []).map(String).map(dependency => graph.nodeById.get(dependency)).filter(Boolean);
   useEffect(() => {
-    if (!selectedNode) return undefined;
+    if (!selectedNode) {
+      const previousNode = nodeButtonRefs.current.get(lastFocusedNode.current);
+      previousNode?.focus();
+      return undefined;
+    }
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     dialogCloseRef.current?.focus();
@@ -331,6 +368,43 @@ export function LearningPath({
       window.removeEventListener('keydown', onKeyDown);
     };
   }, [selectedNode]);
+  const closeDetails = () => setSelectedId('');
+  const focusPrerequisite = dependencyId => {
+    const button = nodeButtonRefs.current.get(String(dependencyId));
+    if (button) {
+      lastFocusedNode.current = String(dependencyId);
+      setView(current => {
+        const position = graph.positions.get(String(dependencyId));
+        if (!position || !viewport.width || !viewport.height) return current;
+        return clampGraphView({
+          ...current,
+          x: viewport.width / 2 - (position.x + graph.nodeWidth / 2) * current.zoom,
+          y: viewport.height / 2 - (position.y + graph.nodeHeight / 2) * current.zoom
+        }, viewport, graph);
+      });
+      setSelectedId(String(dependencyId));
+      window.requestAnimationFrame(() => dialogCloseRef.current?.focus());
+    }
+  };
+  const handleDialogKeyDown = event => {
+    if (event.key !== 'Tab') return;
+    const dialog = event.currentTarget;
+    const focusable = [...dialog.querySelectorAll('a[href], button:not(:disabled), input:not(:disabled), [tabindex]:not([tabindex="-1"])')];
+    if (!focusable.length) {
+      event.preventDefault();
+      dialogCloseRef.current?.focus();
+      return;
+    }
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && (document.activeElement === first || document.activeElement === dialog)) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  };
   const changeZoom = (nextZoom, anchorX = viewport.width / 2, anchorY = viewport.height / 2) => {
     const zoom = Math.max(0.01, Math.min(2.4, nextZoom));
     setView(current => clampGraphView({
@@ -433,7 +507,8 @@ export function LearningPath({
   };
   const toggleProblem = async (node, problem) => {
     const key = problemProgressKey(node._id, problem.url);
-    if (!token || user?.role !== 'user' || progressStatus !== 'ready' || pendingKeys.has(key)) return;
+    const topicState = topicStates.get(String(node._id));
+    if (!token || user?.role !== 'user' || progressStatus !== 'ready' || !safeExternalUrl(problem.url) || (!topicState?.completed && topicState?.unmetDependencies.length) || pendingKeys.has(key)) return;
     const solved = !solvedKeys.has(key);
     setPendingKeys(current => new Set(current).add(key));
     setSolvedKeys(current => {
@@ -476,13 +551,16 @@ export function LearningPath({
       });
     }
   };
+  const selectedTopicState = selectedNode ? topicStates.get(String(selectedNode._id)) : null;
+  const selectedUnmetDependencies = selectedTopicState && !selectedTopicState.completed ? selectedTopicState.unmetDependencies : [];
+  const nodeSubtopics = selectedNode?.subtopics || selectedNode?.subTopics;
+  const selectedSubtopics = Array.isArray(nodeSubtopics)
+    ? nodeSubtopics.filter(Boolean)
+    : typeof nodeSubtopics === 'string'
+      ? nodeSubtopics.split(',').map(item => item.trim()).filter(Boolean)
+      : [];
+  const selectedTheory = selectedNode?.theory || selectedNode?.learningNotes || selectedNode?.content;
   return <section className="learning-path-section" aria-labelledby="learning-path-heading">
-    <header className="learning-path-heading">
-      <div><h2 id="learning-path-heading">Learning <span>Path</span></h2></div>
-      <div className="learning-path-legend" aria-label="Problem difficulty legend">
-        <span><i className="legend-easy" /> Easy</span><span><i className="legend-medium" /> Medium</span><span><i className="legend-hard" /> Hard</span>
-      </div>
-    </header>
     {!nodes.length ? <div className="empty-state"><h3>Learning topics are coming soon.</h3><p>This roadmap’s learning path is being prepared.</p></div> : <div className="learning-roadmap-layout">
       <section className="learning-graph-panel" aria-label="Interactive learning roadmap">
         <div className={`learning-graph-canvas${isPanning ? ' is-panning' : ''}`} ref={viewportRef} aria-label="Interactive graph. Drag to pan, use the wheel to zoom, or pinch on touch screens." onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerCancel={onPointerUp} onLostPointerCapture={onPointerUp}>
@@ -492,7 +570,7 @@ export function LearningPath({
             transform: `translate3d(${view.x}px, ${view.y}px, 0) scale(${view.zoom})`
           }}>
             <svg className="learning-path-edges" width={graph.width} height={graph.height} aria-hidden="true">
-              {graph.edges.map(edge => <path key={edge.id} d={edge.path} />)}
+              {graph.edges.map(edge => <path className={topicStates.get(edge.from)?.completed ? 'is-satisfied' : 'is-locked'} key={edge.id} d={edge.path} />)}
             </svg>
             {nodes.map((node, index) => {
               const position = graph.positions.get(String(node._id));
@@ -500,20 +578,31 @@ export function LearningPath({
                 total: 0,
                 solved: 0
               };
+              const state = topicStates.get(String(node._id));
+              const topicState = state?.completed ? 'completed' : state?.unlocked ? 'unlocked' : 'locked';
               const progressPercent = progress.total ? Math.round(progress.solved / progress.total * 100) : 0;
-              return <button className={`learning-path-node${selectedId === String(node._id) ? ' selected' : ''}`} data-node-color={index % 6} style={{
+              const progressLabel = progressStatus === 'ready' ? `${progress.solved}/${progress.total} Solved` : 'Progress unavailable';
+              const statusMeta = state?.completed ? { icon: '✓', label: 'Completed' } : state?.unlocked ? { icon: '📖', label: 'Open' } : { icon: '🔒', label: 'Locked' };
+              return <button ref={element => {
+                if (element) nodeButtonRefs.current.set(String(node._id), element);
+                else nodeButtonRefs.current.delete(String(node._id));
+              }} className={`learning-path-node${selectedId === String(node._id) ? ' selected' : ''}`} data-node-state={topicState} data-node-color={index % 6} style={{
                 left: position.x,
                 top: position.y,
                 width: graph.nodeWidth
-              }} key={node._id} type="button" aria-pressed={selectedId === String(node._id)} onClick={event => {
+              }} key={node._id} type="button" aria-label={`${node.title}, ${progressLabel}, ${statusMeta.label}`} aria-pressed={selectedId === String(node._id)} onClick={event => {
                 if (suppressClick.current) {
                   event.preventDefault();
                   suppressClick.current = false;
                   return;
                 }
+                lastFocusedNode.current = String(node._id);
                 setSelectedId(String(node._id));
               }}>
-                <strong>{node.title}</strong>
+                <div className="learning-path-node-header">
+                  <strong>{node.title}</strong>
+                  <span className="learning-path-node-status" aria-hidden="true">{statusMeta.icon}</span>
+                </div>
                 <span className="learning-path-node-progress" role="progressbar" aria-label={`${node.title} solved problems`} aria-valuemin={0} aria-valuemax={progress.total || 1} aria-valuenow={progress.solved}>
                   <span style={{
                     width: `${progressPercent}%`
@@ -534,15 +623,6 @@ export function LearningPath({
       <aside className="learning-roadmap-sidebar" aria-label="Roadmap progress and schedule">
         <section className="learning-progress-card" aria-label="Roadmap problem progress">
           <div className="learning-progress-overview">
-            <div className="learning-sidebar-difficulty-list">
-              {difficultySegments.map(({
-                difficulty,
-                count
-              }) => <div className="learning-sidebar-difficulty" key={difficulty}>
-                  <span>{difficulty}</span>
-                  <strong>{progressStatus === 'ready' ? problemCounts[`${difficulty}Solved`] : '—'} / {count}</strong>
-                </div>)}
-            </div>
             <div className="learning-progress-gauge" role="progressbar" aria-label="Overall roadmap progress" aria-valuemin={0} aria-valuemax={problemCounts.total || 1} aria-valuenow={progressStatus === 'ready' ? problemCounts.solved : undefined} aria-valuetext={progressStatus === 'ready' ? `${problemCounts.solved} of ${problemCounts.total} problems solved` : progressStatus === 'loading' ? 'Loading progress' : 'Progress is unavailable'}>
               <svg viewBox="0 0 100 100" aria-hidden="true">
                 {gaugeSegments.map(({
@@ -561,6 +641,15 @@ export function LearningPath({
                 <small>Solved</small>
               </div>
             </div>
+            <div className="learning-sidebar-difficulty-list">
+              {difficultySegments.map(({
+                difficulty,
+                count
+              }) => <div className="learning-sidebar-difficulty" key={difficulty}>
+                  <span>{difficulty}</span>
+                  <strong>{progressStatus === 'ready' ? problemCounts[`${difficulty}Solved`] : '—'} / {count}</strong>
+                </div>)}
+            </div>
           </div>
           {progressStatus === 'unavailable' && <p className="learning-sidebar-message">{token ? 'Student accounts can track problem progress.' : <><Link to="/login">Sign in</Link> to save your progress.</>}</p>}
           {progressStatus === 'error' && <p className="learning-progress-error" role="alert">{progressError} <button type="button" onClick={() => setProgressRetry(current => current + 1)}>Retry</button></p>}
@@ -569,114 +658,160 @@ export function LearningPath({
         <section className="learning-calendar-card" aria-labelledby="learning-calendar-title">
           <header className="learning-sidebar-card-heading">
             <h3 id="learning-calendar-title">Roadmap calendar</h3>
-            <CalendarDays size={18} aria-hidden="true" />
+            <button type="button" className="learning-calendar-collapse-button" aria-label={calendarCollapsed ? 'Expand roadmap calendar' : 'Collapse roadmap calendar'} onClick={() => setCalendarCollapsed(current => !current)}>
+              {calendarCollapsed ? <ChevronRight size={16} aria-hidden="true" /> : <ChevronLeft size={16} aria-hidden="true" />}
+            </button>
           </header>
-          <p className="learning-calendar-description">Scheduled sessions from cycles you joined.</p>
-          {scheduleStatus === 'loading' && <p className="learning-sidebar-message">Loading your enrolled sessions…</p>}
-          {scheduleStatus === 'unavailable' && <p className="learning-sidebar-message"><Link to="/login">Sign in</Link> to see your cycle schedule.</p>}
-          {scheduleStatus === 'error' && <p className="learning-progress-error" role="alert">{scheduleError} <button type="button" onClick={() => setScheduleRetry(current => current + 1)}>Retry</button></p>}
-          {scheduleStatus === 'ready' && <>
-            <div className="learning-calendar-toolbar">
-              <button type="button" aria-label="Previous month" onClick={() => changeCalendarMonth(-1)}><ChevronLeft size={17} /></button>
-              <h4 aria-live="polite">{formatCalendarMonth(calendarMonth)}</h4>
-              <button type="button" aria-label="Next month" onClick={() => changeCalendarMonth(1)}><ChevronRight size={17} /></button>
-            </div>
-            <div className="learning-calendar-grid" role="grid" aria-label={formatCalendarMonth(calendarMonth)}>
-              <div className="learning-calendar-week learning-calendar-weekdays" role="row">
-                {weekdays.map(([weekday]) => <span role="columnheader" key={weekday}>{weekday.slice(0, 2)}</span>)}
+          {!calendarCollapsed && <>
+            <p className="learning-calendar-description">Scheduled sessions from cycles you joined.</p>
+            {scheduleStatus === 'loading' && <p className="learning-sidebar-message">Loading your enrolled sessions…</p>}
+            {scheduleStatus === 'unavailable' && <p className="learning-sidebar-message"><Link to="/login">Sign in</Link> to see your cycle schedule.</p>}
+            {scheduleStatus === 'error' && <p className="learning-progress-error" role="alert">{scheduleError} <button type="button" onClick={() => setScheduleRetry(current => current + 1)}>Retry</button></p>}
+            {scheduleStatus === 'ready' && <>
+              <div className="learning-calendar-toolbar">
+                <button type="button" aria-label="Previous month" onClick={() => changeCalendarMonth(-1)}><ChevronLeft size={17} /></button>
+                <h4 aria-live="polite">{formatCalendarMonth(calendarMonth)}</h4>
+                <button type="button" aria-label="Next month" onClick={() => changeCalendarMonth(1)}><ChevronRight size={17} /></button>
               </div>
-              {calendarWeeks.map((week, weekIndex) => <div className="learning-calendar-week" role="row" key={`week-${weekIndex}`}>
-                {week.map((cell, dayIndex) => cell ? <button className={`learning-calendar-day${selectedCalendarDay === cell.key ? ' is-selected' : ''}${sessionsByDate[cell.key]?.length ? ' has-session' : ''}`} type="button" role="gridcell" aria-label={`${formatCalendarDay(cell.date, {
-                  weekday: 'long',
-                  month: 'long',
-                  day: 'numeric'
-                })}${sessionsByDate[cell.key]?.length ? `, ${sessionsByDate[cell.key].length} scheduled sessions` : ''}`} aria-pressed={selectedCalendarDay === cell.key} key={cell.key} onClick={() => setSelectedCalendarDay(cell.key)}>
-                    <span>{cell.day}</span>
-                    {sessionsByDate[cell.key]?.length > 0 && <i aria-hidden="true" />}
-                  </button> : <span className="learning-calendar-day is-outside" aria-hidden="true" key={`outside-${weekIndex}-${dayIndex}`} />)}
-              </div>)}
-            </div>
-            <div className="learning-calendar-session-list" aria-live="polite">
-              <h4>{formatCalendarDay(new Date(`${selectedCalendarDay}T12:00:00Z`), {
-                  weekday: 'short',
-                  month: 'short',
-                  day: 'numeric'
-                })}</h4>
-              {selectedDaySessions.length ? selectedDaySessions.map(session => <Link className={`learning-calendar-session${session.status === 'cancelled' ? ' is-cancelled' : ''}`} key={session._id} to={`/roadmaps/${encodeURIComponent(roadmapSlug)}/cycles/${encodeURIComponent(session.cycleId)}`}>
-                  <span><strong>{session.title}</strong><small>{session.cycleTitle}</small></span>
-                  <small>{new Intl.DateTimeFormat(undefined, {
-                    hour: 'numeric',
-                    minute: '2-digit',
-                    timeZone: session.timeZone
-                  }).format(new Date(session.startsAt))}</small>
-                </Link>) : <p>{roadmapSessions.length ? 'No sessions scheduled for this day.' : 'No enrolled cycle sessions yet.'}</p>}
-            </div>
-            {!roadmapSessions.length && <Link className="learning-calendar-cycles-link" to="/training">Explore Training <ArrowRight size={14} /></Link>}
+              <div className="learning-calendar-grid" role="grid" aria-label={formatCalendarMonth(calendarMonth)}>
+                <div className="learning-calendar-week learning-calendar-weekdays" role="row">
+                  {weekdays.map(([weekday]) => <span role="columnheader" key={weekday}>{weekday.slice(0, 2)}</span>)}
+                </div>
+                {calendarWeeks.map((week, weekIndex) => <div className="learning-calendar-week" role="row" key={`week-${weekIndex}`}>
+                  {week.map((cell, dayIndex) => cell ? <button className={`learning-calendar-day${selectedCalendarDay === cell.key ? ' is-selected' : ''}${sessionsByDate[cell.key]?.length ? ' has-session' : ''}`} type="button" role="gridcell" aria-label={`${formatCalendarDay(cell.date, {
+                    weekday: 'long',
+                    month: 'long',
+                    day: 'numeric'
+                  })}${sessionsByDate[cell.key]?.length ? `, ${sessionsByDate[cell.key].length} scheduled sessions` : ''}`} aria-pressed={selectedCalendarDay === cell.key} key={cell.key} onClick={() => setSelectedCalendarDay(cell.key)}>
+                      <span>{cell.day}</span>
+                      {sessionsByDate[cell.key]?.length > 0 && <i aria-hidden="true" />}
+                    </button> : <span className="learning-calendar-day is-outside" aria-hidden="true" key={`outside-${weekIndex}-${dayIndex}`} />)}
+                </div>)}
+              </div>
+              <div className="learning-calendar-session-list" aria-live="polite">
+                <h4>{formatCalendarDay(new Date(`${selectedCalendarDay}T12:00:00Z`), {
+                    weekday: 'short',
+                    month: 'short',
+                    day: 'numeric'
+                  })}</h4>
+                {selectedDaySessions.length ? selectedDaySessions.map(session => <Link className={`learning-calendar-session${session.status === 'cancelled' ? ' is-cancelled' : ''}`} key={session._id} to={`/roadmaps/${encodeURIComponent(roadmapSlug)}/cycles/${encodeURIComponent(session.cycleId)}`}>
+                    <span><strong>{session.title}</strong><small>{session.cycleTitle}</small></span>
+                    <small>{new Intl.DateTimeFormat(undefined, {
+                      hour: 'numeric',
+                      minute: '2-digit',
+                      timeZone: session.timeZone
+                    }).format(new Date(session.startsAt))}</small>
+                  </Link>) : <p>{roadmapSessions.length ? 'No sessions scheduled for this day.' : 'No enrolled cycle sessions yet.'}</p>}
+              </div>
+              {!roadmapSessions.length && <Link className="learning-calendar-cycles-link" to="/training">Explore Training <ArrowRight size={14} /></Link>}
+            </>}
           </>}
         </section>
       </aside>
 
       {selectedNode && <div className="learning-node-dialog-backdrop" onMouseDown={event => {
-        if (event.target === event.currentTarget) setSelectedId('');
+        if (event.target === event.currentTarget) closeDetails();
       }}>
-        <aside className="learning-node-dialog" role="dialog" aria-modal="true" aria-labelledby="learning-node-dialog-title">
-          <button ref={dialogCloseRef} className="learning-node-dialog-close" type="button" aria-label="Close topic details" onClick={() => setSelectedId('')}><X size={20} /></button>
+        <aside className="learning-node-dialog" role="dialog" aria-modal="true" aria-labelledby="learning-node-dialog-title" onKeyDown={handleDialogKeyDown}>
+          <button ref={dialogCloseRef} className="learning-node-dialog-close" type="button" aria-label="Close topic details" onClick={closeDetails}><X size={20} /></button>
           <header className="learning-node-dialog-header">
+            {(selectedNode.category || selectedNode.level) && <span className="learning-node-category">{selectedNode.category || selectedNode.level}</span>}
             <h2 id="learning-node-dialog-title">{selectedNode.title}</h2>
             {selectedNode.description && <p className="learning-node-dialog-description">{selectedNode.description}</p>}
-            <p>{progressStatus === 'ready' ? `${selectedProgress.solved} / ${selectedProgress.total} solved` : `${selectedProgress.total} ${selectedProgress.total === 1 ? 'problem' : 'problems'}`}</p>
-            <div className="learning-node-progress-track" style={{
+            <p className="learning-node-completion-status">
+              {selectedTopicState?.completed ? <><Check size={15} aria-hidden="true" /> Completed</> : selectedUnmetDependencies.length ? <><LockKeyhole size={14} aria-hidden="true" /> Theory open · Problems locked</> : 'Problems available'}
+            </p>
+            <p className="learning-node-count">{progressStatus === 'ready' ? `${selectedProgress.solved} / ${selectedProgress.total} problems solved` : `${selectedProgress.total} ${selectedProgress.total === 1 ? 'problem' : 'problems'} · Progress ${progressStatus === 'loading' ? 'loading' : 'unavailable'}`}</p>
+            <div className={`learning-node-progress-track${selectedTopicState?.completed ? ' is-completed' : ''}`} style={{
               '--progress-percent': `${selectedProgress.total ? selectedProgress.solved / selectedProgress.total * 100 : 0}%`
-            }} role="progressbar" aria-label={`${selectedNode.title} solved problems`} aria-valuemin={0} aria-valuemax={selectedProgress.total || 1} aria-valuenow={selectedProgress.solved}>
-            </div>
+            }} role="progressbar" aria-label={`${selectedNode.title} solved problems`} aria-valuemin={0} aria-valuemax={selectedProgress.total || 1} aria-valuenow={progressStatus === 'ready' ? selectedProgress.solved : undefined} aria-valuetext={progressStatus === 'ready' ? `${selectedProgress.solved} of ${selectedProgress.total} solved` : 'Progress unavailable'} />
           </header>
+
+          {selectedSubtopics.length > 0 && <section className="learning-node-subtopics" aria-label="Subtopics">
+            {selectedSubtopics.map((subtopic, index) => <span key={`${subtopic}-${index}`}>{subtopic}</span>)}
+          </section>}
+
+          <section className="learning-node-theory" aria-labelledby="learning-node-theory-title">
+            <h3 id="learning-node-theory-title"><BookOpen size={16} aria-hidden="true" /> Theory</h3>
+            {typeof selectedTheory === 'string' && selectedTheory.trim()
+              ? <div className="learning-node-theory-content">{selectedTheory}</div>
+              : typeof selectedTheory?.text === 'string' && selectedTheory.text.trim()
+                ? <div className="learning-node-theory-content">{selectedTheory.text}</div>
+                : <p className="learning-topic-empty">Theory notes have not been added for this topic yet.</p>}
+          </section>
+
           <section className="learning-node-prerequisites" aria-labelledby="learning-node-prerequisites-title">
             <h3 id="learning-node-prerequisites-title">Prerequisites</h3>
-            {selectedDependencies.length > 0 ? <div className="learning-node-prerequisite-list">
-              {selectedDependencies.map(dependency => {
-                const counts = problemCounts.byTopic.get(String(dependency._id)) || {
-                  total: 0,
-                  solved: 0
-                };
-                return <button key={dependency._id} type="button" onClick={() => setSelectedId(String(dependency._id))}>
+            {(selectedNode.dependencies || []).length ? <div className="learning-node-prerequisite-list">
+              {(selectedNode.dependencies || []).map((dependencyId, index) => {
+                const id = String(dependencyId);
+                const dependency = graph.nodeById.get(id);
+                const counts = problemCounts.byTopic.get(id) || { total: 0, solved: 0 };
+                const completed = progressStatus === 'ready' && counts.total > 0 && counts.solved === counts.total;
+                return dependency ? <button className={completed ? 'is-completed' : ''} key={id} type="button" onClick={() => focusPrerequisite(id)}>
                   <strong>{dependency.title}</strong>
-                  <span>{progressStatus === 'ready' ? `${counts.solved} / ${counts.total} solved` : `${counts.total} ${counts.total === 1 ? 'problem' : 'problems'}`}</span>
-                </button>;
+                  <span>{completed ? 'Completed · ' : ''}{progressStatus === 'ready' ? `${counts.solved} / ${counts.total} solved` : 'Progress unavailable'}</span>
+                  <span className="learning-prerequisite-jump">View topic <ArrowRight size={13} aria-hidden="true" /></span>
+                </button> : <div className="learning-node-prerequisite-missing" key={`${id}-${index}`}>
+                  <strong>Prerequisite unavailable</strong><span>This roadmap references a topic that is no longer available.</span>
+                </div>;
               })}
             </div> : <p className="learning-topic-empty">No prerequisites for this topic.</p>}
           </section>
-          <section className="learning-node-roadmap-progress" aria-label="Overall roadmap progress">
-            <div><span>Roadmap progress</span><strong>{progressStatus === 'ready' ? `${problemCounts.solved} / ${problemCounts.total} solved` : progressStatus === 'loading' ? 'Loading…' : 'Sign in to track progress'}</strong></div>
-            <div className="learning-node-difficulty-totals">
-              {['easy', 'medium', 'hard'].map(difficulty => <span key={difficulty}><i className={`legend-${difficulty}`} />{difficulty} {progressStatus === 'ready' ? `${problemCounts[`${difficulty}Solved`]}/${problemCounts[difficulty]}` : '—'}</span>)}
-            </div>
-          </section>
+
           {progressStatus === 'unavailable' && <p className="learning-node-progress-message">{token ? 'Student accounts can track problem progress.' : <><Link to="/login">Sign in</Link> to save your problem progress.</>}</p>}
           {(progressStatus === 'error' || progressError) && <p className="learning-progress-error" role="alert">{progressError} {progressStatus === 'error' && <button type="button" onClick={() => setProgressRetry(current => current + 1)}>Retry</button>}</p>}
-          <section className="learning-node-problems" aria-labelledby="learning-node-problems-title">
+
+          <section className={`learning-node-problems${selectedUnmetDependencies.length ? ' is-locked' : ''}`} aria-labelledby="learning-node-problems-title">
             <h3 id="learning-node-problems-title">Problems <span>{selectedNode.problems?.length || 0}</span></h3>
+            {selectedUnmetDependencies.length > 0 && <div className="learning-node-lock-notice" role="status">
+              <strong><LockKeyhole size={16} aria-hidden="true" /> Complete prerequisites to unlock problems.</strong>
+              {progressStatus !== 'ready' && <p>Sign in or retry progress loading so prerequisite completion can be verified.</p>}
+              <div className="learning-node-lock-actions">
+                {selectedUnmetDependencies.map((dependencyId, index) => {
+                  const dependency = graph.nodeById.get(String(dependencyId));
+                  return dependency ? <button key={String(dependencyId)} type="button" onClick={() => focusPrerequisite(dependencyId)}>Jump to Prerequisite Node: {dependency.title} <ArrowRight size={14} aria-hidden="true" /></button> : <span key={`${dependencyId}-${index}`}>A prerequisite topic is unavailable.</span>;
+                })}
+              </div>
+            </div>}
             {selectedNode.problems?.length ? <div className="learning-node-problem-list">
-              <div className="learning-node-problem-header" aria-hidden="true"><span>Status</span><span>Problem</span><span>Difficulty</span><span>Open</span></div>
+              <div className="learning-node-problem-header" aria-hidden="true"><span>Done</span><span>Problem</span><span>Difficulty</span><span>Action</span></div>
               {(selectedNode.problems || []).map((problem, index) => {
                 const key = problemProgressKey(selectedId, problem.url);
-                const difficulty = ['easy', 'medium', 'hard'].includes(problem.difficulty) ? problem.difficulty : 'medium';
+                const difficulty = ['easy', 'medium', 'hard'].includes(problem.difficulty?.toLowerCase()) ? problem.difficulty.toLowerCase() : null;
                 const checked = solvedKeys.has(key);
-                return <div className={`learning-node-problem-row${checked ? ' solved' : ''}`} key={`${problem.url}-${index}`}>
+                const problemUrl = safeExternalUrl(problem.url);
+                const platform = problem.platformTag || problem.platform || (problemUrl ? new URL(problemUrl).hostname.replace(/^www\./i, '') : '');
+                const locked = selectedUnmetDependencies.length > 0;
+                return <div className={`learning-node-problem-row${checked ? ' solved' : ''}${locked ? ' is-locked' : ''}`} key={`${problem.url}-${index}`}>
                   <label className="learning-problem-check">
-                    <input type="checkbox" aria-label={`Mark ${problem.title} as solved`} checked={checked} disabled={progressStatus !== 'ready' || pendingKeys.has(key)} onChange={() => toggleProblem(selectedNode, problem)} />
+                    <input type="checkbox" aria-label={`I solved ${problem.title}`} checked={checked} disabled={locked || progressStatus !== 'ready' || !problemUrl || pendingKeys.has(key)} onChange={() => toggleProblem(selectedNode, problem)} />
                     <span className="learning-problem-checkmark" />
                   </label>
-                  <a className="learning-node-problem-title" href={problem.url} target="_blank" rel="noreferrer">{problem.title}</a>
-                  <span className={`learning-problem-difficulty difficulty-${difficulty}`}>{difficulty}</span>
-                  <a className="learning-node-problem-open" href={problem.url} target="_blank" rel="noreferrer" aria-label={`Open ${problem.title}`}><ExternalLink size={16} /></a>
+                  <span className="learning-node-problem-copy"><strong>{problem.title}</strong>{platform && <small>{platform}</small>}</span>
+                  {difficulty ? <span className={`learning-problem-difficulty difficulty-${difficulty}`}>{difficulty}</span> : <span className="learning-problem-difficulty difficulty-unspecified">Not specified</span>}
+                  {locked || !problemUrl
+                    ? <button className="learning-node-problem-locked" type="button" disabled title={locked ? 'Complete prerequisites to unlock' : 'Problem link unavailable'} aria-label={locked ? `Locked: ${problem.title}. Complete prerequisites to unlock` : `${problem.title} link unavailable`}>{locked ? <><LockKeyhole size={14} /> Locked</> : 'Unavailable'}</button>
+                    : <a className="learning-node-problem-solve" href={problemUrl} target="_blank" rel="noopener noreferrer" aria-label={`Solve ${problem.title} on ${platform || 'the linked platform'}`}>Solve <ExternalLink size={14} aria-hidden="true" /></a>}
                 </div>;
               })}
             </div> : <p className="learning-topic-empty">No problems added to this topic yet.</p>}
+            {selectedNode.problems?.length > 0 && progressStatus === 'ready' && <p className="learning-node-recording-note">Use “I solved” only after completing the linked problem. Opening an external link does not record completion.</p>}
           </section>
-          {selectedNode.resources?.length > 0 && <section className="learning-node-resources">
-            <h3>Resources</h3>
-            {selectedNode.resources.map(resource => <a key={`${resource.title}-${resource.url}`} href={resource.url} target="_blank" rel="noreferrer">{resource.title} <ExternalLink size={14} /></a>)}
-          </section>}
+
+          <section className="learning-node-resources" aria-labelledby="learning-node-resources-title">
+            <h3 id="learning-node-resources-title"><FileText size={16} aria-hidden="true" /> Learning resources</h3>
+            {selectedNode.resources?.length ? selectedNode.resources.map((resource, index) => {
+              const resourceUrl = safeExternalUrl(resource.url);
+              const resourceType = resource.type || resource.resourceType || '';
+              const ResourceIcon = /video/i.test(resourceType) ? PlayCircle : BookOpen;
+              return <article className="learning-node-resource-card" key={`${resource.title || 'resource'}-${resource.url || index}`}>
+                <ResourceIcon size={18} aria-hidden="true" />
+                <div><strong>{resource.title || 'Learning resource'}</strong><span>{[resourceType, resource.provider || resource.platform].filter(Boolean).join(' · ')}</span></div>
+                {resourceUrl ? <a href={resourceUrl} target="_blank" rel="noopener noreferrer" aria-label={`Open ${resource.title || 'learning resource'} in a new tab`}><ExternalLink size={15} aria-hidden="true" /></a> : <span className="learning-resource-unavailable">Link unavailable</span>}
+              </article>;
+            }) : <p className="learning-topic-empty">No learning resources have been added for this topic yet.</p>}
+          </section>
         </aside>
       </div>}
     </div>}

@@ -270,9 +270,9 @@ export function EventsPage() {
           </select>
         </div>
         {error && <div className="notice error-notice">{error}</div>}
-        {loading ? <div className="empty-state"><span className="loader" /> Loading events...</div> : events.length ? <div className="event-grid">{events.map((event, index) => <EventCard key={event.id} event={event} index={index} />)}</div> : <div className="empty-state"><span className="empty-icon"><CalendarDays size={24} /></span><h3>No events found</h3><p>Try a different search or check back soon for new events.</p></div>}
+        {loading ? <div className="empty-state"><span className="loader" /> Loading events...</div> : events.length ? <div className="event-grid">{events.map((event, index) => <EventCard key={event.id} event={event} index={index} />)}</div> : <div className="empty-state"><span className="empty-icon"><CalendarDays size={24} /></span><h3>No events found</h3><p>Try a different search or check back soon for new events</p></div>}
       </section>
-      <section className="community-strip"><div className="strip-icon"><Users size={21} /></div><div><b>Better together</b><span>New to competitive programming? This is your place to start.</span></div><Link to="/login">Meet the community <ArrowRight size={16} /></Link></section>
+      <section className="community-strip"><div className="strip-icon"><Users size={21} /></div><div><b>Better together</b><span>New to competitive programming? This is your place to start</span></div><Link to="/login">Meet the community <ArrowRight size={16} /></Link></section>
     </main>;
 }
 export function EventDetail({

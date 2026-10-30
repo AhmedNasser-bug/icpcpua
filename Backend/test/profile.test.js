@@ -38,6 +38,39 @@ test('student profile allows explicitly clearing optional fields', () => {
   assert.deepEqual(result.trainingGoals, []);
 });
 
+test('student profile treats legacy view preference as unspecified during other updates', () => {
+  const result = validateStudentProfileInput({
+    pictureUrl: 'https://example.test/profile.jpg',
+    teamPreferences: { preference: ' VIEW ' },
+  });
+  assert.equal(result.pictureUrl, 'https://example.test/profile.jpg');
+  assert.equal(result.teamPreferences.preference, null);
+});
+
+test('student profile normalizes case and whitespace in optional team preference', () => {
+  assert.equal(validateStudentProfileInput({
+    teamPreferences: { preference: '  ONLINE ' },
+  }).teamPreferences.preference, 'online');
+  assert.equal(validateStudentProfileInput({
+    teamPreferences: { preference: null },
+  }).teamPreferences.preference, null);
+});
+
+test('student profile normalizes legacy team status values', () => {
+  assert.equal(validateStudentProfileInput({
+    teamStatus: '  LOOKING ',
+  }).teamStatus, 'looking');
+  assert.equal(validateStudentProfileInput({
+    teamStatus: 'Already in a team',
+  }).teamStatus, 'in_team');
+  assert.equal(validateStudentProfileInput({
+    teamStatus: 'Not specified',
+  }).teamStatus, null);
+  assert.equal(validateStudentProfileInput({
+    teamStatus: null,
+  }).teamStatus, null);
+});
+
 test('partial profile updates target only supplied paths and preserve other fields', () => {
   const query = updateStudentProfile('507f1f77bcf86cd799439011', {
     university: 'PUA',

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { ArrowRight, ChevronDown, LogOut, Menu, X } from "lucide-react";
+import { ArrowRight, LogOut, Menu, X } from "lucide-react";
 import { NotificationBellMenu } from '../../features/notifications/components/NotificationBellMenu.jsx';
 export function Header({
   user,
@@ -30,77 +30,91 @@ export function Header({
   useEffect(() => {
     setAccountOpen(false);
   }, [location.pathname]);
-  const isActive = path => path === '/' ? location.pathname === '/' : path === '/events' ? location.pathname === '/events' || location.pathname.startsWith('/events/') || location.pathname.startsWith('/check-in/') : location.pathname === path || location.pathname.startsWith(`${path}/`);
+  const isCycleRoute = /^\/roadmaps\/[^/]+\/cycles(?:\/|$)/.test(location.pathname) || location.pathname.startsWith('/roadmaps/check-in/');
+  const isActive = path => path === '/'
+    ? location.pathname === '/'
+    : path === '/events'
+      ? location.pathname === '/events' || location.pathname.startsWith('/events/') || location.pathname.startsWith('/check-in/')
+      : path === '/training'
+        ? location.pathname === '/training' || location.pathname.startsWith('/training/') || isCycleRoute
+        : path === '/roadmaps'
+          ? (location.pathname === '/roadmaps' || location.pathname.startsWith('/roadmaps/')) && !isCycleRoute
+          : location.pathname === path || location.pathname.startsWith(`${path}/`);
   const profilePath = user?.role === 'user' && user.username ? `/users/${user.username}` : null;
   const accountActive = location.pathname.startsWith('/settings') || profilePath && location.pathname === profilePath;
   const navLink = (path, label) => <Link className={isActive(path) ? 'nav-link active' : 'nav-link'} to={path} aria-current={isActive(path) ? 'page' : undefined}>{label}</Link>;
   return <div className="site-header-shell">
       <header className="site-header">
-      <Link className="brand" to="/" aria-label="PUA ICPC Community home" onClick={() => {
-        setMenuOpen(false);
-        setAccountOpen(false);
-      }}>
-        <svg className="brand-logo" viewBox="0 0 731 187" role="img" aria-label="PUA ICPC Training Community">
-          <defs>
-            <pattern id="brand-logo-dots" x="0" y="0" width="6" height="6" patternUnits="userSpaceOnUse">
-              <circle cx="3" cy="3" r="1.2" fill="var(--brand-logo-ink)" />
-            </pattern>
-            <clipPath id="brand-logo-card-clip">
-              <rect x="0" y="0" width="144" height="144" rx="12" />
-            </clipPath>
-          </defs>
-          <g transform="translate(10 10)">
-            <rect x="14" y="14" width="144" height="144" rx="12" fill="#0f0f0f" />
-            <g clipPath="url(#brand-logo-card-clip)">
-              <rect width="144" height="144" fill="var(--color-surface, #fff9e4)" stroke="var(--brand-logo-ink)" strokeWidth="3" />
-              <line x1="0" y1="36" x2="144" y2="88" stroke="var(--color-secondary, #17e5e6)" strokeWidth="4" strokeLinecap="round" />
-              <line x1="0" y1="88" x2="144" y2="36" stroke="var(--color-secondary, #17e5e6)" strokeWidth="4" strokeLinecap="round" />
-              <polygon points="72,42 42,0 58,0 72,42" fill="var(--brand-logo-yellow, #ffd600)" stroke="var(--brand-logo-ink)" strokeWidth="2" strokeLinejoin="round" />
-              <polygon points="72,42 86,0 102,0 72,42" fill="var(--brand-logo-yellow, #ffd600)" stroke="var(--brand-logo-ink)" strokeWidth="2" strokeLinejoin="round" />
-              <rect x="0" y="78" width="144" height="8" fill="var(--brand-logo-yellow, #ffd600)" stroke="var(--brand-logo-ink)" strokeWidth="2" />
-              <circle cx="72" cy="40" r="14" fill="var(--brand-logo-yellow, #ffd600)" stroke="var(--brand-logo-ink)" strokeWidth="2.5" />
-              <circle cx="68" cy="36" r="4" fill="#fff" opacity=".8" />
-              <rect x="58" y="58" width="28" height="8" rx="1" fill="var(--color-primary, #7b2cbf)" stroke="var(--brand-logo-ink)" strokeWidth="2" />
-              <rect x="60" y="66" width="24" height="20" fill="var(--color-surface, #fff9e4)" stroke="var(--brand-logo-ink)" strokeWidth="2" />
-              <rect x="60" y="66" width="24" height="20" fill="url(#brand-logo-dots)" />
-              <rect x="57" y="86" width="30" height="12" fill="var(--color-primary, #7b2cbf)" stroke="var(--brand-logo-ink)" strokeWidth="2" />
-              <rect x="55" y="98" width="34" height="16" fill="var(--color-surface, #fff9e4)" stroke="var(--brand-logo-ink)" strokeWidth="2" />
-              <path d="M67 114v-10a5 5 0 0 1 10 0v10Z" fill="var(--brand-logo-ink)" />
-              <rect x="53" y="114" width="38" height="12" fill="var(--color-primary, #7b2cbf)" stroke="var(--brand-logo-ink)" strokeWidth="2" />
-              <rect x="47" y="126" width="50" height="6" fill="var(--color-primary, #7b2cbf)" stroke="var(--brand-logo-ink)" strokeWidth="2" />
-              <rect x="38" y="128" width="12" height="6" fill="var(--color-primary, #7b2cbf)" stroke="var(--brand-logo-ink)" strokeWidth="2" />
-              <rect x="28" y="32" width="9" height="9" fill="var(--color-primary, #7b2cbf)" stroke="var(--brand-logo-ink)" strokeWidth="1.5" transform="rotate(15 28 32)" />
-              <rect x="118" y="62" width="8" height="8" fill="var(--color-primary, #7b2cbf)" stroke="var(--brand-logo-ink)" strokeWidth="1.5" transform="rotate(45 118 62)" />
-              <rect x="112" y="102" width="12" height="12" fill="var(--color-primary, #7b2cbf)" stroke="var(--brand-logo-ink)" strokeWidth="1.5" transform="rotate(12 112 102)" />
-              <rect x="38" y="136" width="7" height="7" fill="var(--color-primary, #7b2cbf)" stroke="var(--brand-logo-ink)" strokeWidth="1.5" />
-              <text x="18" y="94" className="brand-logo-code">{'{'}</text>
-              <text x="30" y="98" className="brand-logo-semi">;</text>
-              <text x="98" y="64" className="brand-logo-code">{'}'}</text>
-            </g>
-            <rect width="144" height="144" rx="12" fill="none" stroke="var(--brand-logo-ink)" strokeWidth="3" />
-          </g>
-          <text x="200" y="80" className="brand-logo-title">PUA ICPC</text>
-          <text x="202" y="136" className="brand-logo-subtitle">TRAINING COMMUNITY</text>
-        </svg>
-      </Link>
-      <button className="icon-button menu-toggle" aria-label={menuOpen ? 'Close navigation' : 'Open navigation'} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
-        {menuOpen ? <X size={22} /> : <Menu size={22} />}
-      </button>
-      <nav className={menuOpen ? 'main-nav open' : 'main-nav'} aria-label="Main navigation" onClick={event => {
-        if (event.target.closest('a')) setMenuOpen(false);
-      }}>
-        {navLink('/', 'Home')}
-        {navLink('/roadmaps', 'Roadmaps')}
-        {navLink('/training', 'Training')}
-        {navLink('/events', 'Events')}
-        {navLink('/leaderboard', 'Leaderboard')}
-        {user ? <>
+        <div className="header-left-group">
+          <Link className="brand" to="/" aria-label="PUA ICPC Community home" onClick={() => {
+            setMenuOpen(false);
+            setAccountOpen(false);
+          }}>
+            <span className="brand-logo-image-container">
+              <svg className="brand-logo" viewBox="0 0 180 180" role="img" aria-label="PUA ICPC Logo">
+                <defs>
+                  <pattern id="brand-logo-dots" x="0" y="0" width="6" height="6" patternUnits="userSpaceOnUse">
+                    <circle cx="3" cy="3" r="1.2" fill="var(--brand-logo-ink)" />
+                  </pattern>
+                  <clipPath id="brand-logo-card-clip">
+                    <rect x="0" y="0" width="144" height="144" rx="12" />
+                  </clipPath>
+                </defs>
+                <g transform="translate(10 10)">
+                  <rect x="14" y="14" width="144" height="144" rx="12" fill="#0f0f0f" />
+                  <g clipPath="url(#brand-logo-card-clip)">
+                    <rect width="144" height="144" fill="var(--color-surface, #fff9e4)" stroke="var(--brand-logo-ink)" strokeWidth="3" />
+                    <line x1="0" y1="36" x2="144" y2="88" stroke="var(--color-secondary, #17e5e6)" strokeWidth="4" strokeLinecap="round" />
+                    <line x1="0" y1="88" x2="144" y2="36" stroke="var(--color-secondary, #17e5e6)" strokeWidth="4" strokeLinecap="round" />
+                    <polygon points="72,42 42,0 58,0 72,42" fill="var(--brand-logo-yellow, #ffd600)" stroke="var(--brand-logo-ink)" strokeWidth="2" strokeLinejoin="round" />
+                    <polygon points="72,42 86,0 102,0 72,42" fill="var(--brand-logo-yellow, #ffd600)" stroke="var(--brand-logo-ink)" strokeWidth="2" strokeLinejoin="round" />
+                    <rect x="0" y="78" width="144" height="8" fill="var(--brand-logo-yellow, #ffd600)" stroke="var(--brand-logo-ink)" strokeWidth="2" />
+                    <circle cx="72" cy="40" r="14" fill="var(--brand-logo-yellow, #ffd600)" stroke="var(--brand-logo-ink)" strokeWidth="2.5" />
+                    <circle cx="68" cy="36" r="4" fill="#fff" opacity=".8" />
+                    <rect x="58" y="58" width="28" height="8" rx="1" fill="var(--color-primary, #7b2cbf)" stroke="var(--brand-logo-ink)" strokeWidth="2" />
+                    <rect x="60" y="66" width="24" height="20" fill="var(--color-surface, #fff9e4)" stroke="var(--brand-logo-ink)" strokeWidth="2" />
+                    <rect x="60" y="66" width="24" height="20" fill="url(#brand-logo-dots)" />
+                    <rect x="57" y="86" width="30" height="12" fill="var(--color-primary, #7b2cbf)" stroke="var(--brand-logo-ink)" strokeWidth="2" />
+                    <rect x="55" y="98" width="34" height="16" fill="var(--color-surface, #fff9e4)" stroke="var(--brand-logo-ink)" strokeWidth="2" />
+                    <path d="M67 114v-10a5 5 0 0 1 10 0v10Z" fill="var(--brand-logo-ink)" />
+                    <rect x="53" y="114" width="38" height="12" fill="var(--color-primary, #7b2cbf)" stroke="var(--brand-logo-ink)" strokeWidth="2" />
+                    <rect x="47" y="126" width="50" height="6" fill="var(--color-primary, #7b2cbf)" stroke="var(--brand-logo-ink)" strokeWidth="2" />
+                    <rect x="38" y="128" width="12" height="6" fill="var(--color-primary, #7b2cbf)" stroke="var(--brand-logo-ink)" strokeWidth="2" />
+                    <rect x="28" y="32" width="9" height="9" fill="var(--color-primary, #7b2cbf)" stroke="var(--brand-logo-ink)" strokeWidth="1.5" transform="rotate(15 28 32)" />
+                    <rect x="118" y="62" width="8" height="8" fill="var(--color-primary, #7b2cbf)" stroke="var(--brand-logo-ink)" strokeWidth="1.5" transform="rotate(45 118 62)" />
+                    <rect x="112" y="102" width="12" height="12" fill="var(--color-primary, #7b2cbf)" stroke="var(--brand-logo-ink)" strokeWidth="1.5" transform="rotate(12 112 102)" />
+                    <rect x="38" y="136" width="7" height="7" fill="var(--color-primary, #7b2cbf)" stroke="var(--brand-logo-ink)" strokeWidth="1.5" />
+                    <text x="18" y="94" className="brand-logo-code">{'{'}</text>
+                    <text x="30" y="98" className="brand-logo-semi">;</text>
+                    <text x="98" y="64" className="brand-logo-code">{'}'}</text>
+                  </g>
+                  <rect width="144" height="144" rx="12" fill="none" stroke="var(--brand-logo-ink)" strokeWidth="3" />
+                </g>
+              </svg>
+            </span>
+            <span className="brand-copy">
+              <span className="brand-name">PUA ICPC</span>
+            </span>
+          </Link>
+          <nav className={menuOpen ? 'main-nav open' : 'main-nav'} aria-label="Main navigation" onClick={event => {
+            if (event.target.closest('a')) setMenuOpen(false);
+          }}>
+            {navLink('/', 'Home')}
+            {navLink('/roadmaps', 'Roadmaps')}
+            {navLink('/training', 'Training')}
+            {navLink('/events', 'Events')}
+            {navLink('/leaderboard', 'Leaderboard')}
+          </nav>
+        </div>
+        <div className="header-actions">
+          {user ? <>
           <NotificationBellMenu token={token} />
           <div className="account-menu" ref={accountMenuRef}>
-            <button className={accountActive ? 'account-trigger active' : 'account-trigger'} type="button" aria-haspopup="menu" aria-expanded={accountOpen} onClick={() => setAccountOpen(open => !open)}>
-              <span className="account-avatar" aria-hidden="true">{user.name.trim().charAt(0).toUpperCase()}</span>
-              <span className="account-name">{user.name}</span>
-              <ChevronDown className={accountOpen ? 'account-chevron open' : 'account-chevron'} size={15} aria-hidden="true" />
+            <button className={accountActive ? 'account-trigger active' : 'account-trigger'} type="button" aria-label="Open account menu" aria-haspopup="menu" aria-expanded={accountOpen} onClick={() => setAccountOpen(open => !open)}>
+              <span className="account-avatar" aria-hidden="true">
+                {user.name.trim().charAt(0).toUpperCase()}
+                {user.profile?.pictureUrl && <img src={user.profile.pictureUrl} alt="" onError={event => event.currentTarget.remove()} />}
+              </span>
             </button>
             {accountOpen && <div className="account-dropdown" role="menu" aria-label="Account menu">
               <Link className={location.pathname === '/my-activities' ? 'active' : ''} to="/my-activities" role="menuitem" aria-current={location.pathname === '/my-activities' ? 'page' : undefined} onClick={() => setAccountOpen(false)}>My Activities</Link>
@@ -121,9 +135,13 @@ export function Header({
             </div>}
           </div>
           </> : <div className="nav-auth-actions">
-            <Link className="button button-dark nav-register" to="/login?mode=register">Register</Link>
+            <Link className="nav-login" to="/login">Log in</Link>
+            <Link className="nav-register" to="/login?mode=register">Register</Link>
           </div>}
-      </nav>
+          <button className="icon-button menu-toggle" aria-label={menuOpen ? 'Close navigation' : 'Open navigation'} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
+            {menuOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
+        </div>
     </header>
     </div>;
 }
@@ -154,7 +172,7 @@ export function Footer() {
         </div>
         <div className="footer-bottom">
           <span>© {new Date().getFullYear()} PUA ICPC Community</span>
-          <span>Built for curious minds and problem solvers.</span>
+          <span>Built for curious minds and problem solvers</span>
         </div>
       </div>
     </footer>;

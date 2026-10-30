@@ -262,10 +262,25 @@ export function validateStudentProfileInput(input) {
     }).filter((entry) => Object.values(entry).some((value) => Array.isArray(value) ? value.length : Boolean(value)));
   }
   if ('teamStatus' in input) {
-    if (!['looking', 'in_team', 'not_looking', ''].includes(input.teamStatus)) {
-      throw invalidProfile('teamStatus must be looking, in_team, not_looking, or empty.', 'teamStatus');
+    if (input.teamStatus === null) {
+      output.teamStatus = null;
+    } else {
+      if (typeof input.teamStatus !== 'string') {
+        throw invalidProfile('teamStatus must be looking, in_team, not_looking, or empty.', 'teamStatus');
+      }
+      const teamStatus = input.teamStatus.trim().toLowerCase();
+      const normalizedStatus = {
+        'looking for a team': 'looking',
+        'already in a team': 'in_team',
+        'not currently looking': 'not_looking',
+        'not specified': '',
+        none: '',
+      }[teamStatus] ?? teamStatus;
+      if (!['looking', 'in_team', 'not_looking', ''].includes(normalizedStatus)) {
+        throw invalidProfile('teamStatus must be looking, in_team, not_looking, or empty.', 'teamStatus');
+      }
+      output.teamStatus = normalizedStatus || null;
     }
-    output.teamStatus = input.teamStatus || null;
   }
   if ('teamPreferences' in input) {
     const fields = ['preferredLanguage', 'experience', 'schedule', 'preference', 'introduction'];
@@ -276,10 +291,21 @@ export function validateStudentProfileInput(input) {
       if (field in source) output.teamPreferences[field] = validateProfileText(source[field], `teamPreferences.${field}`, maxLength);
     }
     if ('preference' in source) {
-      if (!['online', 'offline', 'either', ''].includes(source.preference)) {
-        throw invalidProfile('preference must be online, offline, either, or empty.', 'teamPreferences.preference');
+      if (source.preference === null) {
+        output.teamPreferences.preference = null;
+      } else {
+        if (typeof source.preference !== 'string') {
+          throw invalidProfile('preference must be online, offline, either, or empty.', 'teamPreferences.preference');
+        }
+        const preference = source.preference.trim().toLowerCase();
+        if (preference === 'view' || preference === '') {
+          output.teamPreferences.preference = null;
+        } else if (!['online', 'offline', 'either'].includes(preference)) {
+          throw invalidProfile('preference must be online, offline, either, or empty.', 'teamPreferences.preference');
+        } else {
+          output.teamPreferences.preference = preference;
+        }
       }
-      output.teamPreferences.preference = source.preference || null;
     }
   }
   return output;
