@@ -9,6 +9,120 @@ import './AdminRoadmapsPage.css';
 
 const ROADMAP_EXPORT_SCHEMA_VERSION = 1;
 const ROADMAP_EXPORT_LIMIT = 5 * 1024 * 1024;
+const ROADMAP_JSON_TEMPLATE = {
+  schemaVersion: ROADMAP_EXPORT_SCHEMA_VERSION,
+  roadmap: {
+    title: 'Competitive Programming Foundations',
+    description: 'Build core problem-solving skills, then apply them to progressively harder contest problems.',
+    coverImageUrl: '',
+    difficulty: 'beginner',
+    estimatedDuration: '4 weeks',
+    objectives: [
+      'Analyze problem constraints and select suitable techniques',
+      'Implement and test common competitive programming solutions'
+    ],
+    audience: 'Students beginning competitive programming',
+    prerequisites: 'Basic programming knowledge',
+    status: 'draft'
+  },
+  nodes: [
+    {
+      id: 'topic-fundamentals',
+      title: 'Complexity and implementation',
+      description: 'Read constraints, estimate runtime, and build reliable implementation habits.',
+      dependencies: [],
+      position: 0,
+      estimatedHours: 3,
+      resources: [
+        {
+          title: 'Complexity analysis guide',
+          url: 'https://example.com/complexity-analysis'
+        }
+      ],
+      problems: [
+        {
+          title: 'Implementation practice',
+          url: 'https://example.com/implementation-practice',
+          difficulty: 'easy'
+        }
+      ],
+      isRequired: true
+    },
+    {
+      id: 'topic-sorting',
+      title: 'Sorting and searching',
+      description: 'Use ordering and binary search to simplify problem constraints.',
+      dependencies: ['topic-fundamentals'],
+      position: 1,
+      estimatedHours: 3,
+      resources: [
+        {
+          title: 'Sorting and searching notes',
+          url: 'https://example.com/sorting-searching'
+        }
+      ],
+      problems: [
+        {
+          title: 'Binary search practice',
+          url: 'https://example.com/binary-search-practice',
+          difficulty: 'medium'
+        }
+      ],
+      isRequired: true
+    },
+    {
+      id: 'topic-graphs',
+      title: 'Graph traversal',
+      description: 'Model relationships with graphs and explore them using BFS and DFS.',
+      dependencies: ['topic-fundamentals'],
+      position: 2,
+      estimatedHours: 4,
+      resources: [],
+      problems: [
+        {
+          title: 'Graph traversal practice',
+          url: 'https://example.com/graph-traversal-practice',
+          difficulty: 'medium'
+        }
+      ],
+      isRequired: true
+    },
+    {
+      id: 'topic-shortest-paths',
+      title: 'Shortest paths',
+      description: 'Choose a shortest-path algorithm based on graph weights and constraints.',
+      dependencies: ['topic-graphs'],
+      position: 3,
+      estimatedHours: 4,
+      resources: [],
+      problems: [
+        {
+          title: 'Shortest path practice',
+          url: 'https://example.com/shortest-path-practice',
+          difficulty: 'hard'
+        }
+      ],
+      isRequired: false
+    },
+    {
+      id: 'topic-contest-practice',
+      title: 'Mixed contest practice',
+      description: 'Combine search and graph techniques in a timed practice set.',
+      dependencies: ['topic-sorting', 'topic-shortest-paths'],
+      position: 4,
+      estimatedHours: 5,
+      resources: [],
+      problems: [
+        {
+          title: 'Mixed techniques practice',
+          url: 'https://example.com/mixed-practice',
+          difficulty: 'hard'
+        }
+      ],
+      isRequired: true
+    }
+  ]
+};
 
 function assertPlainObject(value, label) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) {
@@ -184,6 +298,113 @@ function validateRoadmapImport(input) {
   if (orderedNodes.length !== nodes.length) throw new Error('The prerequisite relationships contain a circular path.');
 
   return { roadmap, nodes, orderedNodes };
+}
+
+function RoadmapImportTree({ nodes }) {
+  const graph = useMemo(() => {
+    const nodesById = new Map(nodes.map(node => [node.id, node]));
+    const levels = new Map();
+    const grouped = [];
+    nodes.forEach(node => {
+      const dependencies = node.dependencies;
+      const level = dependencies.length ? Math.max(...dependencies.map(id => levels.get(id))) + 1 : 0;
+      levels.set(node.id, level);
+      grouped[level] ||= [];
+      grouped[level].push(node);
+    });
+    grouped.forEach(level => level.sort((left, right) => left.position - right.position || left.title.localeCompare(right.title) || left.sourceIndex - right.sourceIndex));
+
+    const nodeWidth = 240;
+    const nodeHeight = 132;
+    const horizontalGap = 40;
+    const verticalGap = 56;
+    const padding = 24;
+    const widestLevel = Math.max(1, ...grouped.map(level => level.length));
+    const width = padding * 2 + widestLevel * nodeWidth + Math.max(0, widestLevel - 1) * horizontalGap;
+    const height = grouped.length
+      ? padding * 2 + grouped.length * nodeHeight + (grouped.length - 1) * verticalGap
+      : padding * 2;
+    const positions = new Map();
+    grouped.forEach((level, row) => {
+      const rowWidth = level.length * nodeWidth + Math.max(0, level.length - 1) * horizontalGap;
+      const startX = (width - rowWidth) / 2;
+      level.forEach((node, column) => positions.set(node.id, {
+        x: startX + column * (nodeWidth + horizontalGap),
+        y: padding + row * (nodeHeight + verticalGap)
+      }));
+    });
+    const edges = nodes.flatMap(node => node.dependencies.map(dependency => {
+      const from = positions.get(dependency);
+      const to = positions.get(node.id);
+      const startX = from.x + nodeWidth / 2;
+      const startY = from.y + nodeHeight;
+      const endX = to.x + nodeWidth / 2;
+      const endY = to.y;
+      const curve = Math.max(28, (endY - startY) / 2);
+      return {
+        id: JSON.stringify([dependency, node.id]),
+        path: `M ${startX} ${startY} C ${startX} ${startY + curve}, ${endX} ${endY - curve}, ${endX} ${endY}`
+      };
+    }));
+    return { edges, height, levels, nodeHeight, nodeWidth, nodesById, positions, width };
+  }, [nodes]);
+
+  if (!nodes.length) {
+    return <div className="roadmap-import-tree-empty">No learning topics are included. The new draft can be edited before publication.</div>;
+  }
+
+  return <section className="roadmap-import-tree-section" aria-label="Learning Path preview">
+    <div className="roadmap-import-tree-heading">
+      <h3>Learning Path</h3>
+      <p>Arrows show prerequisite links. A topic with multiple prerequisites connects to each one.</p>
+    </div>
+    <div className="roadmap-import-tree-viewport" tabIndex={0} aria-label="Scrollable Learning Path diagram">
+      <div className="roadmap-import-tree-board" style={{ width: graph.width, height: graph.height }}>
+        <svg className="roadmap-import-tree-edges" width={graph.width} height={graph.height} aria-hidden="true">
+          {graph.edges.map(edge => <path key={edge.id} d={edge.path} />)}
+        </svg>
+        {nodes.map(node => {
+          const position = graph.positions.get(node.id);
+          const prerequisites = node.dependencies.map(id => graph.nodesById.get(id).title);
+          return <article
+            className="roadmap-import-tree-node"
+            key={node.id}
+            style={{ left: position.x, top: position.y, width: graph.nodeWidth, minHeight: graph.nodeHeight }}
+            aria-label={`${node.title}, level ${graph.levels.get(node.id) + 1}${prerequisites.length ? `, prerequisites: ${prerequisites.join(', ')}` : ', no prerequisites'}`}
+          >
+            <span className="roadmap-import-tree-node-meta">Level {graph.levels.get(node.id) + 1} · Order {node.position}</span>
+            <strong>{node.title}</strong>
+            {node.description && <p>{node.description}</p>}
+            <span className="roadmap-import-tree-node-meta">
+              {prerequisites.length ? `Requires: ${prerequisites.join(', ')}` : 'Starting topic'}
+            </span>
+          </article>;
+        })}
+      </div>
+    </div>
+    <div className="roadmap-import-topic-details">
+      <h4>Topic details</h4>
+      {nodes.map(node => <details key={node.id}>
+        <summary>{node.title}<span>Order {node.position}</span></summary>
+        <div className="roadmap-import-topic-content">
+          <p>{node.description || 'No description provided.'}</p>
+          <p>
+            {node.isRequired ? 'Required' : 'Optional'}
+            {node.estimatedHours !== null && ` · ${node.estimatedHours} estimated hours`}
+            {node.dependencies.length > 0 && ` · Prerequisites: ${node.dependencies.map(id => graph.nodesById.get(id).title).join(', ')}`}
+          </p>
+          {node.resources.length > 0 && <div>
+            <strong>Resources</strong>
+            <ul>{node.resources.map(resource => <li key={`${resource.title}-${resource.url}`}><a href={resource.url} target="_blank" rel="noreferrer">{resource.title}</a></li>)}</ul>
+          </div>}
+          {node.problems.length > 0 && <div>
+            <strong>Problems</strong>
+            <ul>{node.problems.map(problem => <li key={`${problem.title}-${problem.url}`}><a href={problem.url} target="_blank" rel="noreferrer">{problem.title}</a> · {problem.difficulty}</li>)}</ul>
+          </div>}
+        </div>
+      </details>)}
+    </div>
+  </section>;
 }
 
 function validateRoadmapForPublish(roadmap, nodes) {
@@ -770,6 +991,27 @@ export function AdminRoadmapsPage({
       setBusy(false);
     }
   };
+  const downloadRoadmapTemplate = () => {
+    setError('');
+    setMessage('');
+    let downloadUrl;
+    let link;
+    try {
+      const blob = new Blob([`${JSON.stringify(ROADMAP_JSON_TEMPLATE, null, 2)}\n`], { type: 'application/json' });
+      downloadUrl = URL.createObjectURL(blob);
+      link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = 'roadmap-template.json';
+      document.body.append(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
+    } catch (reason) {
+      link?.remove();
+      if (downloadUrl) URL.revokeObjectURL(downloadUrl);
+      setError(`Roadmap template download failed: ${reason.message}`);
+    }
+  };
   const selectImportFile = async event => {
     const [file] = event.target.files || [];
     event.target.value = '';
@@ -808,13 +1050,18 @@ export function AdminRoadmapsPage({
 
       const importedIds = new Map();
       for (const node of importCandidate.orderedNodes) {
+        const dependencies = node.dependencies.map(id => {
+          const importedId = importedIds.get(id);
+          if (!importedId) throw new Error(`Prerequisite for "${node.title}" was not imported first.`);
+          return importedId;
+        });
         const response = await api(`/admin/roadmaps/${createdRoadmap._id}/nodes`, {
           method: 'POST',
           token,
           body: JSON.stringify({
             title: node.title,
             description: node.description,
-            dependencies: node.dependencies.map(id => importedIds.get(id)),
+            dependencies,
             position: node.position,
             estimatedHours: node.estimatedHours,
             resources: node.resources,
@@ -1143,6 +1390,7 @@ export function AdminRoadmapsPage({
       </div>
       {routeSection === 'list' && <div className="roadmap-admin-toolbar">
         <button className="button button-outline" type="button" disabled={busy} onClick={() => importInputRef.current?.click()}><Upload size={15} /> Import JSON</button>
+        <button className="button button-outline" type="button" title="Download a sample JSON file you can edit and import later" onClick={downloadRoadmapTemplate}><Download size={15} /> Download JSON Template</button>
         <button className="button button-dark" type="button" onClick={() => {
         setError('');
         setMessage('');
@@ -1179,15 +1427,35 @@ export function AdminRoadmapsPage({
       <Link to={`/admin/roadmaps/${importFailure.id}/nodes`}>Review the partial draft</Link>
     </div>}
     {importCandidate && <section className="roadmap-import-preview" aria-labelledby="roadmap-import-title">
-      <div>
-        <span className="roadmap-import-kicker">Validated JSON · schema v{ROADMAP_EXPORT_SCHEMA_VERSION}</span>
-        <h2 id="roadmap-import-title">Import “{importCandidate.roadmap.title}” as a new draft?</h2>
-        <p>{importCandidate.nodes.length} topics · {importCandidate.nodes.reduce((total, node) => total + node.dependencies.length, 0)} prerequisite links · {importCandidate.fileName}</p>
-        <small>This creates a separate draft and never replaces an existing roadmap. Imported published status is reset to draft.</small>
+      <div className="roadmap-import-preview-header">
+        <div>
+          <span className="roadmap-import-kicker">Validated JSON · schema v{ROADMAP_EXPORT_SCHEMA_VERSION}</span>
+          <h2 id="roadmap-import-title">Import “{importCandidate.roadmap.title}” as a new draft?</h2>
+          <p>{importCandidate.nodes.length} topics · {importCandidate.nodes.reduce((total, node) => total + node.dependencies.length, 0)} prerequisite links · {importCandidate.fileName}</p>
+          <small>This creates a separate draft and never replaces an existing roadmap. Imported published status is reset to draft.</small>
+        </div>
+        <div className="roadmap-admin-actions">
+          <button className="button button-dark" type="button" disabled={busy} onClick={importRoadmap}>{busy ? 'Importing…' : `Create draft and import ${importCandidate.nodes.length} topics`}</button>
+          <button className="button button-outline" type="button" disabled={busy} onClick={() => setImportCandidate(null)}>Cancel</button>
+        </div>
       </div>
-      <div className="roadmap-admin-actions">
-        <button className="button button-dark" type="button" disabled={busy} onClick={importRoadmap}>{busy ? 'Importing…' : `Create draft and import ${importCandidate.nodes.length} topics`}</button>
-        <button className="button button-outline" type="button" disabled={busy} onClick={() => setImportCandidate(null)}>Cancel</button>
+      <div className="roadmap-import-preview-content">
+        <div className="roadmap-import-roadmap-details">
+          <span className="roadmap-import-kicker">Roadmap details · imported as draft</span>
+          <p>{importCandidate.roadmap.description}</p>
+          <dl>
+            <div><dt>Difficulty</dt><dd>{importCandidate.roadmap.difficulty}</dd></div>
+            <div><dt>Estimated duration</dt><dd>{importCandidate.roadmap.estimatedDuration || 'Not specified'}</dd></div>
+            <div><dt>Audience</dt><dd>{importCandidate.roadmap.audience || 'Not specified'}</dd></div>
+            <div><dt>Prerequisites</dt><dd>{importCandidate.roadmap.prerequisites || 'Not specified'}</dd></div>
+            {importCandidate.roadmap.coverImageUrl && <div><dt>Cover image</dt><dd><a href={importCandidate.roadmap.coverImageUrl} target="_blank" rel="noreferrer">Open image URL</a></dd></div>}
+          </dl>
+          {importCandidate.roadmap.objectives.length > 0 && <div className="roadmap-import-objectives">
+            <strong>Objectives</strong>
+            <ul>{importCandidate.roadmap.objectives.map(objective => <li key={objective}>{objective}</li>)}</ul>
+          </div>}
+        </div>
+        <RoadmapImportTree nodes={importCandidate.orderedNodes} />
       </div>
     </section>}
 

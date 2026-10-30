@@ -11,20 +11,32 @@
 }
 
 .roadmaps-admin-page .roadmap-import-preview {
+  display: block;
+  margin: 0 0 20px;
+  border: 1px solid var(--subtle-line, #d8d1c4);
+  border-radius: 12px;
+  background: var(--surface, #fffdf8);
+  overflow: hidden;
+}
+
+.roadmaps-admin-page .roadmap-import-preview-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  margin: 0 0 20px;
   padding: 18px;
-  border: 1px solid var(--subtle-line, #d8d1c4);
-  border-radius: 12px;
-  background: var(--surface, #fffdf8);
+  border-bottom: 1px solid var(--subtle-line, #d8d1c4);
 }
 
 .roadmaps-admin-page .roadmap-import-preview h2 {
   margin: 6px 0;
   font-size: 17px;
+}
+
+.roadmaps-admin-page .roadmap-import-preview h3,
+.roadmaps-admin-page .roadmap-import-preview h4 {
+  margin: 0;
+  font-size: 15px;
 }
 
 .roadmaps-admin-page .roadmap-import-preview p,
@@ -45,6 +57,223 @@
 
 .roadmaps-admin-page .roadmap-import-preview .roadmap-admin-actions {
   flex: 0 0 auto;
+}
+
+.roadmaps-admin-page .roadmap-import-preview-content {
+  display: grid;
+  grid-template-columns: minmax(220px, .7fr) minmax(0, 1.5fr);
+  align-items: start;
+  gap: 18px;
+  padding: 18px;
+}
+
+.roadmaps-admin-page .roadmap-import-roadmap-details {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--subtle-line, #d8d1c4);
+  border-radius: 10px;
+  background: var(--cream, #f8f6f1);
+}
+
+.roadmaps-admin-page .roadmap-import-roadmap-details > p {
+  margin: 10px 0 14px;
+  color: var(--ink, #25231f);
+  line-height: 1.55;
+}
+
+.roadmaps-admin-page .roadmap-import-roadmap-details dl {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.roadmaps-admin-page .roadmap-import-roadmap-details dl > div {
+  display: grid;
+  gap: 2px;
+}
+
+.roadmaps-admin-page .roadmap-import-roadmap-details dt,
+.roadmaps-admin-page .roadmap-import-topic-content > p {
+  color: var(--muted, #777);
+  font-size: 12px;
+}
+
+.roadmaps-admin-page .roadmap-import-roadmap-details dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-size: 13px;
+}
+
+.roadmaps-admin-page .roadmap-import-objectives {
+  margin-top: 14px;
+  font-size: 13px;
+}
+
+.roadmaps-admin-page .roadmap-import-objectives ul,
+.roadmaps-admin-page .roadmap-import-topic-content ul {
+  margin: 6px 0 0;
+  padding-inline-start: 20px;
+}
+
+.roadmaps-admin-page .roadmap-import-objectives li,
+.roadmaps-admin-page .roadmap-import-topic-content li {
+  margin-top: 4px;
+  overflow-wrap: anywhere;
+}
+
+.roadmaps-admin-page .roadmap-import-tree-section {
+  min-width: 0;
+}
+
+.roadmaps-admin-page .roadmap-import-tree-heading {
+  margin-bottom: 10px;
+}
+
+.roadmaps-admin-page .roadmap-import-tree-heading p {
+  margin: 4px 0 0;
+  font-size: 12px;
+}
+
+.roadmaps-admin-page .roadmap-import-tree-viewport {
+  max-height: 520px;
+  overflow: auto;
+  border: 1px solid var(--subtle-line, #d8d1c4);
+  border-radius: 10px;
+  background: var(--cream, #f8f6f1);
+  overscroll-behavior: contain;
+}
+
+.roadmaps-admin-page .roadmap-import-tree-viewport:focus-visible {
+  outline: 2px solid var(--accent, #8b5a2b);
+  outline-offset: 2px;
+}
+
+.roadmaps-admin-page .roadmap-import-tree-board {
+  position: relative;
+  margin-inline: auto;
+}
+
+.roadmaps-admin-page .roadmap-import-tree-edges {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.roadmaps-admin-page .roadmap-import-tree-edges path {
+  fill: none;
+  stroke: var(--accent, #8b5a2b);
+  stroke-width: 2;
+  opacity: .65;
+}
+
+.roadmaps-admin-page .roadmap-import-tree-node {
+  position: absolute;
+  z-index: 1;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  max-height: 132px;
+  padding: 10px 12px;
+  border: 1px solid var(--subtle-line, #d8d1c4);
+  border-top: 3px solid var(--accent, #8b5a2b);
+  border-radius: 9px;
+  background: var(--surface, #fffdf8);
+  box-shadow: 0 3px 10px rgb(30 26 20 / 7%);
+  overflow: hidden;
+}
+
+.roadmaps-admin-page .roadmap-import-tree-node strong {
+  font-size: 13px;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.roadmaps-admin-page .roadmap-import-tree-node p {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  color: var(--muted, #777);
+  font-size: 11px;
+  line-height: 1.35;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.roadmaps-admin-page .roadmap-import-tree-node-meta {
+  color: var(--muted, #777);
+  font-size: 10px;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.roadmaps-admin-page .roadmap-import-tree-node-meta:last-child {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.roadmaps-admin-page .roadmap-import-tree-empty {
+  padding: 14px;
+  border: 1px dashed var(--subtle-line, #d8d1c4);
+  border-radius: 9px;
+  color: var(--muted, #777);
+  font-size: 13px;
+}
+
+.roadmaps-admin-page .roadmap-import-topic-details {
+  display: grid;
+  gap: 7px;
+  margin-top: 16px;
+}
+
+.roadmaps-admin-page .roadmap-import-topic-details h4 {
+  margin-bottom: 3px;
+}
+
+.roadmaps-admin-page .roadmap-import-topic-details details {
+  border: 1px solid var(--subtle-line, #d8d1c4);
+  border-radius: 8px;
+  background: var(--surface, #fffdf8);
+}
+
+.roadmaps-admin-page .roadmap-import-topic-details summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 11px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.roadmaps-admin-page .roadmap-import-topic-details summary span {
+  flex: 0 0 auto;
+  color: var(--muted, #777);
+  font-size: 11px;
+  font-weight: 400;
+}
+
+.roadmaps-admin-page .roadmap-import-topic-content {
+  padding: 0 11px 11px;
+  font-size: 12px;
+}
+
+.roadmaps-admin-page .roadmap-import-topic-content > p {
+  margin: 6px 0;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.roadmaps-admin-page .roadmap-import-topic-content > div + div {
+  margin-top: 10px;
+}
+
+.roadmaps-admin-page .roadmap-import-topic-content a,
+.roadmaps-admin-page .roadmap-import-roadmap-details a {
+  overflow-wrap: anywhere;
 }
 
 .roadmaps-admin-page .roadmap-import-notice {
@@ -85,12 +314,16 @@
     justify-content: flex-start;
   }
 
-  .roadmaps-admin-page .roadmap-import-preview {
+  .roadmaps-admin-page .roadmap-import-preview-header {
     align-items: stretch;
     flex-direction: column;
   }
 
-  .roadmaps-admin-page .roadmap-import-preview .roadmap-admin-actions {
+  .roadmaps-admin-page .roadmap-import-preview-content {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .roadmaps-admin-page .roadmap-import-preview-header .roadmap-admin-actions {
     flex-wrap: wrap;
   }
 }
