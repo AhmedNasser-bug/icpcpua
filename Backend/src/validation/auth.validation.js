@@ -25,6 +25,18 @@ function loginBody(value) {
   return { email: input.email.toLowerCase().trim(), password: input.password };
 }
 
+function googleBody(value) {
+  const input = bodyObject(['idToken'], 'Google sign-in details')(value);
+  if (
+    typeof input.idToken !== 'string'
+    || input.idToken.length > 12000
+    || !/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/.test(input.idToken)
+  ) {
+    invalid('Provide a valid Google ID token.', 'idToken');
+  }
+  return { idToken: input.idToken };
+}
+
 function studentIdBody(value) {
   const input = bodyObject(['studentId'], 'student ID')(value);
   return { studentId: validateStudentId(input.studentId) };
@@ -38,6 +50,7 @@ function usernameBody(value) {
 
 export const register = { body: registerBody };
 export const login = { body: loginBody };
+export const google = { body: googleBody };
 export const password = { body: validatePasswordChangeInput };
 export const studentId = { body: studentIdBody };
 export const username = { body: usernameBody };

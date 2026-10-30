@@ -89,6 +89,13 @@ test('auth schemas validate credentials, strict fields, aliases, and partial pro
   assert.deepEqual(authValidation.profile.body({ bio: '  hello  ' }), { bio: 'hello' });
 });
 
+test('Google auth schema accepts only a bounded ID token', () => {
+  const idToken = `${'a'.repeat(20)}.${'b'.repeat(20)}.${'c'.repeat(20)}`;
+  assert.deepEqual(authValidation.google.body({ idToken }), { idToken });
+  assert.throws(() => authValidation.google.body({ idToken: 'not-a-token' }), /valid Google ID token/);
+  assert.throws(() => authValidation.google.body({ idToken, email: 'student@example.test' }), /Unexpected field/);
+});
+
 test('notification and roadmap schemas validate filters, tokens, IDs, and progress partials', () => {
   assert.deepEqual(notificationValidation.list.query({ filter: 'unread' }), { filter: 'unread' });
   assert.throws(() => notificationValidation.list.query({ filter: 'other' }), /all or unread/);

@@ -14,6 +14,7 @@ export const config = {
   mongoUri: process.env.MONGODB_URI,
   jwtSecret,
   clientOrigin: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
+  googleClientId: process.env.GOOGLE_CLIENT_ID || '',
 };
 
 export function isAllowedClientOrigin(origin) {

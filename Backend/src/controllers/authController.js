@@ -2,6 +2,7 @@ import {
   assignStudentId,
   assignUsername,
   authenticateUser,
+  authenticateWithGoogle,
   changePassword,
   issueToken,
   presentUser,
@@ -76,6 +77,12 @@ export async function login(req, res) {
   const password = typeof body.password === 'string' ? body.password : '';
   const user = await authenticateUser(email, password);
   if (!user) return res.status(401).json({ error: { message: 'Email or password is incorrect.' } });
+  return res.json({ token: issueToken(user), user: presentUser(user) });
+}
+
+export async function googleLogin(req, res) {
+  const { idToken } = bodyInput(req);
+  const user = await authenticateWithGoogle(idToken);
   return res.json({ token: issueToken(user), user: presentUser(user) });
 }
 

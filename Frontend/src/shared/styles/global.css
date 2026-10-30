@@ -129,6 +129,9 @@ h1, h2, h3, p { margin-top: 0; }
 .auth-form { padding: 52px clamp(25px, 5vw, 57px); align-self: center; }
 .auth-form h2 { margin: 14px 0 6px; font: 700 32px 'Noto Sans Arabic', sans-serif; letter-spacing: -1px; }
 .auth-form > p { color: var(--muted); font-size: 13px; margin-bottom: 26px; }
+.google-signin-button { display: flex; justify-content: center; min-height: 44px; margin: 22px 0 14px; }
+.auth-divider { display: flex; align-items: center; gap: 12px; margin: 0 0 20px; color: var(--muted); font-size: 11px; }
+.auth-divider::before, .auth-divider::after { content: ''; height: 1px; flex: 1; background: var(--color-border, #d8d1c4); }
 .auth-form label, .admin-form label, .checkin-form label, .admin-label { display: flex; flex-direction: column; gap: 7px; margin-bottom: 14px; font-size: 11px; font-weight: 700; }
 .auth-form input, .admin-form input, .admin-form select, .admin-form textarea, .checkin-form input { width: 100%; padding: 11px 12px; min-height: 42px; border: 1px solid #cfc9be; background: #fffefa; outline-color: #8b62d9; font-size: 13px; }
 .student-id-breakdown { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: -5px 0 14px; }

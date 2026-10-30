@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { api } from "../../../shared/services/api.js";
@@ -25,15 +25,130 @@ export function AuthPage({
     password: ''
   });
   const [error, setError] = useState('');
+  const [googleButtonError, setGoogleButtonError] = useState('');
   const [busy, setBusy] = useState(false);
   const navigate = useNavigate();
+  const googleButtonRef = useRef(null);
+  const authRequestInFlight = useRef(false);
+  const googleClientId = (import.meta.env.VITE_GOOGLE_CLIENT_ID || '').trim();
   const from = '/';
+
+  const acceptAuthentication = result => {
+    session.acceptSession(result);
+    if (!result.user?.username) {
+      navigate('/onboarding/username', {
+        replace: true,
+        state: { from }
+      });
+      return;
+    }
+    navigate(from, { replace: true });
+  };
+
+  const googleCredentialHandler = useRef(null);
+  googleCredentialHandler.current = async response => {
+    if (busy || authRequestInFlight.current) return;
+    if (!response?.credential) {
+      setError('Google sign-in did not return an ID token. Please try again.');
+      return;
+    }
+    authRequestInFlight.current = true;
+    setBusy(true);
+    setError('');
+    try {
+      const result = await api('/auth/google', {
+        method: 'POST',
+        body: JSON.stringify({ idToken: response.credential })
+      });
+      acceptAuthentication(result);
+    } catch (reason) {
+      setError(reason.message);
+    } finally {
+      authRequestInFlight.current = false;
+      setBusy(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!googleClientId || !googleButtonRef.current) return undefined;
+    let active = true;
+    let initialized = false;
+    let resizeObserver;
+    let script;
+
+    const renderGoogleButton = () => {
+      const googleIdentity = window.google?.accounts?.id;
+      const container = googleButtonRef.current;
+      if (!active || initialized || !googleIdentity || !container) return;
+      const width = Math.min(Math.floor(container.getBoundingClientRect().width), 400);
+      if (width < 1) return;
+      try {
+        googleIdentity.initialize({
+          client_id: googleClientId,
+          callback: response => googleCredentialHandler.current?.(response),
+        });
+        googleIdentity.renderButton(container, {
+          theme: 'outline',
+          size: 'large',
+          text: 'continue_with',
+          shape: 'rectangular',
+          width,
+        });
+        initialized = true;
+        setGoogleButtonError('');
+      } catch {
+        setGoogleButtonError('Google sign-in could not be initialized. Please check the configured client ID.');
+      }
+    };
+
+    const source = 'https://accounts.google.com/gsi/client';
+    const handleScriptLoad = () => {
+      if (!active) return;
+      if (!window.google?.accounts?.id) {
+        setGoogleButtonError('Google Identity Services loaded without its sign-in API. Please try again.');
+        return;
+      }
+      if (typeof ResizeObserver !== 'undefined') {
+        resizeObserver = new ResizeObserver(renderGoogleButton);
+        resizeObserver.observe(googleButtonRef.current);
+      }
+      renderGoogleButton();
+    };
+    const handleScriptError = () => {
+      if (active) setGoogleButtonError('Google sign-in could not load. Check your connection and try again.');
+    };
+
+    if (window.google?.accounts?.id) {
+      handleScriptLoad();
+    } else {
+      script = document.querySelector(`script[src="${source}"]`);
+      const isNewScript = !script;
+      if (!script) {
+        script = document.createElement('script');
+        script.src = source;
+        script.async = true;
+        script.defer = true;
+      }
+      script.addEventListener('load', handleScriptLoad);
+      script.addEventListener('error', handleScriptError, { once: true });
+      if (isNewScript) document.head.appendChild(script);
+    }
+
+    return () => {
+      active = false;
+      resizeObserver?.disconnect();
+      script?.removeEventListener('load', handleScriptLoad);
+      script?.removeEventListener('error', handleScriptError);
+    };
+  }, [googleClientId]);
+
   useEffect(() => {
     setMode(new URLSearchParams(location.search).get('mode') === 'register' ? 'register' : 'login');
     setError('');
   }, [location.search]);
   const submit = async event => {
     event.preventDefault();
+    if (authRequestInFlight.current) return;
     setBusy(true);
     setError('');
     if (mode === 'register') {
@@ -53,6 +168,7 @@ export function AuthPage({
         username
       }));
     }
+    authRequestInFlight.current = true;
     try {
       const payload = mode === 'register' ? {
         name: form.name,
@@ -67,22 +183,11 @@ export function AuthPage({
         method: 'POST',
         body: JSON.stringify(payload)
       });
-      session.acceptSession(result);
-      if (!result.user?.username) {
-        navigate('/onboarding/username', {
-          replace: true,
-          state: {
-            from
-          }
-        });
-        return;
-      }
-      navigate(from, {
-        replace: true
-      });
+      acceptAuthentication(result);
     } catch (reason) {
       setError(reason.message);
     } finally {
+      authRequestInFlight.current = false;
       setBusy(false);
     }
   };
@@ -92,6 +197,11 @@ export function AuthPage({
       <form className="auth-form" onSubmit={submit}>
         <span className="eyebrow">{mode === 'login' ? 'WELCOME BACK' : 'JOIN OUR FAMILY'}</span>
         <h2>{mode === 'login' ? 'Log in' : 'Create your account'}</h2>
+        {googleClientId ? <>
+          <div className="google-signin-button" ref={googleButtonRef} />
+          {googleButtonError && <div className="notice error-notice" role="alert">{googleButtonError}</div>}
+          <div className="auth-divider"><span>or continue with email</span></div>
+        </> : <div className="notice error-notice" role="status">Google sign-in is unavailable. Configure VITE_GOOGLE_CLIENT_ID for this frontend deployment.</div>}
         {mode === 'register' && <label>Your name<input autoComplete="name" required maxLength="80" value={form.name} onChange={e => setForm({
           ...form,
           name: e.target.value

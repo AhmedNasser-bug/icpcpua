@@ -4,6 +4,40 @@ export function findByEmailWithPassword(email) {
   return User.findOne({ email }).select('+passwordHash');
 }
 
+export function findByEmail(email) {
+  return User.findOne({ email });
+}
+
+export function findByGoogleId(googleId) {
+  return User.findOne({ googleId });
+}
+
+export function linkGoogleIdentity(email, googleId) {
+  return User.findOneAndUpdate(
+    {
+      email,
+      $or: [{ googleId: { $exists: false } }, { googleId: null }, { googleId }],
+    },
+    { $set: { googleId } },
+    { new: true, runValidators: true },
+  );
+}
+
+export function setGooglePictureIfMissing(userId, pictureUrl) {
+  return User.findOneAndUpdate(
+    {
+      _id: userId,
+      $or: [
+        { 'profile.pictureUrl': { $exists: false } },
+        { 'profile.pictureUrl': null },
+        { 'profile.pictureUrl': '' },
+      ],
+    },
+    { $set: { 'profile.pictureUrl': pictureUrl } },
+    { new: true, runValidators: true },
+  );
+}
+
 export function createUser(data) {
   return User.create(data);
 }

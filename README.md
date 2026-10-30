@@ -33,6 +33,12 @@ Open two terminals in VS Code, with the project folder as the workspace.
 
    ```powershell
    cd .\Frontend
+   if (!(Test-Path .env)) { Copy-Item .env.example .env }
+   ```
+
+   Set `VITE_GOOGLE_CLIENT_ID` in `Frontend/.env` to the Google Web OAuth client ID, then start Vite:
+
+   ```powershell
    npm install
    npm run dev
    ```
@@ -55,7 +61,18 @@ Open two terminals in VS Code, with the project folder as the workspace.
 | `MONGODB_URI` | Backend | MongoDB connection URI |
 | `JWT_SECRET` | Backend | Secret used to sign seven-day bearer tokens; at least 32 characters |
 | `CLIENT_ORIGIN` | Backend | Allowed browser origin (default `http://localhost:5173`) |
+| `GOOGLE_CLIENT_ID` | Backend | Google OAuth web client ID used to verify GIS ID tokens |
 | `VITE_API_URL` | Frontend | API base URL (default `http://localhost:5000/api`) |
+| `VITE_GOOGLE_CLIENT_ID` | Frontend | Public Google OAuth web client ID used by Google Identity Services |
+
+## Google sign-in setup
+
+1. In [Google Cloud Console](https://console.cloud.google.com/), create or select a project, configure the OAuth consent screen for an **External** audience, and create an OAuth client ID with application type **Web application**. Publish the consent screen to production; Google limits apps in testing to configured test users.
+2. Add the exact frontend origins under **Authorized JavaScript origins**, including `http://localhost:5173` for local development and `https://icpc-pua.vercel.app` for production. Google Identity Services uses its popup flow here, so no client secret or redirect URI is needed.
+3. Set the same web client ID in `Backend/.env` as `GOOGLE_CLIENT_ID` and in `Frontend/.env` as `VITE_GOOGLE_CLIENT_ID`. The client ID is public and is safe to expose to the frontend; do not add a Google client secret to either app.
+4. For deployment, configure `GOOGLE_CLIENT_ID` in the backend's Vercel environment and `VITE_GOOGLE_CLIENT_ID` in the frontend's Vercel environment, then redeploy both projects. These values must match.
+
+The browser sends only Google's ID token to `POST /api/auth/google`; the backend verifies the token signature and audience and requires a verified email before linking or creating an account. No university-email or hosted-domain restriction is applied. New Google accounts use the existing `user` role (the application's student role), start without a password, and continue through the username onboarding flow. Existing accounts keep their password and role when a verified Google identity is linked.
 
 ## API overview
 
@@ -65,6 +82,7 @@ All routes are prefixed by `/api`; protected routes use `Authorization: Bearer <
 | --- | --- | --- | --- |
 | `POST` | `/auth/register` | Public | Create a user account |
 | `POST` | `/auth/login` | Public | Sign in |
+| `POST` | `/auth/google` | Public | Verify a Google ID token, link/create the account, and sign in |
 | `GET` | `/auth/me` | User | Get the current account |
 | `PUT` | `/auth/student-id` | User | Set a missing student ID once |
 | `PUT` | `/auth/password` | User | Change password after verifying the current password |

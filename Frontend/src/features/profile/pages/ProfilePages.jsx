@@ -688,6 +688,7 @@ export function UserProfilePage({
             </div>
             <div className="member-profile-identity-copy">
               <h1>{profile.name}</h1>
+              <span className="member-profile-username">@{profile.username}</span>
             </div>
           </div>
           {isOwner && <Link className="member-profile-button" to="/settings/profile">Edit Profile <UserRound size={16} /></Link>}
