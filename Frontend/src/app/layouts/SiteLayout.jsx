@@ -93,7 +93,7 @@ export function Header({
               </svg>
             </span>
             <span className="brand-copy">
-              <span className="brand-name">PUA ICPC</span>
+              <span className="brand-name">ICPC PUA</span>
             </span>
           </Link>
           <nav className={menuOpen ? 'main-nav open' : 'main-nav'} aria-label="Main navigation" onClick={event => {
@@ -117,7 +117,6 @@ export function Header({
               </span>
             </button>
             {accountOpen && <div className="account-dropdown" role="menu" aria-label="Account menu">
-              <Link className={location.pathname === '/my-activities' ? 'active' : ''} to="/my-activities" role="menuitem" aria-current={location.pathname === '/my-activities' ? 'page' : undefined} onClick={() => setAccountOpen(false)}>My Activities</Link>
               {profilePath && <Link className={location.pathname === profilePath ? 'active' : ''} to={profilePath} role="menuitem" aria-current={location.pathname === profilePath ? 'page' : undefined} onClick={() => setAccountOpen(false)}>My Profile</Link>}
               <Link className={location.pathname.startsWith('/settings') ? 'active' : ''} to="/settings/account" role="menuitem" aria-current={location.pathname.startsWith('/settings') ? 'page' : undefined} onClick={() => setAccountOpen(false)}>Settings</Link>
               {user.role === 'admin' && <Link className={location.pathname.startsWith('/admin') ? 'active' : ''} to="/admin/overview" role="menuitem" aria-current={location.pathname.startsWith('/admin') ? 'page' : undefined} onClick={() => setAccountOpen(false)}>Admin Dashboard</Link>}

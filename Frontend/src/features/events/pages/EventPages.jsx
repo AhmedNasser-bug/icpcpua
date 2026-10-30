@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { ArrowRight, CalendarDays, Check, ChevronLeft, ChevronRight, Clock3, Code2, MapPin, QrCode, Search, Trophy, Users } from "lucide-react";
 import { api, eventDate } from "../../../shared/services/api.js";
-import { MyRoadmapsSection } from "../../roadmaps/pages/RoadmapsPages.jsx";
 function EventCard({
   event,
   index
@@ -27,7 +26,6 @@ function EventCard({
 }
 function HomeEventCarouselCard({
   event,
-  index,
   now
 }) {
   const startsAt = new Date(event.startsAt).getTime();
@@ -36,7 +34,7 @@ function HomeEventCarouselCard({
   const isOngoing = startsAt <= now && endsAt > now;
   const registrationOpen = isUpcoming && event.status === 'published' && (!event.registrationDeadline || new Date(event.registrationDeadline).getTime() > now) && (!event.capacity || event.registrationCount < event.capacity);
   return <article className={`home-featured-event accent-${event.category.length % 4}`}>
-      <div className="home-event-banner" aria-label={`${event.category} event banner`}>
+      <div className="home-event-banner">
         {event.coverImageUrl && <img className="home-event-banner-cover" src={event.coverImageUrl} alt="" onError={e => e.currentTarget.remove()} />}
         <span className="home-event-banner-category">{event.category}</span>
         <Code2 size={52} aria-hidden="true" />
@@ -44,13 +42,16 @@ function HomeEventCarouselCard({
       </div>
       <div className="home-featured-event-content">
         <div className="home-featured-event-kicker">
-          <span className="category-label">{event.category}</span>
           <span className={isOngoing ? 'home-event-status ongoing' : isUpcoming ? 'home-event-status upcoming' : 'home-event-status past'}>
             {isOngoing ? 'Ongoing' : isUpcoming ? 'Upcoming' : 'Past'}
           </span>
         </div>
         <h3><Link to={`/events/${event.slug}`}>{event.title}</Link></h3>
-        <div className="home-featured-event-date"><CalendarDays size={17} /><span>{eventDate(event.startsAt)}</span></div>
+        {event.description && <p className="home-featured-event-description">{event.description}</p>}
+        <div className="home-featured-event-details">
+          <div className="home-featured-event-date"><CalendarDays size={17} /><span>{eventDate(event.startsAt)}</span></div>
+          <div className="home-featured-event-date"><MapPin size={17} /><span>{event.mode === 'offline' ? event.location || 'In person' : 'Online'}</span></div>
+        </div>
         <div className="home-featured-event-actions">
           <Link className="text-link" to={`/events/${event.slug}`}>View details <ArrowRight size={16} /></Link>
           {registrationOpen && <Link className="button button-dark" to={`/events/${event.slug}`}>Register <ArrowRight size={16} /></Link>}
@@ -92,6 +93,7 @@ export function HomePage() {
   const [activeEventIndex, setActiveEventIndex] = useState(0);
   const [now, setNow] = useState(() => Date.now());
   const [carouselHovered, setCarouselHovered] = useState(false);
+  const [carouselFocused, setCarouselFocused] = useState(false);
   const touchStartX = useRef(null);
   const eventsRef = useRef(events);
   const activeEventIndexRef = useRef(activeEventIndex);
@@ -143,10 +145,10 @@ export function HomePage() {
   useEffect(() => {
     const timer = window.setInterval(() => {
       setNow(Date.now());
-      if (!carouselHovered && events.length > 1) setActiveEventIndex(index => (index + 1) % events.length);
+      if (!carouselHovered && !carouselFocused && events.length > 1) setActiveEventIndex(index => (index + 1) % events.length);
     }, 5000);
     return () => window.clearInterval(timer);
-  }, [carouselHovered, events.length]);
+  }, [carouselHovered, carouselFocused, events.length]);
   const goToEvent = direction => {
     setActiveEventIndex(index => (index + direction + events.length) % events.length);
   };
@@ -160,10 +162,11 @@ export function HomePage() {
     if (Math.abs(delta) >= 45 && events.length > 1) goToEvent(delta < 0 ? 1 : -1);
   };
   return <main className="home-page">
-    <section className="home-hero">
+    <section className="home-hero" aria-labelledby="home-title">
       <div className="home-hero-inner">
         <div className="home-hero-copy">
-          <h1>ICPC PUA — <span>Road to ICPC</span></h1>
+          <p className="home-eyebrow"><span aria-hidden="true" /> PUA · COMPETITIVE PROGRAMMING</p>
+          <h1 id="home-title">ICPC PUA — <span>Road to ICPC</span></h1>
           <p className="home-hero-lead">Building the next generation of problem solvers</p>
           <p className="home-hero-mission">Our goal is to help the first team from our university qualify for the ACPC</p>
           <div className="home-hero-actions">
@@ -172,16 +175,55 @@ export function HomePage() {
           </div>
         </div>
         <aside className="home-countdown-panel" aria-label="Countdown to our estimated ACPC target">
-          <span className="eyebrow">THE ROAD AHEAD</span>
+          <span className="home-eyebrow"><span aria-hidden="true" /> THE ROAD AHEAD</span>
           <h2>Every day brings us closer to ACPC</h2>
           <AcpcCountdown />
+          <div className="home-countdown-route" aria-label="Learn, practice, compete">
+            <span>Learn</span><ArrowRight size={14} aria-hidden="true" />
+            <span>Practice</span><ArrowRight size={14} aria-hidden="true" />
+            <span>Compete</span>
+          </div>
         </aside>
+      </div>
+    </section>
+
+    <section className="home-paths-section" aria-labelledby="home-paths-title">
+      <div className="home-section-inner">
+        <div className="home-section-heading home-paths-heading">
+          <div>
+            <p className="home-eyebrow"><span aria-hidden="true" /> LEARN WITH THE COMMUNITY</p>
+            <h2 id="home-paths-title">Find your <span>next step</span></h2>
+          </div>
+        </div>
+        <div className="home-paths-grid">
+          <article className="home-path-card home-roadmap-card">
+            <div className="home-path-card-top"><span className="home-path-index">01 / LEARNING PATHS</span><span className="home-path-icon"><Code2 size={20} aria-hidden="true" /></span></div>
+            <h3>Our <span>Roadmap</span></h3>
+            <p>Build problem-solving skills one step at a time with structured learning paths that help you keep moving.</p>
+            <div className="home-roadmap-visual" aria-hidden="true">
+              <div className="home-roadmap-node"><span>01</span><b>Learn</b></div>
+              <div className="home-roadmap-node"><span>02</span><b>Practice</b></div>
+              <div className="home-roadmap-node"><span>03</span><b>Compete</b></div>
+            </div>
+            <Link className="button button-dark" to="/roadmaps">Explore roadmaps <ArrowRight size={16} /></Link>
+          </article>
+          <article className="home-path-card home-training-card">
+            <div className="home-path-card-top"><span className="home-path-index">02 / TEAM PRACTICE</span><span className="home-path-icon"><Users size={20} aria-hidden="true" /></span></div>
+            <h3>Our <span>Training</span></h3>
+            <p>Competitive programming is a team effort. Join a guided cycle, practice with a cohort, and prepare alongside students who share your ambition.</p>
+            <div className="home-training-visual" aria-hidden="true"><div className="home-training-board"><span>while (curious) {'{'}</span><b>solve();</b><span>{'}'}</span></div></div>
+            <Link className="button button-dark" to="/training">Explore training <ArrowRight size={16} /></Link>
+          </article>
+        </div>
       </div>
     </section>
 
     <section className="home-events-section" aria-labelledby="home-events-title">
       <div className="home-section-heading">
-        <div><h2 id="home-events-title">Our <span>Events</span></h2></div>
+        <div>
+          <p className="home-eyebrow"><span aria-hidden="true" /> MEET, PRACTICE, COMPETE</p>
+          <h2 id="home-events-title">Our <span>Events</span></h2>
+        </div>
         <div className="home-carousel-actions">
           <button className="home-carousel-control" type="button" aria-label="Previous event" onClick={() => goToEvent(-1)} disabled={events.length < 2}><ChevronLeft size={20} /></button>
           <button className="home-carousel-control" type="button" aria-label="Next event" onClick={() => goToEvent(1)} disabled={events.length < 2}><ChevronRight size={20} /></button>
@@ -190,8 +232,10 @@ export function HomePage() {
       </div>
       {eventsError && <div className="notice error-notice" role="alert">{eventsError} <Link className="text-link" to="/events">Browse events</Link></div>}
       {loadingEvents ? <div className="empty-state"><span className="loader" /> Loading events...</div> : events.length ? <>
-          <div className="home-carousel-viewport" onMouseEnter={() => setCarouselHovered(true)} onMouseLeave={() => setCarouselHovered(false)} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} aria-live="polite">
-            <HomeEventCarouselCard key={events[activeEventIndex].id} event={events[activeEventIndex]} index={activeEventIndex} now={now} />
+          <div className="home-carousel-viewport" onMouseEnter={() => setCarouselHovered(true)} onMouseLeave={() => setCarouselHovered(false)} onFocus={() => setCarouselFocused(true)} onBlur={event => {
+            if (!event.currentTarget.contains(event.relatedTarget)) setCarouselFocused(false);
+          }} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} aria-live="off">
+            <HomeEventCarouselCard key={events[activeEventIndex].id} event={events[activeEventIndex]} now={now} />
           </div>
           <div className="home-carousel-pagination" role="group" aria-label="Choose an event">
             {events.map((event, index) => <button key={event.id} className={activeEventIndex === index ? 'home-carousel-dot active' : 'home-carousel-dot'} type="button" aria-label={`Show event ${index + 1}: ${event.title}`} aria-current={activeEventIndex === index ? 'true' : undefined} onClick={() => setActiveEventIndex(index)} />)}
@@ -199,23 +243,13 @@ export function HomePage() {
         </> : !eventsError && <div className="home-empty-events"><CalendarDays size={22} /><p>No events are available to feature right now. Check back soon or explore the roadmaps.</p><Link className="text-link" to="/roadmaps">Explore roadmaps <ArrowRight size={15} /></Link></div>}
     </section>
 
-    <section className="home-roadmap-section">
-      <div className="home-section-inner home-split-layout">
-        <div className="home-section-copy"><h2>Our <span>Roadmap</span></h2><p>Build problem-solving skills one step at a time with structured learning paths that help you keep moving.</p><Link className="button button-dark" to="/roadmaps">Explore roadmaps <ArrowRight size={16} /></Link></div>
-        <div className="home-roadmap-visual" aria-hidden="true"><div className="home-roadmap-node"><span>01</span><b>Learn</b></div><div className="home-roadmap-node"><span>02</span><b>Practice</b></div><div className="home-roadmap-node"><span>03</span><b>Compete</b></div></div>
-      </div>
-    </section>
-
-    <section className="home-training-section">
-      <div className="home-section-inner home-split-layout home-training-layout">
-        <div className="home-training-visual" aria-hidden="true"><div className="home-training-board"><span>while (curious) {'{'}</span><b>solve();</b><span>{'}'}</span></div></div>
-        <div className="home-section-copy"><h2>Our <span>Training</span></h2><p>Competitive programming is a team effort. Join a guided cycle, practice with a cohort, and prepare alongside students who share your ambition.</p><Link className="button button-dark" to="/training">Explore Training <ArrowRight size={16} /></Link></div>
-      </div>
-    </section>
-
-    <section className="home-goal-section">
+    <section className="home-goal-section" aria-labelledby="home-goal-title">
       <div className="home-section-inner">
-        <div className="home-goal-heading"><h2>One University. One Goal. <span>ACPC</span></h2><p>We are working toward our first PUA team qualifying for ACPC. Every practice session, solved problem, and competition is another step toward that goal.</p></div>
+        <div className="home-goal-heading">
+          <p className="home-eyebrow"><span aria-hidden="true" /> THE LONG-TERM GOAL</p>
+          <h2 id="home-goal-title">One University. One Goal. <span>ACPC</span></h2>
+          <p>We are working toward our first PUA team qualifying for ACPC. Every practice session, solved problem, and competition is another step toward that goal.</p>
+        </div>
         <ol className="home-goal-timeline">
           <li><span>01</span><div><strong>Build the fundamentals</strong><p>Strengthen problem-solving foundations together.</p></div></li>
           <li><span>02</span><div><strong>Practice consistently</strong><p>Turn learning into a regular habit.</p></div></li>
@@ -317,7 +351,7 @@ export function EventDetail({
       });
       setRegistered(true);
       await load();
-      setMessage('You’re registered! Your event is waiting in My Activities.');
+      setMessage('You’re registered! You can review your registration here.');
     } catch (error) {
       setMessage(error.message);
     } finally {
@@ -369,64 +403,9 @@ export function EventDetail({
           {message && <div className={`notice ${message.includes('registered') || message.includes('cancelled') ? 'success-notice' : 'error-notice'}`}>{message}</div>}
           <div className="detail-actions">
             {registered ? <><span className="registered-badge"><Check size={17} /> You’re registered</span><button className="button button-outline" disabled={busy || closed} onClick={cancel}>Cancel registration</button></> : <button className="button button-dark" disabled={busy || closed} onClick={register}>{busy ? 'Please wait...' : closed ? 'Registration closed' : 'Register for this event'} <ArrowRight size={17} /></button>}
-            {user && <Link className="text-link" to="/my-activities">My Activities</Link>}
           </div>
         </div>
       </article>
-    </main>;
-}
-export function MyActivitiesPage({
-  token
-}) {
-  const [standing, setStanding] = useState({
-    rank: null,
-    points: 0,
-    eventsAttended: 0
-  });
-  const [attendanceHistory, setAttendanceHistory] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [leaderboardError, setLeaderboardError] = useState('');
-  const [reloadKey, setReloadKey] = useState(0);
-  useEffect(() => {
-    let active = true;
-    setLoading(true);
-    setLeaderboardError('');
-    api('/events/leaderboard/me', {
-      token
-    }).then(leaderboardResult => {
-      if (!active) return;
-      setStanding(leaderboardResult.standing);
-      setAttendanceHistory(leaderboardResult.attendanceHistory);
-    }).catch(reason => {
-      if (active) setLeaderboardError(reason.message);
-    }).finally(() => {
-      if (active) setLoading(false);
-    });
-    return () => {
-      active = false;
-    };
-  }, [reloadKey, token]);
-  return <main className="page-wrap">
-      <div className="page-heading"><h1>My <span>Activities</span></h1></div>
-      {!loading && <section className="personal-leaderboard">
-        <div className="personal-leaderboard-heading"><span className="eyebrow"><Trophy size={15} /> YOUR CONTEST STATS</span><Link to="/leaderboard">Global rankings <ArrowRight size={15} /></Link></div>
-        {leaderboardError && <div className="notice error-notice" role="alert">{leaderboardError}</div>}
-        {!leaderboardError && <>
-          <div className="personal-leaderboard-stats">
-            <div><small>CURRENT RANK</small><strong>{standing.rank ? `#${standing.rank}` : '—'}</strong></div>
-            <div><small>TOTAL POINTS</small><strong>{standing.points}</strong></div>
-            <div><small>EVENTS ATTENDED</small><strong>{standing.eventsAttended}</strong></div>
-          </div>
-          <div className="personal-history">
-            <h2>Attendance history</h2>
-            {attendanceHistory?.length ? attendanceHistory.map(entry => <div className="personal-history-row" key={`${entry.event.id}-${entry.checkedInAt}`}>
-              <span><b>{entry.event.title}</b><small>{eventDate(entry.checkedInAt)}</small></span>
-              <strong>+{entry.pointsAwarded} pts</strong>
-            </div>) : <p>You’ll see attended events and earned points here.</p>}
-          </div>
-        </>}
-      </section>}
-      <MyRoadmapsSection token={token} />
     </main>;
 }
 export function CheckInPage({
@@ -489,7 +468,7 @@ export function CheckInPage({
     }
   };
   return <main className="page-wrap checkin-page">
-      <Link className="back-link" to={user ? '/my-activities' : '/'}><ChevronLeft size={16} /> {user ? 'Back to My Activities' : 'All events'}</Link>
+      <Link className="back-link" to={user ? '/events' : '/'}><ChevronLeft size={16} /> {user ? 'All events' : 'Home'}</Link>
       {loading && <div className="empty-state"><span className="loader" /> Checking your event...</div>}
       {!loading && event && <article className="checkin-card">
         <div className="checkin-card-heading"><span className="eyebrow"><QrCode size={16} /> EVENT CHECK-IN</span><span className="category-label">{event.category}</span></div>
@@ -510,7 +489,7 @@ export function CheckInPage({
             {!user ? <Link className="button button-dark" to="/login" state={{
             from: `${location.pathname}${location.search}`
           }}>Sign in to check in <ArrowRight size={17} /></Link> : attendance && !attendance.checkedInAt && <button className="button button-dark" disabled={busy || !checkInWindow?.isOpen} onClick={checkIn}>{busy ? 'Checking in...' : 'Confirm check-in'} <Check size={17} /></button>}
-            <Link className="button button-outline" to={user ? '/my-activities' : `/events/${event.slug}`}>{user ? 'My Activities' : 'Event details'}</Link>
+            <Link className="button button-outline" to={`/events/${event.slug}`}>Event details</Link>
           </div>
         </div>
       </article>}

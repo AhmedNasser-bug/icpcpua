@@ -27,7 +27,7 @@ export function AuthPage({
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const navigate = useNavigate();
-  const from = location.state?.from || '/my-activities';
+  const from = '/';
   useEffect(() => {
     setMode(new URLSearchParams(location.search).get('mode') === 'register' ? 'register' : 'login');
     setError('');
@@ -86,7 +86,7 @@ export function AuthPage({
       setBusy(false);
     }
   };
-  if (session.user) return <Navigate to={session.user.username ? '/my-activities' : '/onboarding/username'} replace />;
+  if (session.user) return <Navigate to={session.user.username ? '/' : '/onboarding/username'} replace />;
   return <main className="auth-layout">
       <div className="auth-art"><h1>Your next<br />breakthrough<br /><span>starts here</span></h1><div className="auth-symbol">{'{ }'}</div></div>
       <form className="auth-form" onSubmit={submit}>
@@ -129,7 +129,7 @@ export function UsernameSetupPage({
   const [username, setUsername] = useState(session.user?.username || '');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
-  const from = location.state?.from || '/my-activities';
+  const from = '/';
   if (!session.user) return <Navigate to="/login" replace />;
   if (session.user.username) return <Navigate to={from} replace />;
   const submit = async event => {

@@ -3,7 +3,7 @@ import { Link, Navigate, Route, Routes } from "react-router-dom";
 import { api } from "../shared/services/api.js";
 import { Header, Footer } from './layouts/SiteLayout.jsx';
 import { AuthPage, UsernameSetupPage, RequireUsername } from '../features/auth/pages/AuthPages.jsx';
-import { HomePage, EventsPage, EventDetail, MyActivitiesPage, CheckInPage } from '../features/events/pages/EventPages.jsx';
+import { HomePage, EventsPage, EventDetail, CheckInPage } from '../features/events/pages/EventPages.jsx';
 import { SettingsPage, UserProfilePage } from '../features/profile/pages/ProfilePages.jsx';
 import { NotificationsPage } from '../features/notifications/pages/NotificationsPage.jsx';
 import { LeaderboardPage } from '../features/leaderboard/pages/LeaderboardPage.jsx';
@@ -11,7 +11,7 @@ import { Admin } from '../features/admin/pages/AdminEventsPage.jsx';
 import { AdminDashboardLayout } from '../features/admin/components/AdminDashboardLayout.jsx';
 import { AdminOverviewPage } from '../features/admin/pages/AdminOverviewPage.jsx';
 import { AdminCyclesPage, AdminRoadmapsPage } from '../features/roadmaps/pages/AdminRoadmapsPage.jsx';
-import { MyRoadmapsSection, RoadmapCheckInPage, RoadmapCyclePage, RoadmapDetailsPage, RoadmapsPage, TrainingPage } from '../features/roadmaps/pages/RoadmapsPages.jsx';
+import { RoadmapCheckInPage, RoadmapCyclePage, RoadmapDetailsPage, RoadmapsPage, TrainingPage } from '../features/roadmaps/pages/RoadmapsPages.jsx';
 function useSession() {
   const [token, setToken] = useState(() => localStorage.getItem('pua-token'));
   const [user, setUser] = useState(null);
@@ -70,9 +70,9 @@ export default function App() {
         <Route path="/check-in/:eventId" element={session.loading ? <div className="empty-state"><span className="loader" /> Loading your account...</div> : <CheckInPage token={session.token} user={session.user} />} />
         <Route path="/login" element={<AuthPage session={session} />} />
         <Route path="/onboarding/username" element={session.loading ? <div className="empty-state"><span className="loader" /> Loading your account...</div> : session.user ? <UsernameSetupPage session={session} /> : <Navigate to="/login" replace />} />
-        <Route path="/my-activities" element={<RequireUsername session={session}><MyActivitiesPage token={session.token} /></RequireUsername>} />
-        <Route path="/my-events" element={<Navigate to="/my-activities" replace />} />
-        <Route path="/my-roadmaps" element={<Navigate to="/my-activities" replace />} />
+        <Route path="/my-activities" element={<Navigate to="/" replace />} />
+        <Route path="/my-events" element={<Navigate to="/" replace />} />
+        <Route path="/my-roadmaps" element={<Navigate to="/" replace />} />
         <Route path="/notifications" element={<RequireUsername session={session}><NotificationsPage token={session.token} /></RequireUsername>} />
         <Route path="/settings" element={<RequireUsername session={session}><Navigate to="/settings/account" replace /></RequireUsername>} />
         <Route path="/settings/:section" element={<RequireUsername session={session}><SettingsPage session={session} theme={theme} onThemeChange={setTheme} /></RequireUsername>} />

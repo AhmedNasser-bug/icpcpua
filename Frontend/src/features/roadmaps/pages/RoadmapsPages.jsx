@@ -373,7 +373,7 @@ export function RoadmapCyclePage({
         method: 'POST',
         token
       });
-      setSuccess('You are enrolled. Your cycle is now available in My Activities.');
+      setSuccess('You are enrolled. Open Training to continue your cycle.');
       await load();
     } catch (reason) {
       setError(reason.message);
@@ -577,85 +577,6 @@ function SessionRow({
     </div>
   </article>;
 }
-export function MyRoadmapsSection({
-  token
-}) {
-  const [roadmaps, setRoadmaps] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [reloadKey, setReloadKey] = useState(0);
-  useEffect(() => {
-    let active = true;
-    setLoading(true);
-    setError('');
-    api('/roadmaps/my', {
-      token
-    }).then(({
-      roadmaps: result
-    }) => {
-      if (active) setRoadmaps(result);
-    }).catch(reason => {
-      if (active) setError(reason.message);
-    }).finally(() => {
-      if (active) setLoading(false);
-    });
-    return () => {
-      active = false;
-    };
-  }, [reloadKey, token]);
-  const groupedRoadmaps = roadmaps.reduce((groups, item) => {
-    const {
-      roadmap,
-      cycle,
-      enrollment,
-      progress
-    } = item;
-    const key = roadmap?._id || `archived-${cycle._id}`;
-    let group = groups.find(candidate => candidate.key === key);
-    if (!group) {
-      group = {
-        key,
-        roadmap,
-        cycles: []
-      };
-      groups.push(group);
-    }
-    group.cycles.push({
-      cycle,
-      enrollment,
-      progress
-    });
-    return groups;
-  }, []);
-  return <section className="my-activities-section my-roadmaps-section" aria-labelledby="my-roadmaps-heading">
-    <div className="my-activities-section-heading"><div><h2 id="my-roadmaps-heading">My Roadmaps</h2></div><Link className="text-link" to="/roadmaps">Explore roadmaps <ArrowRight size={15} /></Link></div>
-    {error && <div className="notice error-notice" role="alert">{error} <button className="text-link" type="button" onClick={() => setReloadKey(value => value + 1)}>Try again</button></div>}
-    {loading ? <LoadingState>Loading your roadmaps...</LoadingState> : error ? null : groupedRoadmaps.length ? <section className="my-roadmap-list" aria-label="Joined roadmaps">{groupedRoadmaps.map(({
-        key,
-        roadmap,
-        cycles
-      }) => <article className="my-roadmap-card my-activities-roadmap-card" key={key}>
-      <div className="roadmap-card-heading"><span className="category-label">JOINED ROADMAP</span><span>{cycles.length} {cycles.length === 1 ? 'cycle' : 'cycles'} joined</span></div>
-      <h3>{roadmap?.slug ? <Link to={`/roadmaps/${roadmap.slug}`}>{roadmap.title}</Link> : roadmap?.title || 'Archived roadmap'}</h3>
-      {roadmap?.description && <p className="my-roadmap-description">{roadmap.description}</p>}
-      <div className="my-roadmap-cycles">{cycles.map(({
-            cycle,
-            enrollment,
-            progress
-          }) => <article className="my-roadmap-cycle-card" key={cycle._id}>
-        <div className="roadmap-card-heading"><span className="category-label">{cycle.status} · {cycle.difficulty}</span><span>Enrolled {new Date(enrollment.enrolledAt).toLocaleDateString()}</span></div>
-        <h4>{cycle.title}</h4><p>{cycle.startDate} – {cycle.endDate}</p>
-        <div className="roadmap-progress-stats"><div><strong>{progress.completedSessions}/{progress.totalSessions}</strong><small>Sessions completed</small></div><div><strong>{progress.progressPercentage}%</strong><small>Session progress</small></div><div><strong>{progress.attendancePercentage}%</strong><small>Attendance · {progress.sessionsAttended} present</small></div></div>
-        <div className="roadmap-progress-track" role="progressbar" aria-label={`${cycle.title} session progress`} aria-valuenow={progress.progressPercentage} aria-valuemin="0" aria-valuemax="100"><span style={{
-                width: `${progress.progressPercentage}%`
-              }} /></div>
-        <div className="roadmap-upcoming-sessions"><h5>Next session</h5>{cycle.sessions.find(session => session.status !== 'cancelled' && new Date(session.startsAt) >= new Date()) ? <p><CalendarDays size={14} /> {formatSessionTime(cycle.sessions.find(session => session.status !== 'cancelled' && new Date(session.startsAt) >= new Date()))} · {cycle.sessions.find(session => session.status !== 'cancelled' && new Date(session.startsAt) >= new Date()).title}</p> : <p>No upcoming sessions scheduled.</p>}</div>
-        <p><Trophy size={15} /> {progress.points} roadmap points</p>
-        <Link className="button button-outline" to={`/roadmaps/${encodeURIComponent(roadmap.slug)}/cycles/${cycle._id}`}>View cycle details <ArrowRight size={15} /></Link>
-      </article>)}</div>
-    </article>)}</section> : <div className="empty-state"><span className="empty-icon"><BookOpen size={24} /></span><h3>No joined roadmaps yet.</h3><p>Join a cycle to see its roadmap and learning progress here.</p><Link className="button button-dark" to="/roadmaps">Browse roadmaps <ArrowRight size={16} /></Link></div>}
-  </section>;
-}
 export function RoadmapCheckInPage({
   token
 }) {
@@ -699,12 +620,12 @@ export function RoadmapCheckInPage({
   };
   if (loading) return <main className="page-wrap"><LoadingState>Checking your session link...</LoadingState></main>;
   return <main className="page-wrap roadmap-checkin-page">
-    <Link className="text-link" to="/my-activities">← My Activities</Link>
+    <Link className="text-link" to="/training">← Training</Link>
     {error && <div className="notice error-notice" role="alert">{error}</div>}
     {data && <section className="roadmap-checkin-card"><span className="eyebrow">SESSION ATTENDANCE</span><h1>{data.session.title}</h1><p>{formatSessionTime(data.session)}</p>
       {success && <div className="notice success-notice" role="status">{success}</div>}
       {data.attendance ? <div className="notice success-notice"><Check size={17} /> Already checked in · {data.attendance.pointsAwarded} points</div> : <button className="button button-dark" type="button" disabled={busy || !data.checkInWindow.isOpen} onClick={checkIn}>{busy ? 'Checking in...' : data.checkInWindow.isOpen ? 'Confirm attendance' : 'Check-in is not open'} <Check size={16} /></button>}
-      <button className="button button-outline" type="button" onClick={() => navigate('/my-activities')}>Return to My Activities</button>
+      <button className="button button-outline" type="button" onClick={() => navigate('/training')}>Return to Training</button>
     </section>}
   </main>;
 }
