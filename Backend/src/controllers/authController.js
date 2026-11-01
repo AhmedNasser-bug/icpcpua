@@ -12,6 +12,11 @@ import {
   saveStudentProfile,
 } from '../services/authService.js';
 import { validateNotificationPreferencesInput, validatePasswordChangeInput, validateProfilePrivacyInput, validateStudentId, validateStudentProfileInput, validateUsername } from '../utils/validation.js';
+import {
+  checkCodeforcesVerification,
+  generateCodeforcesVerification,
+  getCodeforcesVerificationStatus,
+} from '../services/codeforcesVerificationService.js';
 
 function bodyInput(req) {
   return req.validated?.body ?? req.body;
@@ -197,4 +202,41 @@ export async function updateNotificationPreferences(req, res) {
 
 export function me(req, res) {
   return res.json({ user: presentUser(req.user) });
+}
+
+function respondCodeforcesError(error, res) {
+  if (!error.status) throw error;
+  return res.status(error.status).json({
+    error: {
+      message: error.message,
+      ...(error.code ? { code: error.code } : {}),
+    },
+  });
+}
+
+export async function codeforcesVerificationStatus(req, res) {
+  try {
+    const verification = await getCodeforcesVerificationStatus(req.user.id);
+    return res.json({ verification });
+  } catch (error) {
+    return respondCodeforcesError(error, res);
+  }
+}
+
+export async function generateCodeforcesVerificationToken(req, res) {
+  try {
+    const result = await generateCodeforcesVerification(req.user.id, bodyInput(req).handle);
+    return res.json(result);
+  } catch (error) {
+    return respondCodeforcesError(error, res);
+  }
+}
+
+export async function checkCodeforcesVerificationStatus(req, res) {
+  try {
+    const result = await checkCodeforcesVerification(req.user.id);
+    return res.json(result);
+  } catch (error) {
+    return respondCodeforcesError(error, res);
+  }
 }

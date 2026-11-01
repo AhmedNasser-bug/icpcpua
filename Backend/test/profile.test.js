@@ -14,6 +14,7 @@ test('student profile accepts an empty optional profile and legacy account data'
   const legacyUser = new User({ name: 'A Student', email: 'student@example.test', passwordHash: 'hash' });
   assert.ok(legacyUser.profile);
   assert.equal(legacyUser.profile.privacy.profileVisible, true);
+  assert.equal(legacyUser.profile.privacy.leaderboardVisible, true);
   assert.equal(legacyUser.validateSync(), undefined);
 });
 
@@ -102,8 +103,9 @@ test('profile input does not accept private account fields or user-claimed verif
 });
 
 test('privacy preferences are strictly boolean and only accept supported controls', () => {
-  assert.deepEqual(validateProfilePrivacyInput({ profileVisible: false, trainingVisible: true, attendanceHistoryVisible: false }), {
+  assert.deepEqual(validateProfilePrivacyInput({ profileVisible: false, leaderboardVisible: false, trainingVisible: true, attendanceHistoryVisible: false }), {
     profileVisible: false,
+    leaderboardVisible: false,
     trainingVisible: true,
     attendanceHistoryVisible: false,
   });
@@ -139,6 +141,7 @@ test('notifications are unique per student and publication event and reads are o
 test('public profile privacy removes disabled sections and hides private profiles', () => {
   const source = {
     bio: 'Hello',
+    codeforcesVerification: { status: 'verified', handle: 'private_handle' },
     externalProfiles: { githubUrl: 'https://github.com/example' },
     cpStats: { problemsSolved: 100 },
     trainingGoals: ['Graphs'],
@@ -155,6 +158,7 @@ test('public profile privacy removes disabled sections and hides private profile
   assert.equal(result.attendanceHistoryVisible, false);
   assert.deepEqual(result.profile.cpStats, { problemsSolved: 100 });
   assert.equal(result.profile.privacy, undefined);
+  assert.equal(result.profile.codeforcesVerification, undefined);
   assert.equal(applyPublicProfilePrivacy({ privacy: { profileVisible: false } }), null);
   assert.equal(applyPublicProfilePrivacy({ trainingGoals: ['Graphs'] }).profile.trainingGoals[0], 'Graphs');
 });
@@ -171,6 +175,7 @@ test('attendance history privacy does not hide legacy ICPC journey profile data'
 test('private profiles are excluded from the public leaderboard aggregation', () => {
   const pipeline = getLeaderboardEntries().pipeline();
   assert.ok(pipeline.some((stage) => stage.$match?.['user.profile.privacy.profileVisible']?.$ne === false));
+  assert.ok(pipeline.some((stage) => stage.$match?.['user.profile.privacy.leaderboardVisible']?.$ne === false));
 });
 
 test('profile update requires authentication', async () => {

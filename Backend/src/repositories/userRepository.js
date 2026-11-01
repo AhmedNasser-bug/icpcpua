@@ -96,6 +96,91 @@ export function updateNotificationPreferences(userId, preferences) {
   return User.findByIdAndUpdate(userId, { $set: updates }, { new: true, runValidators: true });
 }
 
+const codeforcesVerificationPath = 'profile.codeforcesVerification';
+
+export function findCodeforcesVerification(userId) {
+  return User.findById(userId)
+    .select(`+${codeforcesVerificationPath}.tokenHash`)
+    .lean();
+}
+
+export function clearExpiredCodeforcesHandle(normalizedHandle, now) {
+  return User.updateMany({
+    [`${codeforcesVerificationPath}.normalizedHandle`]: normalizedHandle,
+    [`${codeforcesVerificationPath}.status`]: 'pending',
+    $or: [
+      { [`${codeforcesVerificationPath}.expiresAt`]: { $lte: now } },
+      { [`${codeforcesVerificationPath}.expiresAt`]: { $exists: false } },
+    ],
+  }, {
+    $set: { [`${codeforcesVerificationPath}.status`]: 'unverified' },
+    $unset: {
+      [`${codeforcesVerificationPath}.handle`]: 1,
+      [`${codeforcesVerificationPath}.normalizedHandle`]: 1,
+      [`${codeforcesVerificationPath}.tokenHash`]: 1,
+      [`${codeforcesVerificationPath}.expiresAt`]: 1,
+    },
+  });
+}
+
+export function findCodeforcesHandleOwner(normalizedHandle, userId) {
+  return User.findOne({
+    [`${codeforcesVerificationPath}.normalizedHandle`]: normalizedHandle,
+    _id: { $ne: userId },
+  }).select('_id').lean();
+}
+
+export function savePendingCodeforcesVerification(userId, { handle, normalizedHandle, tokenHash, expiresAt }) {
+  return User.findByIdAndUpdate(userId, {
+    $set: {
+      [`${codeforcesVerificationPath}.handle`]: handle,
+      [`${codeforcesVerificationPath}.normalizedHandle`]: normalizedHandle,
+      [`${codeforcesVerificationPath}.status`]: 'pending',
+      [`${codeforcesVerificationPath}.tokenHash`]: tokenHash,
+      [`${codeforcesVerificationPath}.expiresAt`]: expiresAt,
+    },
+    $unset: { [`${codeforcesVerificationPath}.verifiedAt`]: 1 },
+  }, { new: true, runValidators: true }).lean();
+}
+
+export function expireCodeforcesVerification(userId, now) {
+  return User.findOneAndUpdate({
+    _id: userId,
+    [`${codeforcesVerificationPath}.status`]: 'pending',
+    $or: [
+      { [`${codeforcesVerificationPath}.expiresAt`]: { $lte: now } },
+      { [`${codeforcesVerificationPath}.expiresAt`]: { $exists: false } },
+    ],
+  }, {
+    $set: { [`${codeforcesVerificationPath}.status`]: 'unverified' },
+    $unset: {
+      [`${codeforcesVerificationPath}.handle`]: 1,
+      [`${codeforcesVerificationPath}.normalizedHandle`]: 1,
+      [`${codeforcesVerificationPath}.tokenHash`]: 1,
+      [`${codeforcesVerificationPath}.expiresAt`]: 1,
+    },
+  }, { new: true }).lean();
+}
+
+export function completeCodeforcesVerification(userId, normalizedHandle, tokenHash, now) {
+  return User.findOneAndUpdate({
+    _id: userId,
+    [`${codeforcesVerificationPath}.status`]: 'pending',
+    [`${codeforcesVerificationPath}.normalizedHandle`]: normalizedHandle,
+    [`${codeforcesVerificationPath}.tokenHash`]: tokenHash,
+    [`${codeforcesVerificationPath}.expiresAt`]: { $gt: now },
+  }, {
+    $set: {
+      [`${codeforcesVerificationPath}.status`]: 'verified',
+      [`${codeforcesVerificationPath}.verifiedAt`]: now,
+    },
+    $unset: {
+      [`${codeforcesVerificationPath}.tokenHash`]: 1,
+      [`${codeforcesVerificationPath}.expiresAt`]: 1,
+    },
+  }, { new: true }).lean();
+}
+
 export function findPublicMemberByUsername(username) {
   return User.findOne({ username, role: 'user' }).select('name username createdAt profile');
 }

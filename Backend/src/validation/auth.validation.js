@@ -48,6 +48,15 @@ function usernameBody(value) {
   return { username: validateUsername(username) };
 }
 
+function codeforcesHandleBody(value) {
+  const input = bodyObject(['handle'], 'Codeforces handle')(value);
+  const handle = optionalString(input.handle, 'handle', { maxLength: 24, required: true });
+  if (!/^[A-Za-z0-9._-]{3,24}$/.test(handle)) {
+    invalid('Enter a valid Codeforces handle (3–24 letters, numbers, dots, underscores, or hyphens).', 'handle');
+  }
+  return { handle };
+}
+
 export const register = { body: registerBody };
 export const login = { body: loginBody };
 export const google = { body: googleBody };
@@ -57,3 +66,4 @@ export const username = { body: usernameBody };
 export const profile = { body: validateStudentProfileInput };
 export const privacy = { body: validateProfilePrivacyInput };
 export const notificationPreferences = { body: validateNotificationPreferencesInput };
+export const codeforcesHandle = { body: codeforcesHandleBody };

@@ -7,6 +7,7 @@ import { HomePage, EventsPage, EventDetail, CheckInPage } from '../features/even
 import { SettingsPage, UserProfilePage } from '../features/profile/pages/ProfilePages.jsx';
 import { NotificationsPage } from '../features/notifications/pages/NotificationsPage.jsx';
 import { LeaderboardPage } from '../features/leaderboard/pages/LeaderboardPage.jsx';
+import { StudentDashboardPage } from '../features/dashboard/pages/StudentDashboardPage.jsx';
 import { Admin } from '../features/admin/pages/AdminEventsPage.jsx';
 import { AdminDashboardLayout } from '../features/admin/components/AdminDashboardLayout.jsx';
 import { AdminOverviewPage } from '../features/admin/pages/AdminOverviewPage.jsx';
@@ -56,10 +57,11 @@ export default function App() {
     localStorage.setItem('pua-theme', theme);
   }, [theme]);
   return <div className="app-shell">
-      <Header user={session.user} onSignOut={session.signOut} token={session.token} />
+      <Header user={session.user} onSignOut={session.signOut} token={session.token} theme={theme} onThemeChange={setTheme} />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/events" element={<EventsPage />} />
+        <Route path="/dashboard" element={<RequireUsername session={session}>{session.user?.role === 'user' ? <StudentDashboardPage session={session} /> : <Navigate to="/admin/overview" replace />}</RequireUsername>} />
         <Route path="/events/:eventId" element={<EventDetail token={session.token} user={session.user} />} />
         <Route path="/roadmaps" element={<RoadmapsPage token={session.token} />} />
         <Route path="/training" element={<RequireUsername session={session}><TrainingPage token={session.token} user={session.user} /></RequireUsername>} />

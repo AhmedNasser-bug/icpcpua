@@ -7,6 +7,7 @@ import eventRoutes from './routes/events.js';
 import adminRoutes from './routes/admin.js';
 import notificationRoutes from './routes/notifications.js';
 import roadmapRoutes from './routes/roadmaps.js';
+import studentDashboardRoutes from './routes/studentDashboard.js';
 import { errorHandler, notFound } from './middleware/errors.js';
 
 const app = express();
@@ -24,6 +25,7 @@ app.use('/api/events', eventRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/roadmaps', roadmapRoutes);
+app.use('/api/dashboard', studentDashboardRoutes);
 app.use(notFound);
 app.use(errorHandler);
 

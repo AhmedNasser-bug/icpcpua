@@ -19,9 +19,10 @@ import {
   getLeaderboardEntries,
   updateCheckIn,
 } from '../repositories/registrationRepository.js';
+import { getSolvedProblemCounts } from '../repositories/roadmapRepository.js';
 import { findPublicMemberByUsername } from '../repositories/userRepository.js';
 import { hashCheckInToken, getCheckInWindow, isWithinCheckInWindow } from '../utils/checkIn.js';
-import { mergeLeaderboardEntries, rankLeaderboard } from '../utils/leaderboard.js';
+import { addSolvedProblemCounts, mergeLeaderboardEntries, rankLeaderboard } from '../utils/leaderboard.js';
 import { applyPublicProfilePrivacy } from '../utils/profilePrivacy.js';
 import { getRoadmapPointsByStudent } from './roadmapService.js';
 
@@ -46,11 +47,15 @@ export async function listEvents(filters) {
 }
 
 export async function getLeaderboard() {
-  const [eventEntries, roadmapEntries] = await Promise.all([
+  const [eventEntries, roadmapEntries, solvedProblemCounts] = await Promise.all([
     getLeaderboardEntries(),
     getRoadmapPointsByStudent(),
+    getSolvedProblemCounts(),
   ]);
-  return rankLeaderboard(mergeLeaderboardEntries(eventEntries, roadmapEntries));
+  return rankLeaderboard(addSolvedProblemCounts(
+    mergeLeaderboardEntries(eventEntries, roadmapEntries),
+    solvedProblemCounts,
+  ));
 }
 
 function presentStanding(entry) {

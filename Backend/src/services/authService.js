@@ -25,6 +25,18 @@ export function issueToken(user) {
 }
 
 export function presentUser(user) {
+  const profile = user.profile?.toObject ? user.profile.toObject() : user.profile || {};
+  const codeforcesVerification = profile.codeforcesVerification;
+  if (codeforcesVerification) {
+    profile.codeforcesVerification = {
+      status: codeforcesVerification.status || 'unverified',
+      ...(codeforcesVerification.handle ? { handle: codeforcesVerification.handle } : {}),
+      ...(codeforcesVerification.verifiedAt ? { verifiedAt: codeforcesVerification.verifiedAt } : {}),
+      ...(codeforcesVerification.status === 'pending' && codeforcesVerification.expiresAt
+        ? { expiresAt: codeforcesVerification.expiresAt }
+        : {}),
+    };
+  }
   return {
     id: user.id,
     name: user.name,
@@ -33,7 +45,7 @@ export function presentUser(user) {
     studentId: user.studentId || null,
     role: user.role,
     createdAt: user.createdAt || null,
-    profile: user.profile?.toObject ? user.profile.toObject() : user.profile || {},
+    profile,
     notificationPreferences: user.notificationPreferences?.toObject
       ? user.notificationPreferences.toObject()
       : user.notificationPreferences || {},

@@ -228,15 +228,50 @@ export function getRoadmapLeaderboardEntries() {
     { $match: { points: { $gt: 0 } } },
     { $lookup: { from: 'users', localField: '_id', foreignField: '_id', as: 'user' } },
     { $unwind: '$user' },
-    { $match: { 'user.role': 'user', 'user.profile.privacy.profileVisible': { $ne: false } } },
+    {
+      $match: {
+        'user.role': 'user',
+        'user.profile.privacy.profileVisible': { $ne: false },
+        'user.profile.privacy.leaderboardVisible': { $ne: false },
+      },
+    },
     {
       $project: {
         _id: 0,
         userId: '$_id',
         name: '$user.name',
         username: '$user.username',
+        avatarUrl: '$user.profile.pictureUrl',
         points: 1,
         sessionsAttended: 1,
+      },
+    },
+  ]);
+}
+
+export function getSolvedProblemCounts() {
+  return RoadmapProgress.aggregate([
+    { $lookup: { from: 'users', localField: 'student', foreignField: '_id', as: 'user' } },
+    { $unwind: '$user' },
+    {
+      $match: {
+        'user.role': 'user',
+        'user.profile.privacy.profileVisible': { $ne: false },
+        'user.profile.privacy.leaderboardVisible': { $ne: false },
+      },
+    },
+    { $unwind: '$solvedProblems' },
+    {
+      $group: {
+        _id: '$student',
+        problemUrls: { $addToSet: '$solvedProblems.problemUrl' },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        userId: '$_id',
+        problemsSolved: { $size: '$problemUrls' },
       },
     },
   ]);

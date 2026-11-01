@@ -34,3 +34,13 @@ export function mergeLeaderboardEntries(eventEntries, roadmapEntries) {
     || left.userId.toString().localeCompare(right.userId.toString())
   ));
 }
+
+export function addSolvedProblemCounts(entries, solvedProblemCounts) {
+  const countsByUser = new Map(solvedProblemCounts.map(({ userId, problemsSolved }) => (
+    [userId.toString(), problemsSolved]
+  )));
+  return entries.map((entry) => ({
+    ...entry,
+    problemsSolved: countsByUser.get(entry.userId.toString()) ?? 0,
+  }));
+}

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
-import { ArrowRight, Bell, CheckCircle2, ChevronLeft, Code2, ExternalLink, Globe, KeyRound, Link2, LogOut, Moon, Palette, Plus, Shield, Sun, Trophy, UserRound } from "lucide-react";
+import { ArrowRight, Bell, Check, CheckCircle2, ChevronLeft, Code2, Copy, ExternalLink, Globe, KeyRound, Link2, LogOut, Moon, Palette, Plus, Shield, Sun, Trophy, UserRound } from "lucide-react";
 import { api, eventDate } from "../../../shared/services/api.js";
 import { normalizeTeamPreference, normalizeTeamStatus, studentProfileForm } from '../utils/profileForm.js';
 import { normalizeUsername, isValidUsername } from '../../auth/utils/username.js';
@@ -59,14 +59,70 @@ export function SettingsPage({
   const [pointsLoading, setPointsLoading] = useState(false);
   const [pointsError, setPointsError] = useState('');
   const [pointsReload, setPointsReload] = useState(0);
+  const [pointsVerificationRequired, setPointsVerificationRequired] = useState(
+    session.user.role === 'user' && session.user.profile?.codeforcesVerification?.status !== 'verified',
+  );
+  const [codeforcesVerification, setCodeforcesVerification] = useState(
+    session.user.profile?.codeforcesVerification || { status: 'unverified' },
+  );
+  const [codeforcesHandle, setCodeforcesHandle] = useState(
+    session.user.profile?.codeforcesVerification?.handle
+      || session.user.profile?.externalProfiles?.codeforcesHandle
+      || '',
+  );
+  const [codeforcesToken, setCodeforcesToken] = useState('');
+  const [codeforcesError, setCodeforcesError] = useState('');
+  const [codeforcesMessage, setCodeforcesMessage] = useState('');
+  const [codeforcesBusy, setCodeforcesBusy] = useState(false);
+  const [codeforcesLoading, setCodeforcesLoading] = useState(false);
+  const [codeforcesCopied, setCodeforcesCopied] = useState(false);
+  const [codeforcesChangingHandle, setCodeforcesChangingHandle] = useState(false);
+  const saveCodeforcesVerification = verification => {
+    setCodeforcesVerification(verification);
+    if (verification.handle) setCodeforcesHandle(verification.handle);
+    session.updateUser({
+      ...session.user,
+      profile: {
+        ...(session.user.profile || {}),
+        codeforcesVerification: verification
+      }
+    });
+  };
   useEffect(() => {
     setUsername(session.user.username || '');
   }, [session.user.username]);
   useEffect(() => {
+    if (section !== 'codeforces') return undefined;
+    let active = true;
+    setCodeforcesLoading(true);
+    setCodeforcesError('');
+    api('/auth/codeforces-verification', { token: session.token })
+      .then(({ verification }) => {
+        if (active) saveCodeforcesVerification(verification);
+      })
+      .catch(reason => {
+        if (active) setCodeforcesError(reason.message);
+      })
+      .finally(() => {
+        if (active) setCodeforcesLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [section, session.token]);
+  useEffect(() => {
     if (section !== 'points') return undefined;
+    if (session.user.role === 'user' && session.user.profile?.codeforcesVerification?.status !== 'verified') {
+      setPointsEntries([]);
+      setPointsVerificationRequired(true);
+      setPointsLoading(false);
+      setPointsError('');
+      return undefined;
+    }
     let active = true;
     setPointsLoading(true);
     setPointsError('');
+    setPointsVerificationRequired(false);
     Promise.all([
       api('/events/my', { token: session.token }),
       api('/roadmaps/my', { token: session.token })
@@ -92,14 +148,74 @@ export function SettingsPage({
         })));
       setPointsEntries([...eventEntries, ...cycleEntries].sort((left, right) => new Date(right.earnedAt) - new Date(left.earnedAt)));
     }).catch(reason => {
-      if (active) setPointsError(reason.message);
+      if (active && reason.code === 'CODEFORCES_VERIFICATION_REQUIRED') {
+        setPointsEntries([]);
+        setPointsVerificationRequired(true);
+      } else if (active) setPointsError(reason.message);
     }).finally(() => {
       if (active) setPointsLoading(false);
     });
     return () => {
       active = false;
     };
-  }, [pointsReload, section, session.token]);
+  }, [pointsReload, section, session.token, session.user.profile?.codeforcesVerification?.status, session.user.role]);
+  const generateCodeforcesToken = async event => {
+    event.preventDefault();
+    setCodeforcesError('');
+    setCodeforcesMessage('');
+    setCodeforcesToken('');
+    setCodeforcesCopied(false);
+    setCodeforcesBusy(true);
+    try {
+      const result = await api('/auth/codeforces-verification/generate', {
+        method: 'POST',
+        token: session.token,
+        body: JSON.stringify({ handle: codeforcesHandle.trim() }),
+      });
+      saveCodeforcesVerification(result.verification);
+      setCodeforcesToken(result.token);
+      setCodeforcesChangingHandle(false);
+      setCodeforcesMessage('Token generated. Add it to the First Name English field on Codeforces, then check verification.');
+    } catch (reason) {
+      setCodeforcesError(reason.message);
+    } finally {
+      setCodeforcesBusy(false);
+    }
+  };
+  const checkCodeforcesToken = async () => {
+    setCodeforcesError('');
+    setCodeforcesMessage('');
+    setCodeforcesBusy(true);
+    try {
+      const result = await api('/auth/codeforces-verification/check', {
+        method: 'POST',
+        token: session.token,
+      });
+      saveCodeforcesVerification(result.verification);
+      setCodeforcesMessage(result.message || (result.verification.status === 'verified'
+        ? 'Your Codeforces account is verified.'
+        : result.verification.status === 'expired'
+          ? 'Your verification token expired. Generate a new token to continue.'
+          : 'Verification is still pending. Save the token on Codeforces and try again.'));
+    } catch (reason) {
+      setCodeforcesError(reason.message);
+    } finally {
+      setCodeforcesBusy(false);
+    }
+  };
+  const copyCodeforcesToken = async () => {
+    if (!navigator.clipboard?.writeText) {
+      setCodeforcesError('Clipboard access is unavailable in this browser. Select and copy the token instead.');
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(codeforcesToken);
+      setCodeforcesCopied(true);
+      setCodeforcesError('');
+    } catch {
+      setCodeforcesError('Could not copy the token. Select and copy it manually.');
+    }
+  };
   const submit = async event => {
     event.preventDefault();
     setError('');
@@ -296,6 +412,7 @@ export function SettingsPage({
   };
   const privacySettings = {
     profileVisible: true,
+    leaderboardVisible: true,
     externalProfilesVisible: true,
     cpStatsVisible: true,
     trainingVisible: true,
@@ -354,7 +471,7 @@ export function SettingsPage({
       replace: true
     });
   };
-  if (!['account', 'profile', 'privacy', 'notifications', 'appearance', 'connections', 'points'].includes(section)) {
+  if (!['account', 'profile', 'privacy', 'notifications', 'appearance', 'connections', 'points', 'codeforces'].includes(section)) {
     return <Navigate to="/settings/account" replace />;
   }
   return <main className="page-wrap settings-page settings-modern-page">
@@ -363,10 +480,15 @@ export function SettingsPage({
       </header>
       <div className="settings-layout">
         <nav className="settings-nav" aria-label="Settings sections">
-          {[['account', 'Account', UserRound], ['profile', 'Profile', UserRound], ['privacy', 'Privacy', Shield], ['notifications', 'Notifications', Bell], ['appearance', 'Appearance', Palette], ['connections', 'Connections', Link2], ['points', 'Points history', Trophy]].map(([path, label, Icon]) => <Link key={path} className={section === path ? 'settings-nav-link active' : 'settings-nav-link'} to={`/settings/${path}`} aria-current={section === path ? 'page' : undefined}><Icon size={17} />{label}</Link>)}
+          {[['account', 'Account', UserRound], ['profile', 'Profile', UserRound], ['privacy', 'Privacy', Shield], ['notifications', 'Notifications', Bell], ['appearance', 'Appearance', Palette], ['connections', 'Connections', Link2], ['codeforces', 'Codeforces', Code2], ['points', 'Points history', Trophy]].map(([path, label, Icon]) => <Link key={path} className={section === path ? 'settings-nav-link active' : 'settings-nav-link'} to={`/settings/${path}`} aria-current={section === path ? 'page' : undefined}><Icon size={17} />{label}</Link>)}
         </nav>
         <div className="settings-content">
-      {section === 'points' && <section className="settings-card points-history-card" aria-labelledby="points-history-title">
+      {section === 'points' && pointsVerificationRequired ? <section className="settings-card codeforces-required-card" aria-labelledby="points-verification-title">
+        <span className="eyebrow">STUDENT DASHBOARD</span>
+        <h2 id="points-verification-title">Verify your Codeforces account</h2>
+        <p>Verify your account to view your personal points history and dashboard data.</p>
+        <Link className="button button-dark" to="/settings/codeforces">Go to Codeforces verification <ArrowRight size={16} /></Link>
+      </section> : section === 'points' && <section className="settings-card points-history-card" aria-labelledby="points-history-title">
         <div className="points-history-heading">
           <div><span className="eyebrow">YOUR ACTIVITY</span><h2 id="points-history-title">Points history</h2><p>Points recorded for your event and training-session attendance.</p></div>
           <div className="points-history-total"><small>Points earned</small><strong>{pointsLoading ? '—' : pointsEntries.reduce((total, entry) => total + entry.points, 0).toLocaleString()}</strong></div>
@@ -379,6 +501,56 @@ export function SettingsPage({
             <b>+{entry.points} pts</b>
           </article>)}
         </div> : <p className="points-history-message">No points have been recorded yet. Points from checked-in events and attended training sessions will appear here.</p>}
+      </section>}
+      {section === 'codeforces' && <section className="settings-card codeforces-verification-card" aria-labelledby="codeforces-verification-title">
+        <span className="eyebrow">ACCOUNT VERIFICATION</span>
+        <h2 id="codeforces-verification-title">Codeforces verification</h2>
+        <p>Verify that you own your Codeforces account to access your personal student dashboard data.</p>
+        {codeforcesLoading ? <p className="points-history-message" role="status">Loading verification status...</p> : <>
+          {codeforcesVerification.status === 'verified' && !codeforcesChangingHandle ? <div className="codeforces-verified-state" role="status">
+            <CheckCircle2 size={21} aria-hidden="true" />
+            <div><strong>Codeforces account verified</strong><span><a href={`https://codeforces.com/profile/${encodeURIComponent(codeforcesVerification.handle)}`} target="_blank" rel="noopener noreferrer">{codeforcesVerification.handle} <ExternalLink size={14} aria-hidden="true" /></a></span>
+              {codeforcesVerification.verifiedAt && <small>Verified {new Date(codeforcesVerification.verifiedAt).toLocaleDateString()}</small>}
+              <button className="button button-outline" type="button" onClick={() => {
+                setCodeforcesHandle('');
+                setCodeforcesError('');
+                setCodeforcesMessage('');
+                setCodeforcesChangingHandle(true);
+              }}>Change handle</button>
+            </div>
+          </div> : <>
+            {codeforcesChangingHandle && <div className="notice info-notice" role="status">
+              Generate a new verification token for the replacement handle. Your current verification remains active until you start verification for that handle.
+            </div>}
+            <form onSubmit={generateCodeforcesToken}>
+              <label htmlFor="codeforces-handle">Codeforces handle
+                <input id="codeforces-handle" name="handle" autoComplete="off" maxLength="24" pattern="[A-Za-z0-9._-]{3,24}" required value={codeforcesHandle} onChange={event => setCodeforcesHandle(event.target.value)} />
+              </label>
+              <button className="button button-dark" type="submit" disabled={codeforcesBusy}>{codeforcesBusy ? 'Checking handle...' : codeforcesVerification.status === 'pending' ? 'Generate a new token' : 'Generate token'} <ArrowRight size={16} /></button>
+              {codeforcesChangingHandle && <button className="button button-outline codeforces-cancel-change" type="button" onClick={() => {
+                setCodeforcesChangingHandle(false);
+                setCodeforcesHandle(codeforcesVerification.handle || '');
+                setCodeforcesError('');
+              }}>Cancel</button>}
+            </form>
+            {codeforcesVerification.status === 'expired' && <div className="notice error-notice" role="status">Your previous token expired. Generate a new token to continue.</div>}
+            {codeforcesVerification.status === 'pending' && <div className="codeforces-pending-state" role="status">
+              <strong>Verification pending for {codeforcesVerification.handle}</strong>
+              {!codeforcesToken && <p>The token is only shown when generated. You can check again or generate a new token.</p>}
+              {codeforcesToken && <div className="codeforces-token-row"><code>{codeforcesToken}</code><button className="button button-outline" type="button" onClick={copyCodeforcesToken} aria-label="Copy verification token">{codeforcesCopied ? <Check size={16} /> : <Copy size={16} />}{codeforcesCopied ? 'Copied' : 'Copy token'}</button></div>}
+              <ol>
+                <li>Open your <a href="https://codeforces.com/settings/social" target="_blank" rel="noopener noreferrer">Codeforces profile settings <ExternalLink size={14} aria-hidden="true" /></a>.</li>
+                <li>Put the generated token in the <strong>First Name English</strong> field.</li>
+                <li>Save your changes on Codeforces.</li>
+                <li>Return here and click <strong>Check verification</strong>.</li>
+              </ol>
+              {codeforcesToken && <p className="codeforces-token-expiry">Token expires {codeforcesVerification.expiresAt ? new Date(codeforcesVerification.expiresAt).toLocaleTimeString() : 'in 15 minutes'}.</p>}
+              <button className="button button-outline" type="button" onClick={checkCodeforcesToken} disabled={codeforcesBusy}>{codeforcesBusy ? 'Checking...' : 'Check verification'}</button>
+            </div>}
+          </>}
+        </>}
+        {codeforcesError && <div className="notice error-notice" role="alert">{codeforcesError}</div>}
+        {codeforcesMessage && <div className={`notice ${codeforcesVerification.status === 'verified' ? 'success-notice' : codeforcesVerification.status === 'expired' ? 'error-notice' : 'info-notice'}`} role="status">{codeforcesMessage}</div>}
       </section>}
       {section === 'account' && <section className="settings-card settings-profile-card" aria-labelledby="settings-profile-title">
         <div className="settings-card-heading">
@@ -451,7 +623,7 @@ export function SettingsPage({
       {section === 'connections' && <form className="settings-card profile-editor" onSubmit={saveConnections}>
         <span className="eyebrow">MANUALLY ENTERED PROFILES</span>
         <h2>Public profile links</h2>
-        <p>These are public profile links and handles only. They are not authenticated account connections, and every field is optional.</p>
+        <p>These are manually entered public links and handles, not authenticated connections. Use Codeforces settings to verify Codeforces ownership; every field here is optional.</p>
         <fieldset>
           <legend>Competitive and social profiles</legend>
           {[['githubUrl', 'GitHub profile URL'], ['linkedinUrl', 'LinkedIn profile URL'], ['codeforcesUrl', 'Codeforces profile URL']].map(([field, label]) => {
@@ -535,7 +707,7 @@ export function SettingsPage({
         <h2 id="settings-privacy-title">Privacy</h2>
         <p>Choose which parts of your profile can be seen by people in the community. Your email and student ID are never shown publicly.</p>
         <div className="privacy-options">
-          {[['profileVisible', 'Public profile', 'Show your public profile page and list your name on the community leaderboard.'], ['externalProfilesVisible', 'External profile links', 'Show your manually entered GitHub, LinkedIn, Codeforces, and other profile links.'], ['cpStatsVisible', 'Competitive programming stats', 'Show self-reported platform ratings and counts. Verified community leaderboard points remain visible.'], ['trainingVisible', 'Training interests and goals', 'Show the topics, milestones, and training goals on your profile.'], ['teamStatusVisible', 'Team status and preferences', 'Show whether you are looking for a team and any preferences you shared.'], ['attendanceHistoryVisible', 'Attendance history', 'Show verified community event attendance on your public profile.']].map(([key, label, description]) => <label className="privacy-option" key={key}>
+          {[['profileVisible', 'Public profile', 'Show your public profile page. Turning this off also hides you from the community leaderboard.'], ['leaderboardVisible', 'Show me on the Leaderboard', 'Include your name, rank, avatar, and statistics on the public leaderboard. Turning off Public profile also hides you there.'], ['externalProfilesVisible', 'External profile links', 'Show your manually entered GitHub, LinkedIn, Codeforces, and other profile links.'], ['cpStatsVisible', 'Competitive programming stats', 'Show self-reported platform ratings and counts. Verified community leaderboard points remain visible.'], ['trainingVisible', 'Training interests and goals', 'Show the topics, milestones, and training goals on your profile.'], ['teamStatusVisible', 'Team status and preferences', 'Show whether you are looking for a team and any preferences you shared.'], ['attendanceHistoryVisible', 'Attendance history', 'Show verified community event attendance on your public profile.']].map(([key, label, description]) => <label className="privacy-option" key={key}>
             <span><strong>{label}</strong><small>{description}</small></span>
             <input type="checkbox" checked={Boolean(privacySettings[key])} disabled={privacyBusy} onChange={event => updatePrivacy(key, event.target.checked)} aria-label={label} />
           </label>)}
@@ -569,6 +741,7 @@ export function UserProfilePage({
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [verificationRequired, setVerificationRequired] = useState(false);
   const [roadmapProblemProgress, setRoadmapProblemProgress] = useState({ status: 'idle' });
   const [roadmapProgressRetry, setRoadmapProgressRetry] = useState(0);
   const isOwner = session.user?.username === username;
@@ -576,13 +749,18 @@ export function UserProfilePage({
     let active = true;
     setLoading(true);
     setError('');
-    api(`/events/${encodeURIComponent(username)}/profile`).then(({
+    setVerificationRequired(false);
+    api(`/events/${encodeURIComponent(username)}/profile`, { token: session.token }).then(({
       profile: result
-    }) => active && setProfile(result)).catch(reason => active && setError(reason.message)).finally(() => active && setLoading(false));
+    }) => active && setProfile(result)).catch(reason => {
+      if (!active) return;
+      if (reason.code === 'CODEFORCES_VERIFICATION_REQUIRED') setVerificationRequired(true);
+      else setError(reason.message);
+    }).finally(() => active && setLoading(false));
     return () => {
       active = false;
     };
-  }, [username]);
+  }, [username, session.token]);
   useEffect(() => {
     let active = true;
     if (!isOwner || !session.token) {
@@ -640,6 +818,14 @@ export function UserProfilePage({
     };
   }, [isOwner, roadmapProgressRetry, session.token]);
   if (loading) return <main className="page-wrap"><div className="empty-state"><span className="loader" /> Loading member profile...</div></main>;
+  if (verificationRequired) return <main className="page-wrap profile-page member-profile-page">
+    <section className="member-profile-card codeforces-dashboard-gate" aria-labelledby="profile-verification-title">
+      <span className="eyebrow">STUDENT DASHBOARD</span>
+      <h1 id="profile-verification-title">Codeforces verification required</h1>
+      <p>Verify your Codeforces account to access your personal dashboard and roadmap progress.</p>
+      <Link className="button button-dark" to="/settings/codeforces">Go to Codeforces verification <ArrowRight size={16} /></Link>
+    </section>
+  </main>;
   if (error || !profile) return <main className="page-wrap"><div className="notice error-notice">{error || 'Member profile not found.'}</div><Link className="back-link" to="/leaderboard"><ChevronLeft size={16} /> Back to leaderboard</Link></main>;
   const details = profile.profile || {};
   const externalProfiles = details.externalProfiles || {};

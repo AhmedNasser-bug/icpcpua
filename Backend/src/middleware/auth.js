@@ -34,6 +34,25 @@ export function requireUsername(req, res, next) {
   return next();
 }
 
+export function requireCodeforcesVerification(req, res, next) {
+  if (req.user?.role === 'admin' || req.user?.profile?.codeforcesVerification?.status === 'verified') {
+    return next();
+  }
+  return res.status(403).json({
+    error: {
+      message: 'Verify your Codeforces account in Settings to access your personal dashboard data.',
+      code: 'CODEFORCES_VERIFICATION_REQUIRED',
+    },
+  });
+}
+
+export function requireStudent(req, res, next) {
+  if (req.user?.role !== 'user') {
+    return res.status(403).json({ error: { message: 'Student dashboard access is only available to student accounts.' } });
+  }
+  return next();
+}
+
 export function requireAdmin(req, res, next) {
   if (req.user?.role !== 'admin') {
     return res.status(403).json({ error: { message: 'Administrator access is required.' } });

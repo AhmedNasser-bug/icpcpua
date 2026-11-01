@@ -15,9 +15,19 @@ const icpcJourneySchema = new mongoose.Schema({
   achievement: { type: String, trim: true, maxlength: 160 },
 }, { _id: false });
 
+const codeforcesVerificationSchema = new mongoose.Schema({
+  handle: { type: String, trim: true, maxlength: 24 },
+  normalizedHandle: { type: String, lowercase: true, trim: true, maxlength: 24 },
+  status: { type: String, enum: ['unverified', 'pending', 'verified'], default: 'unverified' },
+  verifiedAt: { type: Date },
+  tokenHash: { type: String, select: false },
+  expiresAt: { type: Date },
+}, { _id: false });
+
 const profileSchema = new mongoose.Schema({
   privacy: {
     profileVisible: { type: Boolean, default: true },
+    leaderboardVisible: { type: Boolean, default: true },
     externalProfilesVisible: { type: Boolean, default: true },
     cpStatsVisible: { type: Boolean, default: true },
     trainingVisible: { type: Boolean, default: true },
@@ -25,6 +35,7 @@ const profileSchema = new mongoose.Schema({
     journeyVisible: { type: Boolean, default: true },
     attendanceHistoryVisible: { type: Boolean },
   },
+  codeforcesVerification: { type: codeforcesVerificationSchema, default: () => ({}) },
   pictureUrl: { type: String, trim: true, maxlength: 500 },
   university: { type: String, trim: true, maxlength: 120 },
   academicYear: { type: String, trim: true, maxlength: 40 },
@@ -87,6 +98,14 @@ const userSchema = new mongoose.Schema(
     role: { type: String, enum: ['user', 'admin'], default: 'user' },
   },
   { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } },
+);
+
+userSchema.index(
+  { 'profile.codeforcesVerification.normalizedHandle': 1 },
+  {
+    unique: true,
+    partialFilterExpression: { 'profile.codeforcesVerification.normalizedHandle': { $type: 'string' } },
+  },
 );
 
 export default mongoose.model('User', userSchema);

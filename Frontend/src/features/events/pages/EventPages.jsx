@@ -219,7 +219,6 @@ export function HomePage() {
     <section className="home-events-section" aria-labelledby="home-events-title">
       <div className="home-section-heading">
         <div>
-          <p className="home-eyebrow"><span aria-hidden="true" /> MEET, PRACTICE, COMPETE</p>
           <h2 id="home-events-title">Our <span>Events</span></h2>
         </div>
         <div className="home-carousel-actions">
@@ -244,7 +243,6 @@ export function HomePage() {
     <section className="home-goal-section" aria-labelledby="home-goal-title">
       <div className="home-section-inner">
         <div className="home-goal-heading">
-          <p className="home-eyebrow"><span aria-hidden="true" /> THE LONG-TERM GOAL</p>
           <h2 id="home-goal-title">One University. One Goal. <span>ACPC</span></h2>
           <p>We are working toward our first PUA team qualifying for ACPC. Every practice session, solved problem, and competition is another step toward that goal.</p>
         </div>

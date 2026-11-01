@@ -15,6 +15,7 @@ export function applyPublicProfilePrivacy(source = {}) {
   if (!privacy.profileVisible) return null;
   const profile = { ...source };
   delete profile.privacy;
+  delete profile.codeforcesVerification;
   if (!privacy.externalProfilesVisible) delete profile.externalProfiles;
   if (!privacy.cpStatsVisible) delete profile.cpStats;
   if (!privacy.trainingVisible) {

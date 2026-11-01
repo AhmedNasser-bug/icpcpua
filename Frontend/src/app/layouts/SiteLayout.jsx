@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { ArrowRight, LogOut, Menu, X } from "lucide-react";
+import { ArrowRight, LogOut, Menu, Moon, Sun, X } from "lucide-react";
 import { NotificationBellMenu } from '../../features/notifications/components/NotificationBellMenu.jsx';
 export function Header({
   user,
   onSignOut,
-  token
+  token,
+  theme,
+  onThemeChange
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
@@ -100,6 +102,7 @@ export function Header({
             if (event.target.closest('a')) setMenuOpen(false);
           }}>
             {navLink('/', 'Home')}
+            {user?.role === 'user' && navLink('/dashboard', 'Dashboard')}
             {navLink('/roadmaps', 'Roadmaps')}
             {navLink('/training', 'Training')}
             {navLink('/events', 'Events')}
@@ -107,6 +110,15 @@ export function Header({
           </nav>
         </div>
         <div className="header-actions">
+          <button
+            className="theme-toggle"
+            type="button"
+            aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} appearance`}
+            title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} appearance`}
+            onClick={() => onThemeChange(theme === 'dark' ? 'light' : 'dark')}
+          >
+            {theme === 'dark' ? <Sun size={19} aria-hidden="true" /> : <Moon size={19} aria-hidden="true" />}
+          </button>
           {user ? <>
           <NotificationBellMenu token={token} />
           <div className="account-menu" ref={accountMenuRef}>

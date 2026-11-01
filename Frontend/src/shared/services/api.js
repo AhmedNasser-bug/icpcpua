@@ -8,6 +8,8 @@ export async function api(path, { token, ...options } = {}) {
   if (!response.ok) {
     const error = new Error(data?.error?.message || 'Something went wrong. Please try again.');
     error.field = data?.error?.field;
+    error.code = data?.error?.code;
+    error.status = response.status;
     throw error;
   }
   return data;

@@ -19,13 +19,20 @@ export function getLeaderboardEntries() {
       },
     },
     { $unwind: '$user' },
-    { $match: { 'user.role': 'user', 'user.profile.privacy.profileVisible': { $ne: false } } },
+    {
+      $match: {
+        'user.role': 'user',
+        'user.profile.privacy.profileVisible': { $ne: false },
+        'user.profile.privacy.leaderboardVisible': { $ne: false },
+      },
+    },
     {
       $project: {
         _id: 0,
         userId: '$_id',
         name: '$user.name',
         username: '$user.username',
+        avatarUrl: '$user.profile.pictureUrl',
         points: 1,
         eventsAttended: 1,
       },

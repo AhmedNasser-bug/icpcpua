@@ -314,6 +314,7 @@ export function validateStudentProfileInput(input) {
 export function validateProfilePrivacyInput(input) {
   const fields = [
     'profileVisible',
+    'leaderboardVisible',
     'externalProfilesVisible',
     'cpStatsVisible',
     'trainingVisible',

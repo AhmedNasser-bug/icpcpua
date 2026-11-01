@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mergeLeaderboardEntries, rankLeaderboard } from '../src/utils/leaderboard.js';
+import { getRoadmapLeaderboardEntries, getSolvedProblemCounts } from '../src/repositories/roadmapRepository.js';
+import { addSolvedProblemCounts, mergeLeaderboardEntries, rankLeaderboard } from '../src/utils/leaderboard.js';
 
 test('leaderboard assigns dense ranks for tied points with stable display ordering', () => {
   const ranked = rankLeaderboard([
@@ -33,4 +34,34 @@ test('leaderboard combines roadmap points without changing event attendance coun
     { userId: 'user-a', points: 35, eventsAttended: 2, sessionsAttended: 3 },
     { userId: 'user-b', points: 8, eventsAttended: 0, sessionsAttended: 2 },
   ]);
+});
+
+test('leaderboard includes solved problem totals without affecting point-based ranks', () => {
+  const entries = [
+    { userId: 'user-a', name: 'Ari', points: 40, eventsAttended: 3 },
+    { userId: 'user-b', name: 'Bea', points: 20, eventsAttended: 1 },
+  ];
+  const withCounts = addSolvedProblemCounts(entries, [
+    { userId: 'user-a', problemsSolved: 5 },
+  ]);
+
+  assert.deepEqual(rankLeaderboard(withCounts).map(({ rank, problemsSolved }) => ({ rank, problemsSolved })), [
+    { rank: 1, problemsSolved: 5 },
+    { rank: 2, problemsSolved: 0 },
+  ]);
+});
+
+test('solved problem aggregation counts each problem URL once per user', () => {
+  const pipeline = getSolvedProblemCounts().pipeline();
+  assert.ok(pipeline.some((stage) => stage.$match?.['user.profile.privacy.profileVisible']?.$ne === false));
+  assert.ok(pipeline.some((stage) => stage.$match?.['user.profile.privacy.leaderboardVisible']?.$ne === false));
+  assert.ok(pipeline.some((stage) => stage.$group?.problemUrls?.$addToSet === '$solvedProblems.problemUrl'));
+  assert.ok(pipeline.some((stage) => stage.$project?.problemsSolved?.$size === '$problemUrls'));
+});
+
+test('roadmap leaderboard excludes users who opted out and includes profile avatars', () => {
+  const pipeline = getRoadmapLeaderboardEntries().pipeline();
+  assert.ok(pipeline.some((stage) => stage.$match?.['user.profile.privacy.profileVisible']?.$ne === false));
+  assert.ok(pipeline.some((stage) => stage.$match?.['user.profile.privacy.leaderboardVisible']?.$ne === false));
+  assert.ok(pipeline.some((stage) => stage.$project?.avatarUrl === '$user.profile.pictureUrl'));
 });
