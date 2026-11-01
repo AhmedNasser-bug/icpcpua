@@ -1,0 +1,796 @@
+{
+  "roadmaps": [
+    {
+      "id": "6ae1057d6f12a21817c67da1",
+      "_id": "6ae1057d6f12a21817c67da1",
+      "title": "Level 1",
+      "slug": "level-0-37e4fa",
+      "description": "From Zero to Problem Solver",
+      "coverImageUrl": "https://media.licdn.com/dms/image/v2/C4E1BAQERt_6w7EMUYQ/company-background_10000/company-background_10000/0/1603290244441/ecpc_egyptian_collegiate_programming_contest_cover?e=2147483647&v=beta&t=i6_SNNsZOk4wln5myAL2oKA7ritF1gEuV7mKX5ZYDZA",
+      "difficulty": "beginner",
+      "estimatedDuration": "2 Weeks",
+      "objectives": [
+        "Build rock-solid algorithmic thinking, syntax fluency, control structures, and computational complexity fundamentals essential for competitive programming."
+      ],
+      "audience": "Level 1",
+      "prerequisites": "NO",
+      "status": "published",
+      "createdBy": "6ad6525be1fd2b68493522c1",
+      "createdAt": "2026-10-27T20:11:41.460Z",
+      "updatedAt": "2026-10-29T15:36:50.406Z",
+      "checkInTokenHash": null
+    }
+  ],
+  "roadmapNodes": [
+    {
+      "id": "6ae1370f4a1f1597c4ed1f4f",
+      "_id": "6ae1370f4a1f1597c4ed1f4f",
+      "roadmap": "6ae1057d6f12a21817c67da1",
+      "title": "Introduction to Programming",
+      "description": "What is Programming | \nAlgorithms and Problem-Solving | \nPseudocode and Flowcharts | \nCompilers vs Interpreters",
+      "dependencies": [],
+      "position": 0,
+      "estimatedHours": null,
+      "resources": [],
+      "problems": [
+        {
+          "title": "Hello World",
+          "url": "https://www.hackerrank.com/challenges/cpp-hello-world/problem",
+          "difficulty": "easy"
+        },
+        {
+          "title": "Input and Output",
+          "url": "https://www.hackerrank.com/challenges/cpp-input-and-output/problem",
+          "difficulty": "easy"
+        },
+        {
+          "title": "Basic Data Types",
+          "url": "https://www.hackerrank.com/challenges/c-tutorial-basic-data-types/problem",
+          "difficulty": "easy"
+        }
+      ],
+      "isRequired": true,
+      "createdAt": "2026-10-27T23:43:11.109Z",
+      "updatedAt": "2026-10-28T03:45:08.976Z",
+      "checkInTokenHash": null
+    },
+    {
+      "id": "6ae13a454a1f1597c4ed210d",
+      "_id": "6ae13a454a1f1597c4ed210d",
+      "roadmap": "6ae1057d6f12a21817c67da1",
+      "title": "Variables and Data Types",
+      "description": "Variables and Constants |\nIntegers, Floating-Point Numbers, Characters, and Booleans |\nInput and Output |\nType Conversion and Casting |\nOperators and Expressions |\nArithmetic, Comparison, and Logical Operators |\nOperator Precedence",
+      "dependencies": [
+        "6ae1370f4a1f1597c4ed1f4f"
+      ],
+      "position": 1,
+      "estimatedHours": 2,
+      "resources": [
+        {
+          "title": "W3schools.com",
+          "url": "https://www.w3schools.com/python/python_datatypes.asp"
+        }
+      ],
+      "problems": [
+        {
+          "title": "Basic Data Types",
+          "url": "https://www.hackerrank.com/challenges/c-tutorial-basic-data-types/problem",
+          "difficulty": "easy"
+        },
+        {
+          "title": "Playing with Characters",
+          "url": "https://www.hackerrank.com/challenges/playing-with-characters/problem",
+          "difficulty": "easy"
+        }
+      ],
+      "isRequired": true,
+      "createdAt": "2026-10-27T23:56:53.541Z",
+      "updatedAt": "2026-10-27T23:56:53.541Z",
+      "checkInTokenHash": null
+    },
+    {
+      "id": "6ae13b6c4a1f1597c4ed21ba",
+      "_id": "6ae13b6c4a1f1597c4ed21ba",
+      "roadmap": "6ae1057d6f12a21817c67da1",
+      "title": "Conditional Statements",
+      "description": "Boolean Conditions | If, Else If, and Else | Nested Conditions | Switch Statements | Comparison Operators | Logical Operators | Decision-Making Problems",
+      "dependencies": [
+        "6ae1370f4a1f1597c4ed1f4f"
+      ],
+      "position": 2,
+      "estimatedHours": 2,
+      "resources": [
+        {
+          "title": "Geeksforgeeks.org",
+          "url": "https://www.geeksforgeeks.org/dsa/conditional-statements-in-programming/"
+        }
+      ],
+      "problems": [
+        {
+          "title": "Conditional Statements",
+          "url": "https://www.hackerrank.com/challenges/c-tutorial-conditional-if-else/problem",
+          "difficulty": "easy"
+        },
+        {
+          "title": "Watermelon",
+          "url": "https://codeforces.com/problemset/problem/4/A",
+          "difficulty": "easy"
+        },
+        {
+          "title": "Team",
+          "url": "https://codeforces.com/problemset/problem/231/A",
+          "difficulty": "easy"
+        },
+        {
+          "title": "Next Round",
+          "url": "https://codeforces.com/problemset/problem/158/A",
+          "difficulty": "easy"
+        },
+        {
+          "title": "Petya and Strings",
+          "url": "https://codeforces.com/problemset/problem/112/A",
+          "difficulty": "easy"
+        }
+      ],
+      "isRequired": true,
+      "createdAt": "2026-10-28T00:01:48.631Z",
+      "updatedAt": "2026-10-28T00:04:35.518Z",
+      "checkInTokenHash": null
+    },
+    {
+      "id": "6ae140684a1f1597c4ed2567",
+      "_id": "6ae140684a1f1597c4ed2567",
+      "roadmap": "6ae1057d6f12a21817c67da1",
+      "title": "Loops",
+      "description": "For Loops | While Loops | Do-While Loops | Nested Loops | Break and Continue | Loop Tracing | Iteration | Loop Boundaries",
+      "dependencies": [
+        "6ae13a454a1f1597c4ed210d",
+        "6ae13b6c4a1f1597c4ed21ba"
+      ],
+      "position": 4,
+      "estimatedHours": null,
+      "resources": [
+        {
+          "title": "W3schools.com",
+          "url": "https://www.w3schools.com/programming/prog_loops.php"
+        }
+      ],
+      "problems": [
+        {
+          "title": "For Loop",
+          "url": "https://www.hackerrank.com/challenges/c-tutorial-for-loop/problem",
+          "difficulty": "easy"
+        },
+        {
+          "title": "Way Too Long Words",
+          "url": "https://codeforces.com/problemset/problem/71/A",
+          "difficulty": "easy"
+        },
+        {
+          "title": "Queue at the School",
+          "url": "https://codeforces.com/problemset/problem/266/B",
+          "difficulty": "medium"
+        },
+        {
+          "title": "Stones on the Table",
+          "url": "https://codeforces.com/problemset/problem/266/A",
+          "difficulty": "easy"
+        }
+      ],
+      "isRequired": true,
+      "createdAt": "2026-10-28T00:23:04.034Z",
+      "updatedAt": "2026-10-28T00:23:04.034Z",
+      "checkInTokenHash": null
+    },
+    {
+      "id": "6ae140ca4a1f1597c4ed2578",
+      "_id": "6ae140ca4a1f1597c4ed2578",
+      "roadmap": "6ae1057d6f12a21817c67da1",
+      "title": "Basic Problem-Solving",
+      "description": "Understanding Problem Statements | Identifying Inputs and Outputs | Breaking Problems into Steps | Algorithm Design | Dry Runs | Test Cases | Edge Cases | Debugging | Basic Time Complexity: O(1), O(n), O(n^2)",
+      "dependencies": [
+        "6ae140684a1f1597c4ed2567"
+      ],
+      "position": 3,
+      "estimatedHours": null,
+      "resources": [
+        {
+          "title": "Geeksforgeeks.org",
+          "url": "https://www.geeksforgeeks.org/computer-science-fundamentals/basic-programming-problems/"
+        }
+      ],
+      "problems": [
+        {
+          "title": "Domino Piling",
+          "url": "https://codeforces.com/problemset/problem/50/A",
+          "difficulty": "easy"
+        },
+        {
+          "title": "Bit++",
+          "url": "https://codeforces.com/problemset/problem/282/A",
+          "difficulty": "easy"
+        },
+        {
+          "title": "Beautiful Matrix",
+          "url": "https://codeforces.com/problemset/problem/263/A",
+          "difficulty": "easy"
+        },
+        {
+          "title": "Helpful Maths",
+          "url": "https://codeforces.com/problemset/problem/339/A",
+          "difficulty": "easy"
+        },
+        {
+          "title": "Stones on the Table",
+          "url": "https://codeforces.com/problemset/problem/266/A",
+          "difficulty": "easy"
+        }
+      ],
+      "isRequired": true,
+      "createdAt": "2026-10-28T00:24:42.797Z",
+      "updatedAt": "2026-10-28T00:25:24.957Z",
+      "checkInTokenHash": null
+    },
+    {
+      "id": "6ae141704a1f1597c4ed25aa",
+      "_id": "6ae141704a1f1597c4ed25aa",
+      "roadmap": "6ae1057d6f12a21817c67da1",
+      "title": "Functions",
+      "description": "Function Declaration and Definition | Parameters and Arguments | Return Values | Local and Global Variables | Pass by Value | Code Reusability | Function Decomposition | Introduction to Recursion",
+      "dependencies": [
+        "6ae140ca4a1f1597c4ed2578",
+        "6ae142324a1f1597c4ed260f"
+      ],
+      "position": 5,
+      "estimatedHours": null,
+      "resources": [
+        {
+          "title": "W3schools.com",
+          "url": "https://www.w3schools.com/programming/prog_functions.php"
+        }
+      ],
+      "problems": [
+        {
+          "title": "Functions",
+          "url": "https://www.hackerrank.com/challenges/c-tutorial-functions/problem",
+          "difficulty": "easy"
+        },
+        {
+          "title": "Recursive Digit Sum",
+          "url": "https://www.hackerrank.com/challenges/recursive-digit-sum/problem",
+          "difficulty": "medium"
+        },
+        {
+          "title": "Factorial",
+          "url": "https://www.hackerrank.com/domains/algorithms",
+          "difficulty": "easy"
+        }
+      ],
+      "isRequired": true,
+      "createdAt": "2026-10-28T00:27:28.625Z",
+      "updatedAt": "2026-10-28T00:34:23.458Z",
+      "checkInTokenHash": null
+    },
+    {
+      "id": "6ae142324a1f1597c4ed260f",
+      "_id": "6ae142324a1f1597c4ed260f",
+      "roadmap": "6ae1057d6f12a21817c67da1",
+      "title": "Nested Loops and Patterns",
+      "description": "Nested Loop Execution | Rows and Columns | Star Patterns | Number Patterns | Multiplication Tables | Loop Tracing | Counting Operations | Nested Loop Complexity",
+      "dependencies": [
+        "6ae140684a1f1597c4ed2567"
+      ],
+      "position": 6,
+      "estimatedHours": null,
+      "resources": [
+        {
+          "title": "Geeksforgeeks.org",
+          "url": "https://www.geeksforgeeks.org/python/python-nested-loops/"
+        }
+      ],
+      "problems": [
+        {
+          "title": "For Loop",
+          "url": "https://www.hackerrank.com/challenges/c-tutorial-for-loop/problem",
+          "difficulty": "easy"
+        },
+        {
+          "title": "Young Physicist",
+          "url": "https://codeforces.com/problemset/problem/69/A",
+          "difficulty": "medium"
+        },
+        {
+          "title": "Magnets",
+          "url": "https://codeforces.com/problemset/problem/344/A",
+          "difficulty": "easy"
+        },
+        {
+          "title": "Football",
+          "url": "https://codeforces.com/problemset/problem/96/A",
+          "difficulty": "easy"
+        }
+      ],
+      "isRequired": true,
+      "createdAt": "2026-10-28T00:30:42.061Z",
+      "updatedAt": "2026-10-28T00:30:42.061Z",
+      "checkInTokenHash": null
+    },
+    {
+      "id": "6ae1435826f136533572c728",
+      "_id": "6ae1435826f136533572c728",
+      "roadmap": "6ae1057d6f12a21817c67da1",
+      "title": "Arrays and Strings",
+      "description": "Array Declaration and Initialization | Array Indexing | Traversing Arrays | Updating Elements | Finding Minimum and Maximum | Array Sum | Linear Search | String Operations | Character Traversal | String Comparison | Frequency Counting",
+      "dependencies": [
+        "6ae141704a1f1597c4ed25aa"
+      ],
+      "position": 7,
+      "estimatedHours": null,
+      "resources": [
+        {
+          "title": "W3schools.com",
+          "url": "https://www.w3schools.com/cpp/cpp_strings.asp"
+        },
+        {
+          "title": "W3schools.com",
+          "url": "https://www.w3schools.com/cpp/cpp_arrays.asp"
+        }
+      ],
+      "problems": [
+        {
+          "title": "Arrays Introduction",
+          "url": "https://www.hackerrank.com/challenges/arrays-introduction/problem",
+          "difficulty": "easy"
+        },
+        {
+          "title": "Way Too Long Words",
+          "url": "https://codeforces.com/problemset/problem/71/A",
+          "difficulty": "easy"
+        },
+        {
+          "title": "Petya and Strings",
+          "url": "https://codeforces.com/problemset/problem/112/A",
+          "difficulty": "easy"
+        },
+        {
+          "title": "Anton and Letters",
+          "url": "https://codeforces.com/problemset/problem/443/A",
+          "difficulty": "easy"
+        },
+        {
+          "title": "Presents",
+          "url": "https://codeforces.com/problemset/problem/136/A",
+          "difficulty": "easy"
+        },
+        {
+          "title": "String Task",
+          "url": "https://codeforces.com/problemset/problem/118/A",
+          "difficulty": "medium"
+        }
+      ],
+      "isRequired": true,
+      "createdAt": "2026-10-28T00:35:36.400Z",
+      "updatedAt": "2026-10-28T00:38:10.609Z",
+      "checkInTokenHash": null
+    }
+  ],
+  "roadmapCycles": [
+    {
+      "id": "6ae1321437ad9ff88e47f2ff",
+      "_id": "6ae1321437ad9ff88e47f2ff",
+      "roadmap": "6ae1057d6f12a21817c67da1",
+      "order": 1,
+      "title": "Level 1",
+      "description": "Roadmap Level 0",
+      "location": "F320",
+      "difficulty": "beginner",
+      "objectives": [],
+      "prerequisites": "",
+      "startDate": "2026-11-02",
+      "endDate": "2026-12-02",
+      "sessionsPerWeek": 3,
+      "trainingDays": [
+        1,
+        2,
+        3
+      ],
+      "startTime": "16:30",
+      "sessionDurationMinutes": 120,
+      "timeZone": "Africa/Cairo",
+      "registrationOpensAt": "2026-10-25T20:59:00.000Z",
+      "registrationClosesAt": "2026-12-01T14:29:00.000Z",
+      "capacity": 50,
+      "enrollmentCount": 0,
+      "attendancePoints": 15,
+      "status": "published",
+      "createdAt": "2026-10-27T23:21:56.418Z",
+      "updatedAt": "2026-10-31T15:28:51.176Z",
+      "checkInTokenHash": null
+    }
+  ],
+  "roadmapSessions": [
+    {
+      "id": "6ae1322599b37eb856577b79",
+      "_id": "6ae1322599b37eb856577b79",
+      "cycle": "6ae1321437ad9ff88e47f2ff",
+      "ordinal": 1,
+      "attendancePoints": 15,
+      "checkInClosesAt": null,
+      "checkInOpensAt": null,
+      "createdAt": "2026-10-27T23:22:13.065Z",
+      "description": "",
+      "endsAt": "2026-11-02T16:30:00.000Z",
+      "instructor": "",
+      "materials": [],
+      "problemSets": [],
+      "sessionDurationMinutes": 120,
+      "startsAt": "2026-11-02T14:30:00.000Z",
+      "status": "scheduled",
+      "timeZone": "Africa/Cairo",
+      "title": "Session 1",
+      "updatedAt": "2026-11-01T08:38:04.735Z",
+      "checkInTokenHash": null
+    },
+    {
+      "id": "6ae1322599b37eb856577b7a",
+      "_id": "6ae1322599b37eb856577b7a",
+      "cycle": "6ae1321437ad9ff88e47f2ff",
+      "ordinal": 2,
+      "attendancePoints": 15,
+      "checkInClosesAt": null,
+      "checkInOpensAt": null,
+      "createdAt": "2026-10-27T23:22:13.071Z",
+      "description": "",
+      "endsAt": "2026-11-03T16:30:00.000Z",
+      "instructor": "",
+      "materials": [],
+      "problemSets": [],
+      "sessionDurationMinutes": 120,
+      "startsAt": "2026-11-03T14:30:00.000Z",
+      "status": "scheduled",
+      "timeZone": "Africa/Cairo",
+      "title": "Session 2",
+      "updatedAt": "2026-10-27T23:22:13.071Z",
+      "checkInTokenHash": null
+    },
+    {
+      "id": "6ae1322599b37eb856577b7b",
+      "_id": "6ae1322599b37eb856577b7b",
+      "cycle": "6ae1321437ad9ff88e47f2ff",
+      "ordinal": 3,
+      "attendancePoints": 15,
+      "checkInClosesAt": null,
+      "checkInOpensAt": null,
+      "createdAt": "2026-10-27T23:22:13.075Z",
+      "description": "",
+      "endsAt": "2026-11-04T16:30:00.000Z",
+      "instructor": "",
+      "materials": [],
+      "problemSets": [],
+      "sessionDurationMinutes": 120,
+      "startsAt": "2026-11-04T14:30:00.000Z",
+      "status": "scheduled",
+      "timeZone": "Africa/Cairo",
+      "title": "Session 3",
+      "updatedAt": "2026-10-27T23:22:13.075Z",
+      "checkInTokenHash": null
+    },
+    {
+      "id": "6ae1322599b37eb856577b7c",
+      "_id": "6ae1322599b37eb856577b7c",
+      "cycle": "6ae1321437ad9ff88e47f2ff",
+      "ordinal": 4,
+      "attendancePoints": 15,
+      "checkInClosesAt": null,
+      "checkInOpensAt": null,
+      "createdAt": "2026-10-27T23:22:13.078Z",
+      "description": "",
+      "endsAt": "2026-11-09T16:30:00.000Z",
+      "instructor": "",
+      "materials": [],
+      "problemSets": [],
+      "sessionDurationMinutes": 120,
+      "startsAt": "2026-11-09T14:30:00.000Z",
+      "status": "scheduled",
+      "timeZone": "Africa/Cairo",
+      "title": "Session 4",
+      "updatedAt": "2026-10-27T23:22:13.078Z",
+      "checkInTokenHash": null
+    },
+    {
+      "id": "6ae1322599b37eb856577b7d",
+      "_id": "6ae1322599b37eb856577b7d",
+      "cycle": "6ae1321437ad9ff88e47f2ff",
+      "ordinal": 5,
+      "attendancePoints": 15,
+      "checkInClosesAt": null,
+      "checkInOpensAt": null,
+      "createdAt": "2026-10-27T23:22:13.082Z",
+      "description": "",
+      "endsAt": "2026-11-10T16:30:00.000Z",
+      "instructor": "",
+      "materials": [],
+      "problemSets": [],
+      "sessionDurationMinutes": 120,
+      "startsAt": "2026-11-10T14:30:00.000Z",
+      "status": "scheduled",
+      "timeZone": "Africa/Cairo",
+      "title": "Session 5",
+      "updatedAt": "2026-10-27T23:22:13.082Z",
+      "checkInTokenHash": null
+    },
+    {
+      "id": "6ae1322599b37eb856577b7e",
+      "_id": "6ae1322599b37eb856577b7e",
+      "cycle": "6ae1321437ad9ff88e47f2ff",
+      "ordinal": 6,
+      "attendancePoints": 15,
+      "checkInClosesAt": null,
+      "checkInOpensAt": null,
+      "createdAt": "2026-10-27T23:22:13.085Z",
+      "description": "",
+      "endsAt": "2026-11-11T16:30:00.000Z",
+      "instructor": "",
+      "materials": [],
+      "problemSets": [],
+      "sessionDurationMinutes": 120,
+      "startsAt": "2026-11-11T14:30:00.000Z",
+      "status": "scheduled",
+      "timeZone": "Africa/Cairo",
+      "title": "Session 6",
+      "updatedAt": "2026-10-27T23:22:13.085Z",
+      "checkInTokenHash": null
+    },
+    {
+      "id": "6ae1322599b37eb856577b7f",
+      "_id": "6ae1322599b37eb856577b7f",
+      "cycle": "6ae1321437ad9ff88e47f2ff",
+      "ordinal": 7,
+      "attendancePoints": 15,
+      "checkInClosesAt": null,
+      "checkInOpensAt": null,
+      "createdAt": "2026-10-27T23:22:13.088Z",
+      "description": "",
+      "endsAt": "2026-11-16T16:30:00.000Z",
+      "instructor": "",
+      "materials": [],
+      "problemSets": [],
+      "sessionDurationMinutes": 120,
+      "startsAt": "2026-11-16T14:30:00.000Z",
+      "status": "scheduled",
+      "timeZone": "Africa/Cairo",
+      "title": "Session 7",
+      "updatedAt": "2026-10-27T23:22:13.088Z",
+      "checkInTokenHash": null
+    },
+    {
+      "id": "6ae1322599b37eb856577b80",
+      "_id": "6ae1322599b37eb856577b80",
+      "cycle": "6ae1321437ad9ff88e47f2ff",
+      "ordinal": 8,
+      "attendancePoints": 15,
+      "checkInClosesAt": null,
+      "checkInOpensAt": null,
+      "createdAt": "2026-10-27T23:22:13.090Z",
+      "description": "",
+      "endsAt": "2026-11-17T16:30:00.000Z",
+      "instructor": "",
+      "materials": [],
+      "problemSets": [],
+      "sessionDurationMinutes": 120,
+      "startsAt": "2026-11-17T14:30:00.000Z",
+      "status": "scheduled",
+      "timeZone": "Africa/Cairo",
+      "title": "Session 8",
+      "updatedAt": "2026-10-27T23:22:13.090Z",
+      "checkInTokenHash": null
+    },
+    {
+      "id": "6ae1322599b37eb856577b81",
+      "_id": "6ae1322599b37eb856577b81",
+      "cycle": "6ae1321437ad9ff88e47f2ff",
+      "ordinal": 9,
+      "attendancePoints": 15,
+      "checkInClosesAt": null,
+      "checkInOpensAt": null,
+      "createdAt": "2026-10-27T23:22:13.093Z",
+      "description": "",
+      "endsAt": "2026-11-18T16:30:00.000Z",
+      "instructor": "",
+      "materials": [],
+      "problemSets": [],
+      "sessionDurationMinutes": 120,
+      "startsAt": "2026-11-18T14:30:00.000Z",
+      "status": "scheduled",
+      "timeZone": "Africa/Cairo",
+      "title": "Session 9",
+      "updatedAt": "2026-10-27T23:22:13.093Z",
+      "checkInTokenHash": null
+    },
+    {
+      "id": "6ae1322599b37eb856577b82",
+      "_id": "6ae1322599b37eb856577b82",
+      "ordinal": 10,
+      "cycle": "6ae1321437ad9ff88e47f2ff",
+      "attendancePoints": 15,
+      "checkInClosesAt": null,
+      "checkInOpensAt": null,
+      "createdAt": "2026-10-27T23:22:13.096Z",
+      "description": "",
+      "endsAt": "2026-11-23T16:30:00.000Z",
+      "instructor": "",
+      "materials": [],
+      "problemSets": [],
+      "sessionDurationMinutes": 120,
+      "startsAt": "2026-11-23T14:30:00.000Z",
+      "status": "scheduled",
+      "timeZone": "Africa/Cairo",
+      "title": "Session 10",
+      "updatedAt": "2026-10-27T23:22:13.096Z",
+      "checkInTokenHash": null
+    },
+    {
+      "id": "6ae1322599b37eb856577b83",
+      "_id": "6ae1322599b37eb856577b83",
+      "cycle": "6ae1321437ad9ff88e47f2ff",
+      "ordinal": 11,
+      "attendancePoints": 15,
+      "checkInClosesAt": null,
+      "checkInOpensAt": null,
+      "createdAt": "2026-10-27T23:22:13.099Z",
+      "description": "",
+      "endsAt": "2026-11-24T16:30:00.000Z",
+      "instructor": "",
+      "materials": [],
+      "problemSets": [],
+      "sessionDurationMinutes": 120,
+      "startsAt": "2026-11-24T14:30:00.000Z",
+      "status": "scheduled",
+      "timeZone": "Africa/Cairo",
+      "title": "Session 11",
+      "updatedAt": "2026-10-27T23:22:13.099Z",
+      "checkInTokenHash": null
+    },
+    {
+      "id": "6ae1322599b37eb856577b84",
+      "_id": "6ae1322599b37eb856577b84",
+      "cycle": "6ae1321437ad9ff88e47f2ff",
+      "ordinal": 12,
+      "attendancePoints": 15,
+      "checkInClosesAt": null,
+      "checkInOpensAt": null,
+      "createdAt": "2026-10-27T23:22:13.101Z",
+      "description": "",
+      "endsAt": "2026-11-25T16:30:00.000Z",
+      "instructor": "",
+      "materials": [],
+      "problemSets": [],
+      "sessionDurationMinutes": 120,
+      "startsAt": "2026-11-25T14:30:00.000Z",
+      "status": "scheduled",
+      "timeZone": "Africa/Cairo",
+      "title": "Session 12",
+      "updatedAt": "2026-10-27T23:22:13.101Z",
+      "checkInTokenHash": null
+    },
+    {
+      "id": "6ae1322599b37eb856577b85",
+      "_id": "6ae1322599b37eb856577b85",
+      "cycle": "6ae1321437ad9ff88e47f2ff",
+      "ordinal": 13,
+      "attendancePoints": 15,
+      "checkInClosesAt": null,
+      "checkInOpensAt": null,
+      "createdAt": "2026-10-27T23:22:13.104Z",
+      "description": "",
+      "endsAt": "2026-11-30T16:30:00.000Z",
+      "instructor": "",
+      "materials": [],
+      "problemSets": [],
+      "sessionDurationMinutes": 120,
+      "startsAt": "2026-11-30T14:30:00.000Z",
+      "status": "scheduled",
+      "timeZone": "Africa/Cairo",
+      "title": "Session 13",
+      "updatedAt": "2026-10-27T23:22:13.104Z",
+      "checkInTokenHash": null
+    },
+    {
+      "id": "6ae1322599b37eb856577b86",
+      "_id": "6ae1322599b37eb856577b86",
+      "cycle": "6ae1321437ad9ff88e47f2ff",
+      "ordinal": 14,
+      "attendancePoints": 15,
+      "checkInClosesAt": null,
+      "checkInOpensAt": null,
+      "createdAt": "2026-10-27T23:22:13.106Z",
+      "description": "",
+      "endsAt": "2026-12-01T16:30:00.000Z",
+      "instructor": "",
+      "materials": [],
+      "problemSets": [],
+      "sessionDurationMinutes": 120,
+      "startsAt": "2026-12-01T14:30:00.000Z",
+      "status": "scheduled",
+      "timeZone": "Africa/Cairo",
+      "title": "Session 14",
+      "updatedAt": "2026-10-27T23:22:13.106Z",
+      "checkInTokenHash": null
+    },
+    {
+      "id": "6ae1322599b37eb856577b87",
+      "_id": "6ae1322599b37eb856577b87",
+      "cycle": "6ae1321437ad9ff88e47f2ff",
+      "ordinal": 15,
+      "attendancePoints": 15,
+      "checkInClosesAt": null,
+      "checkInOpensAt": null,
+      "createdAt": "2026-10-27T23:22:13.108Z",
+      "description": "",
+      "endsAt": "2026-12-02T16:30:00.000Z",
+      "instructor": "",
+      "materials": [],
+      "problemSets": [],
+      "sessionDurationMinutes": 120,
+      "startsAt": "2026-12-02T14:30:00.000Z",
+      "status": "scheduled",
+      "timeZone": "Africa/Cairo",
+      "title": "Session 15",
+      "updatedAt": "2026-10-27T23:22:13.108Z",
+      "checkInTokenHash": null
+    }
+  ],
+  "events": [
+    {
+      "id": "6ad742817ef7b91e0d760a7b",
+      "_id": "6ad742817ef7b91e0d760a7b",
+      "title": "ICPC-Orientation",
+      "slug": "icpc-orientation-a6fd6b",
+      "description": "ICPC Orientation",
+      "category": "Orientation",
+      "startsAt": "2026-11-05T14:00:00.000Z",
+      "endsAt": "2026-11-05T17:00:00.000Z",
+      "registrationDeadline": "2026-10-21T09:29:00.000Z",
+      "checkInOpensAt": null,
+      "checkInClosesAt": null,
+      "attendancePoints": 25,
+      "mode": "offline",
+      "location": "F 324",
+      "capacity": 100,
+      "registrationCount": 0,
+      "status": "published",
+      "deletedAt": null,
+      "createdBy": "6ad6525be1fd2b68493522c1",
+      "createdAt": "2026-10-20T10:29:21.637Z",
+      "updatedAt": "2026-11-01T05:14:32.455Z",
+      "coverImageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-26TkwNjCaxS_ahrpsXH1zop3M4Pr4-D8jX5QduOsqw&s=10",
+      "checkInTokenHash": null
+    },
+    {
+      "id": "evt_season2026_kickoff",
+      "_id": "evt_season2026_kickoff",
+      "title": "Level 1 Training Kickoff & Problem Solving Drill",
+      "slug": "level-1-kickoff-2026",
+      "description": "Live kickoff workshop for the Level 1 Competitive Programming cycle at Pharos University. Bring your laptop and solve your first contest sheet!",
+      "coverImageUrl": "",
+      "category": "Workshop",
+      "startsAt": "2026-11-12T14:00:00.000Z",
+      "endsAt": "2026-11-12T17:00:00.000Z",
+      "registrationDeadline": "2026-11-15T13:30:00.000Z",
+      "publishedAt": "2026-11-01T08:00:00.000Z",
+      "checkInOpensAt": null,
+      "checkInClosesAt": null,
+      "checkInTokenHash": null,
+      "attendancePoints": 25,
+      "mode": "offline",
+      "location": "F320",
+      "capacity": 100,
+      "registrationCount": 0,
+      "status": "published",
+      "deletedAt": null,
+      "createdBy": "system_seed",
+      "createdAt": "2026-11-01T08:00:00.000Z",
+      "updatedAt": "2026-11-01T08:00:00.000Z"
+    }
+  ]
+}

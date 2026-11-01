@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
-import { api } from "../../../shared/services/api.js";
+import { ArrowRight, Github } from "lucide-react";
+import { api, signInWithOAuthProvider } from "../../../shared/services/api.js";
 import { normalizeUsername, isValidUsername } from '../utils/username.js';
+
 function StudentIdField({
   id,
   label,
@@ -13,6 +14,7 @@ function StudentIdField({
       <label htmlFor={id}>{label}<input id={id} autoComplete="off" inputMode="numeric" pattern="[0-9]{4,20}" title="Enter 4–20 digits." required maxLength="20" value={value} onChange={onChange} /></label>
     </div>;
 }
+
 export function AuthPage({
   session
 }) {
@@ -25,12 +27,10 @@ export function AuthPage({
     password: ''
   });
   const [error, setError] = useState('');
-  const [googleButtonError, setGoogleButtonError] = useState('');
   const [busy, setBusy] = useState(false);
+  const [oauthProviderBusy, setOauthProviderBusy] = useState('');
   const navigate = useNavigate();
-  const googleButtonRef = useRef(null);
   const authRequestInFlight = useRef(false);
-  const googleClientId = (import.meta.env.VITE_GOOGLE_CLIENT_ID || '').trim();
   const from = '/';
 
   const acceptAuthentication = result => {
@@ -45,107 +45,33 @@ export function AuthPage({
     navigate(from, { replace: true });
   };
 
-  const googleCredentialHandler = useRef(null);
-  googleCredentialHandler.current = async response => {
+  const handleOAuthSignIn = async providerName => {
     if (busy || authRequestInFlight.current) return;
-    if (!response?.credential) {
-      setError('Google sign-in did not return an ID token. Please try again.');
-      return;
-    }
     authRequestInFlight.current = true;
     setBusy(true);
+    setOauthProviderBusy(providerName);
     setError('');
     try {
-      const result = await api('/auth/google', {
+      const oauthProfile = await signInWithOAuthProvider(providerName);
+      const result = await api('/auth/oauth', {
         method: 'POST',
-        body: JSON.stringify({ idToken: response.credential })
+        body: JSON.stringify(oauthProfile)
       });
       acceptAuthentication(result);
     } catch (reason) {
-      setError(reason.message);
+      setError(reason?.message || `${providerName} sign-in could not be completed. Please try again.`);
     } finally {
       authRequestInFlight.current = false;
       setBusy(false);
+      setOauthProviderBusy('');
     }
   };
-
-  useEffect(() => {
-    if (!googleClientId || !googleButtonRef.current) return undefined;
-    let active = true;
-    let initialized = false;
-    let resizeObserver;
-    let script;
-
-    const renderGoogleButton = () => {
-      const googleIdentity = window.google?.accounts?.id;
-      const container = googleButtonRef.current;
-      if (!active || initialized || !googleIdentity || !container) return;
-      const width = Math.min(Math.floor(container.getBoundingClientRect().width), 400);
-      if (width < 1) return;
-      try {
-        googleIdentity.initialize({
-          client_id: googleClientId,
-          callback: response => googleCredentialHandler.current?.(response),
-        });
-        googleIdentity.renderButton(container, {
-          theme: 'outline',
-          size: 'large',
-          text: 'continue_with',
-          shape: 'rectangular',
-          width,
-        });
-        initialized = true;
-        setGoogleButtonError('');
-      } catch {
-        setGoogleButtonError('Google sign-in could not be initialized. Please check the configured client ID.');
-      }
-    };
-
-    const source = 'https://accounts.google.com/gsi/client';
-    const handleScriptLoad = () => {
-      if (!active) return;
-      if (!window.google?.accounts?.id) {
-        setGoogleButtonError('Google Identity Services loaded without its sign-in API. Please try again.');
-        return;
-      }
-      if (typeof ResizeObserver !== 'undefined') {
-        resizeObserver = new ResizeObserver(renderGoogleButton);
-        resizeObserver.observe(googleButtonRef.current);
-      }
-      renderGoogleButton();
-    };
-    const handleScriptError = () => {
-      if (active) setGoogleButtonError('Google sign-in could not load. Check your connection and try again.');
-    };
-
-    if (window.google?.accounts?.id) {
-      handleScriptLoad();
-    } else {
-      script = document.querySelector(`script[src="${source}"]`);
-      const isNewScript = !script;
-      if (!script) {
-        script = document.createElement('script');
-        script.src = source;
-        script.async = true;
-        script.defer = true;
-      }
-      script.addEventListener('load', handleScriptLoad);
-      script.addEventListener('error', handleScriptError, { once: true });
-      if (isNewScript) document.head.appendChild(script);
-    }
-
-    return () => {
-      active = false;
-      resizeObserver?.disconnect();
-      script?.removeEventListener('load', handleScriptLoad);
-      script?.removeEventListener('error', handleScriptError);
-    };
-  }, [googleClientId]);
 
   useEffect(() => {
     setMode(new URLSearchParams(location.search).get('mode') === 'register' ? 'register' : 'login');
     setError('');
   }, [location.search]);
+
   const submit = async event => {
     event.preventDefault();
     if (authRequestInFlight.current) return;
@@ -191,17 +117,36 @@ export function AuthPage({
       setBusy(false);
     }
   };
+
   if (session.user) return <Navigate to={session.user.username ? '/' : '/onboarding/username'} replace />;
+
   return <main className="auth-layout">
       <div className="auth-art"><h1>Your next<br />breakthrough<br /><span>starts here</span></h1><div className="auth-symbol">{'{ }'}</div></div>
       <form className="auth-form" onSubmit={submit}>
         <span className="eyebrow">{mode === 'login' ? 'WELCOME BACK' : 'JOIN OUR FAMILY'}</span>
         <h2>{mode === 'login' ? 'Log in' : 'Create your account'}</h2>
-        {googleClientId ? <>
-          <div className="google-signin-button" ref={googleButtonRef} />
-          {googleButtonError && <div className="notice error-notice" role="alert">{googleButtonError}</div>}
-          <div className="auth-divider"><span>or continue with email</span></div>
-        </> : <div className="notice error-notice" role="status">Google sign-in is unavailable. Configure VITE_GOOGLE_CLIENT_ID for this frontend deployment.</div>}
+        <div className="oauth-provider-stack" style={{ display: 'grid', gap: '0.65rem', marginBottom: '0.75rem' }}>
+          <button
+            type="button"
+            className="button button-outline"
+            style={{ width: '100%', justifyContent: 'center' }}
+            disabled={busy}
+            onClick={() => handleOAuthSignIn('google')}
+          >
+            {oauthProviderBusy === 'google' ? 'Connecting Google...' : 'Continue with Google'}
+          </button>
+          <button
+            type="button"
+            className="button button-outline"
+            style={{ width: '100%', justifyContent: 'center' }}
+            disabled={busy}
+            onClick={() => handleOAuthSignIn('github')}
+          >
+            <Github size={17} aria-hidden="true" />
+            {oauthProviderBusy === 'github' ? 'Connecting GitHub...' : 'Continue with GitHub'}
+          </button>
+        </div>
+        <div className="auth-divider"><span>or continue with email</span></div>
         {mode === 'register' && <label>Your name<input autoComplete="name" required maxLength="80" value={form.name} onChange={e => setForm({
           ...form,
           name: e.target.value
@@ -231,11 +176,11 @@ export function AuthPage({
       </form>
     </main>;
 }
+
 export function UsernameSetupPage({
   session
 }) {
   const navigate = useNavigate();
-  const location = useLocation();
   const [username, setUsername] = useState(session.user?.username || '');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -282,6 +227,7 @@ export function UsernameSetupPage({
       </section>
     </main>;
 }
+
 export function RequireUsername({
   session,
   children

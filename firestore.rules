@@ -1,0 +1,245 @@
+rules_version = '2';
+
+// ===============================================================
+// Assumed Data Model — ICPC PUA (Firebase Spark Architecture)
+// ===============================================================
+//
+// 1. Collection: admins/{uid}
+//    - Stores admin marker documents (uid, email, grantedAt).
+//
+// 2. Collection: users/{uid}
+//    - Public user profiles & leaderboard records.
+//    - Fields: uid, fullName, username, role ('user' | 'admin'),
+//      attendancePoints, avatar, bio, faculty, academicYear,
+//      codeforcesHandle, githubUrl, linkedinUrl, createdAt, updatedAt.
+//
+// 3. Collection: userSecrets/{uid}
+//    - Private account settings (email, studentId, phone).
+//    - Restricted strictly to document owner or admin.
+//
+// 4. Collection: usernames/{username}
+//    - Deterministic uniqueness lock mapping lowercase username -> { uid }.
+//
+// 5. Collection: studentIds/{studentId}
+//    - Deterministic uniqueness lock mapping studentId (4-20 digits) -> { uid }.
+//    - Immutable once claimed by a student; only admins can update/delete.
+//
+// 6. Collection: events/{eventId}
+//    - Club events, workshops, and contests.
+//    - Fields: title, status ('draft' | 'published'), registrationCount,
+//      attendancePoints, checkinPin, startDate, endDate, createdAt, updatedAt.
+//
+// 7. Collection: registrations/{regId}
+//    - Deterministic ID: {eventId}_{uid}
+//    - Fields: event, user, checkedInAt, pointsAwarded, createdAt, updatedAt.
+//
+// 8. Collection: roadmaps/{roadmapId}
+//    - Learning roadmaps ('draft' | 'published' | 'completed').
+//
+// 9. Collection: roadmapNodes/{nodeId}
+//    - Nodes/topics inside a roadmap.
+//
+// 10. Collection: roadmapCycles/{cycleId}
+//     - Cohort cycles for roadmaps ('draft' | 'published' | 'completed').
+//     - Fields: roadmap, status, enrollmentCount, updatedAt.
+//
+// 11. Collection: roadmapSessions/{sessionId}
+//     - Scheduled sessions within a roadmap cycle.
+//
+// 12. Collection: roadmapEnrollments/{enrollmentId}
+//     - Deterministic ID: {cycleId}_{uid}
+//     - Fields: cycle, roadmap, student, status, enrolledAt.
+//
+// 13. Collection: roadmapAttendance/{attendanceId}
+//     - Deterministic ID: {sessionId}_{uid}
+//     - Fields: session, cycle, roadmap, student, pointsAwarded, pointsReversed.
+//
+// 14. Collection: roadmapProgress/{progressId}
+//     - Deterministic ID: {roadmapId}_{uid}
+//     - Fields: roadmap, student, completedNodes, updatedAt.
+//
+// 15. Collection: notifications/{notifId}
+//     - User notifications.
+//     - Fields: user, title, message, type, readAt, createdAt, updatedAt.
+// ===============================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
+        request.auth.token.email == 'enjoyplayax@gmail.com'
+      );
+    }
+
+    // ===============================================================
+    // Collection Rules
+    // ===============================================================
+
+    match /admins/{uid} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    match /users/{uid} {
+      allow read: if true;
+      allow create: if isOwner(uid)
+        && (!('role' in request.resource.data) || request.resource.data.role == 'user' || isAdmin())
+        && (!('attendancePoints' in request.resource.data) || request.resource.data.attendancePoints == 0);
+      allow update: if isAdmin() || (
+        isOwner(uid) && (
+          !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role']) ||
+          request.resource.data.role == resource.data.role
+        )
+      );
+      allow delete: if isAdmin();
+    }
+
+    match /userSecrets/{uid} {
+      allow read, write: if isOwner(uid) || isAdmin();
+    }
+
+    match /usernames/{username} {
+      allow read: if true;
+      allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
+      allow update, delete: if isAdmin() || (isSignedIn() && resource.data.uid == request.auth.uid);
+    }
+
+    match /studentIds/{studentId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn()
+        && request.resource.data.uid == request.auth.uid
+        && studentId.matches('^[0-9]{4,20}$');
+      allow update, delete: if isAdmin();
+    }
+
+    match /events/{eventId} {
+      allow read: if resource.data.status == 'published' || isAdmin();
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin() || (
+        isSignedIn()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['registrationCount', 'updatedAt'])
+        && (
+          request.resource.data.registrationCount == resource.data.registrationCount + 1 ||
+          request.resource.data.registrationCount == resource.data.registrationCount - 1
+        )
+      );
+    }
+
+    match /registrations/{regId} {
+      allow read: if true;
+      allow create: if isSignedIn()
+        && request.resource.data.user == request.auth.uid
+        && regId == request.resource.data.event + '_' + request.auth.uid
+        && request.resource.data.checkedInAt == null
+        && request.resource.data.pointsAwarded == 0;
+      allow update: if isAdmin() || (
+        isSignedIn()
+        && resource.data.user == request.auth.uid
+        && resource.data.checkedInAt == null
+        && request.resource.data.checkedInAt != null
+        && request.resource.data.pointsAwarded == get(/databases/$(database)/documents/events/$(resource.data.event)).data.attendancePoints
+      );
+      allow delete: if isAdmin() || (
+        isSignedIn()
+        && resource.data.user == request.auth.uid
+        && resource.data.checkedInAt == null
+      );
+    }
+
+    match /roadmaps/{roadmapId} {
+      allow read: if resource.data.status in ['published', 'completed'] || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    match /roadmapNodes/{nodeId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /roadmapCycles/{cycleId} {
+      allow read: if resource.data.status in ['published', 'completed'] || isAdmin();
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin() || (
+        isSignedIn()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['enrollmentCount', 'updatedAt'])
+        && request.resource.data.enrollmentCount == resource.data.enrollmentCount + 1
+      );
+    }
+
+    match /roadmapSessions/{sessionId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    match /roadmapEnrollments/{enrollmentId} {
+      allow read: if isSignedIn() && (
+        resource == null ||
+        resource.data.student == request.auth.uid ||
+        isAdmin()
+      );
+      allow create: if isSignedIn()
+        && request.resource.data.student == request.auth.uid
+        && enrollmentId == request.resource.data.cycle + '_' + request.auth.uid;
+      allow update, delete: if isAdmin();
+    }
+
+    match /roadmapAttendance/{attendanceId} {
+      allow read: if isSignedIn() && (
+        resource == null ||
+        resource.data.student == request.auth.uid ||
+        isAdmin()
+      );
+      allow create: if isAdmin() || (
+        isSignedIn()
+        && request.resource.data.student == request.auth.uid
+        && attendanceId == request.resource.data.session + '_' + request.auth.uid
+        && request.resource.data.pointsReversed == 0
+      );
+      allow update, delete: if isAdmin();
+    }
+
+    match /roadmapProgress/{progressId} {
+      allow read: if isSignedIn() && (
+        resource == null ||
+        resource.data.student == request.auth.uid ||
+        isAdmin()
+      );
+      allow create, update: if isSignedIn()
+        && request.resource.data.student == request.auth.uid
+        && progressId == request.resource.data.roadmap + '_' + request.auth.uid;
+      allow delete: if isAdmin();
+    }
+
+    match /notifications/{notifId} {
+      allow read: if isSignedIn() && (
+        resource.data.user == request.auth.uid ||
+        isAdmin()
+      );
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin() || (
+        isSignedIn()
+        && resource.data.user == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['readAt', 'updatedAt'])
+      );
+    }
+
+    // Default deny for any unmatched paths
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,8 +1,26 @@
+# Environment & Secrets
 Backend/.env
 Frontend/.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
 Backend/node_modules/
 Frontend/node_modules/
+
+# Production Builds & Temporary Serving
+dist/
 Frontend/dist/
-node_modules/
-.github/
+Frontend/serve_spa.mjs
+.vercel/
+
+# Logs & OS artifacts
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.DS_Store
+Thumbs.db
 Backend/backup/

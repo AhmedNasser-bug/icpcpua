@@ -59,9 +59,7 @@ export function SettingsPage({
   const [pointsLoading, setPointsLoading] = useState(false);
   const [pointsError, setPointsError] = useState('');
   const [pointsReload, setPointsReload] = useState(0);
-  const [pointsVerificationRequired, setPointsVerificationRequired] = useState(
-    session.user.role === 'user' && session.user.profile?.codeforcesVerification?.status !== 'verified',
-  );
+  const [pointsVerificationRequired, setPointsVerificationRequired] = useState(false);
   const [codeforcesVerification, setCodeforcesVerification] = useState(
     session.user.profile?.codeforcesVerification || { status: 'unverified' },
   );
@@ -112,13 +110,6 @@ export function SettingsPage({
   }, [section, session.token]);
   useEffect(() => {
     if (section !== 'points') return undefined;
-    if (session.user.role === 'user' && session.user.profile?.codeforcesVerification?.status !== 'verified') {
-      setPointsEntries([]);
-      setPointsVerificationRequired(true);
-      setPointsLoading(false);
-      setPointsError('');
-      return undefined;
-    }
     let active = true;
     setPointsLoading(true);
     setPointsError('');
@@ -173,9 +164,9 @@ export function SettingsPage({
         body: JSON.stringify({ handle: codeforcesHandle.trim() }),
       });
       saveCodeforcesVerification(result.verification);
-      setCodeforcesToken(result.token);
+      setCodeforcesToken(result.token || '');
       setCodeforcesChangingHandle(false);
-      setCodeforcesMessage('Token generated. Add it to the First Name English field on Codeforces, then check verification.');
+      setCodeforcesMessage(result.message || 'Self-reported Codeforces handle saved (unverified).');
     } catch (reason) {
       setCodeforcesError(reason.message);
     } finally {
@@ -503,54 +494,25 @@ export function SettingsPage({
         </div> : <p className="points-history-message">No points have been recorded yet. Points from checked-in events and attended training sessions will appear here.</p>}
       </section>}
       {section === 'codeforces' && <section className="settings-card codeforces-verification-card" aria-labelledby="codeforces-verification-title">
-        <span className="eyebrow">ACCOUNT VERIFICATION</span>
-        <h2 id="codeforces-verification-title">Codeforces verification</h2>
-        <p>Verify that you own your Codeforces account to access your personal student dashboard data.</p>
-        {codeforcesLoading ? <p className="points-history-message" role="status">Loading verification status...</p> : <>
-          {codeforcesVerification.status === 'verified' && !codeforcesChangingHandle ? <div className="codeforces-verified-state" role="status">
-            <CheckCircle2 size={21} aria-hidden="true" />
-            <div><strong>Codeforces account verified</strong><span><a href={`https://codeforces.com/profile/${encodeURIComponent(codeforcesVerification.handle)}`} target="_blank" rel="noopener noreferrer">{codeforcesVerification.handle} <ExternalLink size={14} aria-hidden="true" /></a></span>
-              {codeforcesVerification.verifiedAt && <small>Verified {new Date(codeforcesVerification.verifiedAt).toLocaleDateString()}</small>}
-              <button className="button button-outline" type="button" onClick={() => {
-                setCodeforcesHandle('');
-                setCodeforcesError('');
-                setCodeforcesMessage('');
-                setCodeforcesChangingHandle(true);
-              }}>Change handle</button>
+        <span className="eyebrow">COMPETITIVE PROGRAMMING</span>
+        <h2 id="codeforces-verification-title">Codeforces handle</h2>
+        <p>Link your self-reported Codeforces handle to display on your student profile and dashboard (optional, unverified).</p>
+        {codeforcesLoading ? <p className="points-history-message" role="status">Loading Codeforces handle...</p> : <>
+          {codeforcesVerification.handle && !codeforcesChangingHandle && <div className="codeforces-verified-state" role="status" style={{ marginBottom: '1rem' }}>
+            <Code2 size={21} aria-hidden="true" />
+            <div><strong>Unverified handle linked</strong><span><a href={`https://codeforces.com/profile/${encodeURIComponent(codeforcesVerification.handle)}`} target="_blank" rel="noopener noreferrer">@{codeforcesVerification.handle} <ExternalLink size={14} aria-hidden="true" /></a></span>
+              <small>Status: Self-reported (unverified)</small>
             </div>
-          </div> : <>
-            {codeforcesChangingHandle && <div className="notice info-notice" role="status">
-              Generate a new verification token for the replacement handle. Your current verification remains active until you start verification for that handle.
-            </div>}
-            <form onSubmit={generateCodeforcesToken}>
-              <label htmlFor="codeforces-handle">Codeforces handle
-                <input id="codeforces-handle" name="handle" autoComplete="off" maxLength="24" pattern="[A-Za-z0-9._-]{3,24}" required value={codeforcesHandle} onChange={event => setCodeforcesHandle(event.target.value)} />
-              </label>
-              <button className="button button-dark" type="submit" disabled={codeforcesBusy}>{codeforcesBusy ? 'Checking handle...' : codeforcesVerification.status === 'pending' ? 'Generate a new token' : 'Generate token'} <ArrowRight size={16} /></button>
-              {codeforcesChangingHandle && <button className="button button-outline codeforces-cancel-change" type="button" onClick={() => {
-                setCodeforcesChangingHandle(false);
-                setCodeforcesHandle(codeforcesVerification.handle || '');
-                setCodeforcesError('');
-              }}>Cancel</button>}
-            </form>
-            {codeforcesVerification.status === 'expired' && <div className="notice error-notice" role="status">Your previous token expired. Generate a new token to continue.</div>}
-            {codeforcesVerification.status === 'pending' && <div className="codeforces-pending-state" role="status">
-              <strong>Verification pending for {codeforcesVerification.handle}</strong>
-              {!codeforcesToken && <p>The token is only shown when generated. You can check again or generate a new token.</p>}
-              {codeforcesToken && <div className="codeforces-token-row"><code>{codeforcesToken}</code><button className="button button-outline" type="button" onClick={copyCodeforcesToken} aria-label="Copy verification token">{codeforcesCopied ? <Check size={16} /> : <Copy size={16} />}{codeforcesCopied ? 'Copied' : 'Copy token'}</button></div>}
-              <ol>
-                <li>Open your <a href="https://codeforces.com/settings/social" target="_blank" rel="noopener noreferrer">Codeforces profile settings <ExternalLink size={14} aria-hidden="true" /></a>.</li>
-                <li>Put the generated token in the <strong>First Name English</strong> field.</li>
-                <li>Save your changes on Codeforces.</li>
-                <li>Return here and click <strong>Check verification</strong>.</li>
-              </ol>
-              {codeforcesToken && <p className="codeforces-token-expiry">Token expires {codeforcesVerification.expiresAt ? new Date(codeforcesVerification.expiresAt).toLocaleTimeString() : 'in 15 minutes'}.</p>}
-              <button className="button button-outline" type="button" onClick={checkCodeforcesToken} disabled={codeforcesBusy}>{codeforcesBusy ? 'Checking...' : 'Check verification'}</button>
-            </div>}
-          </>}
+          </div>}
+          <form onSubmit={generateCodeforcesToken}>
+            <label htmlFor="codeforces-handle">Codeforces handle
+              <input id="codeforces-handle" name="handle" autoComplete="off" maxLength="24" pattern="[A-Za-z0-9._-]{3,24}" required value={codeforcesHandle} onChange={event => setCodeforcesHandle(event.target.value)} />
+            </label>
+            <button className="button button-dark" type="submit" disabled={codeforcesBusy}>{codeforcesBusy ? 'Saving handle...' : 'Save handle'} <ArrowRight size={16} /></button>
+          </form>
         </>}
         {codeforcesError && <div className="notice error-notice" role="alert">{codeforcesError}</div>}
-        {codeforcesMessage && <div className={`notice ${codeforcesVerification.status === 'verified' ? 'success-notice' : codeforcesVerification.status === 'expired' ? 'error-notice' : 'info-notice'}`} role="status">{codeforcesMessage}</div>}
+        {codeforcesMessage && <div className="notice success-notice" role="status">{codeforcesMessage}</div>}
       </section>}
       {section === 'account' && <section className="settings-card settings-profile-card" aria-labelledby="settings-profile-title">
         <div className="settings-card-heading">

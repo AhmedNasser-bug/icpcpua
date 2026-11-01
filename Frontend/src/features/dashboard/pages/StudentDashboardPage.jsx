@@ -1,65 +1,47 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
-import { ArrowRight, BookOpen, CalendarDays, CheckCircle2, Clock3, ShieldCheck, Trophy } from 'lucide-react';
+import { ArrowRight, BookOpen, CalendarDays, CheckCircle2, Clock3, Code2, Trophy } from 'lucide-react';
 import { api, eventDate } from '../../../shared/services/api.js';
 
-function VerificationCard() {
-  return <section className="student-dashboard-verification" aria-labelledby="student-dashboard-verification-title">
-    <span className="student-dashboard-verification-icon"><ShieldCheck size={26} aria-hidden="true" /></span>
-    <h2 id="student-dashboard-verification-title">Verify your Codeforces account</h2>
-    <p>Verify your Codeforces account to unlock your points, attendance, and training overview</p>
-    <Link className="button button-dark" to="/settings/codeforces">Verify Codeforces account <ArrowRight size={17} aria-hidden="true" /></Link>
-  </section>;
-}
-
 export function StudentDashboardPage({ session }) {
-  const isVerified = session.user?.profile?.codeforcesVerification?.status === 'verified';
+  const cfHandle = session.user?.profile?.codeforcesVerification?.handle
+    || session.user?.profile?.externalProfiles?.codeforcesHandle
+    || '';
   const [dashboard, setDashboard] = useState(null);
-  const [loading, setLoading] = useState(isVerified);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [verificationBlocked, setVerificationBlocked] = useState(!isVerified);
   const [retry, setRetry] = useState(0);
 
   const loadDashboard = useCallback(async () => {
-    if (!isVerified) {
-      setDashboard(null);
-      setLoading(false);
-      return;
-    }
     setLoading(true);
     setError('');
     try {
       const { dashboard: result } = await api('/dashboard', { token: session.token });
       setDashboard(result);
-      setVerificationBlocked(false);
     } catch (reason) {
       setDashboard(null);
-      if (reason.code === 'CODEFORCES_VERIFICATION_REQUIRED') {
-        setVerificationBlocked(true);
-        setError('');
-      } else {
-        setError(reason.message);
-      }
+      setError(reason.message);
     } finally {
       setLoading(false);
     }
-  }, [isVerified, retry, session.token]);
+  }, [retry, session.token]);
 
   useEffect(() => {
     loadDashboard();
   }, [loadDashboard]);
 
   if (session.user?.role === 'admin') return <Navigate to="/admin/overview" replace />;
-  const needsVerification = !isVerified || verificationBlocked;
-  const showVerified = isVerified && !verificationBlocked;
 
   return <main className="page-wrap student-dashboard-page">
     <header className="student-dashboard-hero">
       <div><h1>Student dashboard</h1></div>
-      <span className={`student-dashboard-status${showVerified ? ' is-verified' : ''}`}>{showVerified ? <><CheckCircle2 size={16} /> Verified account</> : <><ShieldCheck size={16} /> Verification required</>}</span>
+      <Link className="student-dashboard-status" to="/settings/codeforces">
+        <Code2 size={16} aria-hidden="true" />
+        {cfHandle ? `Unverified handle: @${cfHandle}` : 'Link Codeforces handle (optional)'}
+      </Link>
     </header>
 
-    {needsVerification ? <VerificationCard /> : loading ? <div className="empty-state"><span className="loader" /> Loading your dashboard...</div> : error ? <div className="notice error-notice" role="alert">{error} <button className="text-link" type="button" onClick={() => setRetry(value => value + 1)}>Try again</button></div> : dashboard && <>
+    {loading ? <div className="empty-state"><span className="loader" /> Loading your dashboard...</div> : error ? <div className="notice error-notice" role="alert">{error} <button className="text-link" type="button" onClick={() => setRetry(value => value + 1)}>Try again</button></div> : dashboard && <>
       <section className="student-dashboard-stats" aria-label="Your community statistics">
         <article><span><Trophy size={18} aria-hidden="true" /></span><small>Total points</small><strong>{dashboard.stats.points.toLocaleString()}</strong><Link to="/settings/points">Points history <ArrowRight size={14} /></Link></article>
         <article><span><CalendarDays size={18} aria-hidden="true" /></span><small>Events attended</small><strong>{dashboard.stats.eventsAttended.toLocaleString()}</strong><Link to="/events">Explore events <ArrowRight size={14} /></Link></article>

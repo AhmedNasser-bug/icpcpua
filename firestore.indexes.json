@@ -1,0 +1,54 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "events",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "startsAt", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "users",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "role", "order": "ASCENDING" },
+        { "fieldPath": "attendancePoints", "order": "DESCENDING" },
+        { "fieldPath": "verifiedAttendanceCount", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "roadmapNodes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "roadmap", "order": "ASCENDING" },
+        { "fieldPath": "position", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "roadmapCycles",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "roadmap", "order": "ASCENDING" },
+        { "fieldPath": "order", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "roadmapSessions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "cycle", "order": "ASCENDING" },
+        { "fieldPath": "sessionNumber", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "notifications",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "user", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

@@ -1,18 +1,8 @@
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+import { handleSparkRequest } from './sparkAdapter.js';
+export { signInWithOAuthProvider, signOutFirebase } from './firebase.js';
 
-export async function api(path, { token, ...options } = {}) {
-  const headers = { ...(options.body ? { 'Content-Type': 'application/json' } : {}), ...options.headers };
-  if (token) headers.Authorization = `Bearer ${token}`;
-  const response = await fetch(`${API_URL}${path}`, { ...options, headers });
-  const data = response.status === 204 ? null : await response.json();
-  if (!response.ok) {
-    const error = new Error(data?.error?.message || 'Something went wrong. Please try again.');
-    error.field = data?.error?.field;
-    error.code = data?.error?.code;
-    error.status = response.status;
-    throw error;
-  }
-  return data;
+export async function api(path, options = {}) {
+  return handleSparkRequest(path, options);
 }
 
 export function eventDate(value, options = {}) {
