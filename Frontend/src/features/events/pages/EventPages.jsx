@@ -165,8 +165,7 @@ export function HomePage() {
     <section className="home-hero" aria-labelledby="home-title">
       <div className="home-hero-inner">
         <div className="home-hero-copy">
-          <p className="home-eyebrow"><span aria-hidden="true" /> PUA · COMPETITIVE PROGRAMMING</p>
-          <h1 id="home-title">ICPC PUA — <span>Road to ICPC</span></h1>
+          <h1 id="home-title">ICPC PUA<span>Road to ICPC</span></h1>
           <p className="home-hero-lead">Building the next generation of problem solvers</p>
           <p className="home-hero-mission">Our goal is to help the first team from our university qualify for the ACPC</p>
           <div className="home-hero-actions">
@@ -191,7 +190,6 @@ export function HomePage() {
       <div className="home-section-inner">
         <div className="home-section-heading home-paths-heading">
           <div>
-            <p className="home-eyebrow"><span aria-hidden="true" /> LEARN WITH THE COMMUNITY</p>
             <h2 id="home-paths-title">Find your <span>next step</span></h2>
           </div>
         </div>

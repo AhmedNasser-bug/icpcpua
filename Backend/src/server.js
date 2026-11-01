@@ -12,7 +12,7 @@ async function startServer() {
     server.once('error', reject);
   });
   console.log(`API listening on port ${config.port}.`);
-}
+} 
 
 startServer().catch((error) => {
   console.error('Could not connect to MongoDB or start the API.', error);
